@@ -15,17 +15,14 @@ from statsmodels.tsa.statespace.sarimax import SARIMAX
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 
-# =========================
+# =========================================================
 # PAGE CONFIG
-# =========================
+# =========================================================
 st.set_page_config(
     page_title="Prediksi Jumlah Sampah Kota Bandung",
     layout="wide"
 )
 
-# =========================
-# FILE CONFIG
-# =========================
 FILE_PATH = "jumlah_capaian_penanganan_sampah_di_kota_bandung.xlsx"
 
 bulan_map = {
@@ -44,13 +41,12 @@ bulan_map = {
 }
 
 
-# =========================
-# HELPER FUNCTIONS
-# =========================
+# =========================================================
+# FUNCTIONS
+# =========================================================
 @st.cache_data
 def load_data():
-    df = pd.read_excel(FILE_PATH)
-    return df
+    return pd.read_excel(FILE_PATH)
 
 
 @st.cache_data
@@ -73,7 +69,7 @@ def split_train_test(ts, test_size=12):
     return train, test
 
 
-def calculate_metrics(actual, pred):
+def calc_metrics(actual, pred):
     mae = mean_absolute_error(actual, pred)
     rmse = np.sqrt(mean_squared_error(actual, pred))
     mape = np.mean(np.abs((actual - pred) / actual)) * 100
@@ -82,7 +78,7 @@ def calculate_metrics(actual, pred):
 
 
 @st.cache_data
-def best_arima_order(train):
+def search_best_arima(train):
     p = d = q = range(0, 3)
     pdq = list(itertools.product(p, d, q))
 
@@ -103,7 +99,7 @@ def best_arima_order(train):
 
 
 @st.cache_data
-def best_sarima_order(train):
+def search_best_sarima(train):
     p = d = q = range(0, 2)
     pdq = list(itertools.product(p, d, q))
     seasonal_pdq = [(x[0], x[1], x[2], 12) for x in pdq]
@@ -133,17 +129,34 @@ def best_sarima_order(train):
     return best_order, best_seasonal, best_aic
 
 
-def make_future_index(last_date, periods):
-    return pd.date_range(start=last_date + pd.offsets.MonthBegin(1), periods=periods, freq="MS")
+def get_fitted_model(model_name, train):
+    if model_name == "ARIMA":
+        best_order, best_aic = search_best_arima(train)
+        fitted = ARIMA(train, order=best_order).fit()
+        return fitted, best_order, None, best_aic
+    else:
+        best_order, best_seasonal, best_aic = search_best_sarima(train)
+        fitted = SARIMAX(
+            train,
+            order=best_order,
+            seasonal_order=best_seasonal,
+            enforce_stationarity=False,
+            enforce_invertibility=False
+        ).fit(disp=False)
+        return fitted, best_order, best_seasonal, best_aic
 
 
-def format_metric(x):
-    return f"{x:,.2f}"
+def future_index(last_date, periods):
+    return pd.date_range(
+        start=last_date + pd.offsets.MonthBegin(1),
+        periods=periods,
+        freq="MS"
+    )
 
 
-# =========================
-# LOAD & PREPROCESS
-# =========================
+# =========================================================
+# LOAD DATA
+# =========================================================
 try:
     raw_df = load_data()
     df, ts = preprocess_data(raw_df)
@@ -153,11 +166,10 @@ except Exception as e:
     st.stop()
 
 
-# =========================
+# =========================================================
 # SIDEBAR
-# =========================
+# =========================================================
 st.sidebar.title("Navigasi")
-
 menu = st.sidebar.radio(
     "Pilih Halaman",
     [
@@ -168,63 +180,50 @@ menu = st.sidebar.radio(
         "Uji Stasioneritas",
         "Pemodelan",
         "Forecasting",
-        "Evaluasi",
+        "Evaluasi"
     ]
 )
 
 st.sidebar.markdown("---")
-st.sidebar.write("Jumlah observasi:", len(ts))
-st.sidebar.write("Periode awal:", str(ts.index.min().date()))
-st.sidebar.write("Periode akhir:", str(ts.index.max().date()))
+st.sidebar.write(f"Jumlah observasi: {len(ts)}")
+st.sidebar.write(f"Periode awal: {ts.index.min().date()}")
+st.sidebar.write(f"Periode akhir: {ts.index.max().date()}")
 
 
-# =========================
+# =========================================================
 # BERANDA
-# =========================
+# =========================================================
 if menu == "Beranda":
     st.title("Prediksi Jumlah Sampah Kota Bandung")
     st.write(
-        "Aplikasi ini digunakan untuk melakukan analisis time series dan prediksi jumlah sampah "
-        "di Kota Bandung berdasarkan data historis bulanan periode 2017–2024."
+        "Aplikasi ini digunakan untuk melakukan analisis time series dan prediksi "
+        "jumlah sampah Kota Bandung berdasarkan data historis bulanan."
     )
 
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Jumlah Data", len(ts))
-    col2.metric("Periode Awal", str(ts.index.min().date()))
-    col3.metric("Periode Akhir", str(ts.index.max().date()))
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Jumlah Data", len(ts))
+    c2.metric("Periode Awal", str(ts.index.min().date()))
+    c3.metric("Periode Akhir", str(ts.index.max().date()))
 
-    st.subheader("Tujuan Aplikasi")
+    st.subheader("Tujuan")
     st.markdown(
         """
         - Memahami pola historis jumlah sampah
         - Melakukan eksplorasi data time series
         - Menguji stasioneritas data
         - Membandingkan model ARIMA dan SARIMA
-        - Menentukan model terbaik berdasarkan hasil evaluasi
-        - Melakukan prediksi jumlah sampah ke periode berikutnya
+        - Menentukan model terbaik
+        - Melakukan prediksi ke periode berikutnya
         """
     )
 
     st.subheader("Preview Data")
     st.dataframe(df.head(10), use_container_width=True)
 
-    st.subheader("Ringkasan Data")
-    summary_df = pd.DataFrame({
-        "Statistik": ["Mean", "Std", "Min", "Median", "Max"],
-        "Nilai": [
-            ts.mean(),
-            ts.std(),
-            ts.min(),
-            ts.median(),
-            ts.max()
-        ]
-    })
-    st.dataframe(summary_df, use_container_width=True)
 
-
-# =========================
+# =========================================================
 # UNDERSTANDING DATA
-# =========================
+# =========================================================
 elif menu == "Understanding Data":
     st.title("Understanding Data")
 
@@ -248,30 +247,20 @@ elif menu == "Understanding Data":
         st.write("Duplicates Values:", int(raw_df.duplicated().sum()))
 
     st.subheader("Preprocessing")
-    st.code(
-        "df['bulan_num'] = df['bulan'].map(bulan_map)\n"
-        "df['tanggal'] = pd.to_datetime(df['tahun'].astype(str) + '-' + df['bulan_num'])\n"
-        "df = df.set_index('tanggal').sort_index()\n"
-        "ts = df['jumlah_sampah'].copy()",
-        language="python"
-    )
-
     st.dataframe(df.head(), use_container_width=True)
 
     st.info(
         "Hasil preprocessing menunjukkan bahwa dataset memiliki 96 observasi bulanan dari Januari 2017 "
-        "hingga Desember 2024. Tidak ditemukan missing values maupun data duplikat. Variabel jumlah_sampah "
-        "dijadikan time series utama dengan indeks tanggal bulanan sehingga siap digunakan untuk analisis."
+        "hingga Desember 2024. Tidak ditemukan missing values maupun data duplikat."
     )
 
 
-# =========================
+# =========================================================
 # EDA
-# =========================
+# =========================================================
 elif menu == "EDA":
     st.title("EDA")
 
-    # ---------- Time Series Plot ----------
     st.subheader("Time Series Plot")
     fig, ax = plt.subplots(figsize=(12, 5))
     ax.plot(ts, label="Jumlah Sampah")
@@ -290,7 +279,6 @@ elif menu == "EDA":
         "→ terdapat tren → data tidak stasioner"
     )
 
-    # ---------- Moving Average ----------
     st.subheader("Moving Average")
     st.write("Digunakan untuk melihat tren jangka panjang dengan menghaluskan fluktuasi data.")
 
@@ -313,13 +301,11 @@ elif menu == "EDA":
         "→ tren berubah → data tidak stasioner"
     )
 
-    # ---------- Boxplot per Tahun ----------
     st.subheader("Boxplot per Tahun")
     st.write("Digunakan untuk membandingkan distribusi jumlah sampah tiap tahun, termasuk median, sebaran data, dan potensi outlier.")
 
     df_box = df.copy()
     df_box["tahun_plot"] = df_box.index.year
-
     years = sorted(df_box["tahun_plot"].unique())
     data_by_year = [df_box[df_box["tahun_plot"] == y]["jumlah_sampah"].values for y in years]
 
@@ -336,10 +322,9 @@ elif menu == "EDA":
         "2020–2022 → median cenderung stabil\n\n"
         "2023–2024 → median turun signifikan + distribusi melebar\n\n"
         "2021 dan 2024 terlihat outlier\n\n"
-        "Outlier tidak dibuang karena dapat merepresentasikan kondisi nyata, seperti pandemi, kebijakan, atau shock tertentu."
+        "Outlier tidak dibuang karena dapat merepresentasikan kondisi nyata."
     )
 
-    # ---------- Seasonal Decomposition ----------
     st.subheader("Seasonal Decomposition")
     st.write("Digunakan untuk memisahkan komponen time series menjadi tren, musiman, dan residual.")
 
@@ -351,28 +336,20 @@ elif menu == "EDA":
     st.caption(
         "Trend → meningkat hingga ~2020 lalu menurun hingga 2024\n\n"
         "Seasonal → pola berulang ada tapi tidak terlalu kuat\n\n"
-        "Residual → fluktuasi acak + ada beberapa spike\n\n"
-        "→ tren dominan → seasonality lemah"
+        "Residual → fluktuasi acak + ada beberapa spike"
     )
 
 
-# =========================
-# TRAIN-TEST SPLIT
-# =========================
+# =========================================================
+# TRAIN TEST SPLIT
+# =========================================================
 elif menu == "Train-Test Split":
     st.title("Train-Test Split")
-
     st.write("Data dibagi menjadi data latih (train) dan data uji (test) untuk mengevaluasi performa model forecasting.")
 
-    st.code(
-        "train = ts.iloc[:-12]\n"
-        "test = ts.iloc[-12:]",
-        language="python"
-    )
-
-    col1, col2 = st.columns(2)
-    col1.metric("Jumlah Data Train", len(train))
-    col2.metric("Jumlah Data Test", len(test))
+    c1, c2 = st.columns(2)
+    c1.metric("Jumlah Data Train", len(train))
+    c2.metric("Jumlah Data Test", len(test))
 
     split_df = pd.DataFrame({
         "Set": ["Train", "Test"],
@@ -389,18 +366,17 @@ elif menu == "Train-Test Split":
     )
 
 
-# =========================
-# UJI STASIONERITAS
-# =========================
+# =========================================================
+# STATIONARITY
+# =========================================================
 elif menu == "Uji Stasioneritas":
     st.title("Uji Stasioneritas (ADF Test)")
     st.write("Digunakan untuk menguji apakah data time series bersifat stasioner atau tidak.")
 
     adf_result = adfuller(train)
-
-    col1, col2 = st.columns(2)
-    col1.metric("ADF Statistic", f"{adf_result[0]:.6f}")
-    col2.metric("p-value", f"{adf_result[1]:.6f}")
+    c1, c2 = st.columns(2)
+    c1.metric("ADF Statistic", f"{adf_result[0]:.6f}")
+    c2.metric("p-value", f"{adf_result[1]:.6f}")
 
     if adf_result[1] < 0.05:
         st.success("p-value < 0.05 → data stasioner secara statistik")
@@ -408,15 +384,12 @@ elif menu == "Uji Stasioneritas":
         st.warning("p-value > 0.05 → data tidak stasioner")
 
     st.info(
-        "Namun secara visual masih terdapat tren. Hal ini terjadi karena train-test split "
-        "tidak membuat data menjadi stasioner, tetapi bagian data test yang memiliki perubahan "
-        "cukup tajam tidak ikut masuk ke data train. Oleh karena itu, differencing tetap dipertimbangkan."
+        "Secara visual masih terdapat tren, sehingga differencing tetap digunakan pada pemodelan."
     )
 
     st.subheader("Differencing")
-    st.write("Digunakan untuk menghilangkan tren dan membuat data lebih stasioner sebelum dilakukan pemodelan.")
-
     ts_diff = train.diff().dropna()
+
     fig, ax = plt.subplots(figsize=(12, 5))
     ax.plot(ts_diff)
     ax.set_title("Differenced Series")
@@ -436,7 +409,6 @@ elif menu == "Uji Stasioneritas":
     st.write("Digunakan untuk menentukan parameter p (AR) dan q (MA) pada model ARIMA.")
 
     col1, col2 = st.columns(2)
-
     with col1:
         fig_acf, ax_acf = plt.subplots(figsize=(6, 4))
         plot_acf(ts_diff, ax=ax_acf)
@@ -454,9 +426,9 @@ elif menu == "Uji Stasioneritas":
     )
 
 
-# =========================
-# PEMODELAN
-# =========================
+# =========================================================
+# MODELING
+# =========================================================
 elif menu == "Pemodelan":
     st.title("Pemodelan")
 
@@ -465,44 +437,26 @@ elif menu == "Pemodelan":
         ["ARIMA", "SARIMA", "Perbandingan AIC"]
     )
 
-    # ---------- ARIMA ----------
     if model_page == "ARIMA":
         st.subheader("Pemilihan Parameter ARIMA")
         st.write("Dilakukan pencarian kombinasi parameter terbaik untuk model ARIMA berdasarkan nilai AIC terendah.")
 
-        best_order, best_aic = best_arima_order(train)
-
+        best_order, best_aic = search_best_arima(train)
         st.write(f"Best ARIMA: {best_order}")
         st.write(f"Best AIC: {best_aic:.3f}")
 
-        st.caption(
-            f"Model terbaik: ARIMA{best_order}\n\n"
-            f"AIC paling kecil: {best_aic:.3f}\n\n"
-            "→ model ini paling optimal untuk kandidat ARIMA"
-        )
-
-        st.subheader("Pemodelan ARIMA")
         model_arima = ARIMA(train, order=best_order)
         result_arima = model_arima.fit()
         st.text(str(result_arima.summary()))
 
-    # ---------- SARIMA ----------
     elif model_page == "SARIMA":
         st.subheader("Pemilihan Parameter SARIMA")
         st.write("Dilakukan pencarian kombinasi parameter terbaik untuk model SARIMA berdasarkan nilai AIC terendah.")
 
-        best_order_s, best_seasonal_s, best_aic_s = best_sarima_order(train)
-
+        best_order_s, best_seasonal_s, best_aic_s = search_best_sarima(train)
         st.write(f"Best SARIMA: {best_order_s} {best_seasonal_s}")
         st.write(f"Best AIC: {best_aic_s:.3f}")
 
-        st.caption(
-            f"Model terbaik: SARIMA{best_order_s}{best_seasonal_s}\n\n"
-            f"AIC paling kecil: {best_aic_s:.3f}\n\n"
-            "→ penambahan komponen musiman meningkatkan kemampuan model dalam menangkap pola data"
-        )
-
-        st.subheader("Pemodelan SARIMA")
         model_sarima = SARIMAX(
             train,
             order=best_order_s,
@@ -513,12 +467,9 @@ elif menu == "Pemodelan":
         result_sarima = model_sarima.fit(disp=False)
         st.text(str(result_sarima.summary()))
 
-    # ---------- Comparison ----------
     else:
-        st.subheader("Perbandingan AIC ARIMA dan SARIMA")
-
-        best_order, best_aic = best_arima_order(train)
-        best_order_s, best_seasonal_s, best_aic_s = best_sarima_order(train)
+        best_order, best_aic = search_best_arima(train)
+        best_order_s, best_seasonal_s, best_aic_s = search_best_sarima(train)
 
         compare_df = pd.DataFrame({
             "Model": ["ARIMA", "SARIMA"],
@@ -528,80 +479,27 @@ elif menu == "Pemodelan":
         })
         st.dataframe(compare_df, use_container_width=True)
 
-        if best_aic_s < best_aic:
-            st.success("Berdasarkan AIC, SARIMA lebih baik dibanding ARIMA.")
-        else:
-            st.success("Berdasarkan AIC, ARIMA lebih baik dibanding SARIMA.")
 
-
-# =========================
+# =========================================================
 # FORECASTING
-# =========================
+# =========================================================
 elif menu == "Forecasting":
     st.title("Forecasting")
+    st.write("Halaman ini digunakan untuk melakukan prediksi menggunakan model ARIMA atau SARIMA.")
 
-    forecast_mode = st.radio(
-        "Pilih jenis forecasting",
-        ["Forecast pada Data Test", "Prediksi Masa Depan"]
-    )
+    st.subheader("Input Forecasting")
 
-    model_choice = st.selectbox(
-        "Pilih model",
-        ["ARIMA", "SARIMA"]
-    )
+    with st.form("forecast_form"):
+        forecast_mode = st.selectbox(
+            "Pilih jenis forecasting",
+            ["Forecast pada Data Test", "Prediksi Masa Depan"]
+        )
 
-    best_order, _ = best_arima_order(train)
-    best_order_s, best_seasonal_s, _ = best_sarima_order(train)
+        model_choice = st.selectbox(
+            "Pilih model",
+            ["ARIMA", "SARIMA"]
+        )
 
-    if model_choice == "ARIMA":
-        fitted_model = ARIMA(train, order=best_order).fit()
-    else:
-        fitted_model = SARIMAX(
-            train,
-            order=best_order_s,
-            seasonal_order=best_seasonal_s,
-            enforce_stationarity=False,
-            enforce_invertibility=False
-        ).fit(disp=False)
-
-    # ---------- Forecast test ----------
-    if forecast_mode == "Forecast pada Data Test":
-        st.subheader("Forecast vs Actual")
-
-        if model_choice == "ARIMA":
-            forecast = fitted_model.forecast(steps=len(test))
-            label_forecast = "Forecast ARIMA"
-        else:
-            forecast = fitted_model.forecast(steps=len(test))
-            label_forecast = "Forecast SARIMA"
-
-        fig, ax = plt.subplots(figsize=(12, 5))
-        ax.plot(train, label="Train")
-        ax.plot(test, label="Actual")
-        ax.plot(forecast, label=label_forecast)
-        ax.set_title(f"{model_choice} Forecast vs Actual")
-        ax.set_xlabel("Tahun")
-        ax.set_ylabel("Ton")
-        ax.legend()
-        ax.grid(True)
-        st.pyplot(fig)
-
-        if model_choice == "ARIMA":
-            st.caption(
-                "Prediksi cenderung stabil di sekitar nilai rata-rata\n\n"
-                "Model tidak mampu mengikuti fluktuasi data aktual yang cukup tinggi\n\n"
-                "→ model lebih menangkap pola rata-rata (mean)"
-            )
-        else:
-            st.caption(
-                "Prediksi lebih dinamis dibanding ARIMA\n\n"
-                "Model mampu menangkap sebagian pola fluktuasi\n\n"
-                "Namun masih terjadi overestimate dan underestimate pada beberapa periode"
-            )
-
-    # ---------- Future forecast ----------
-    else:
-        st.subheader("Input Prediksi")
         horizon = st.number_input(
             "Masukkan jumlah bulan yang ingin diprediksi",
             min_value=1,
@@ -610,41 +508,76 @@ elif menu == "Forecasting":
             step=1
         )
 
-        future_forecast = fitted_model.forecast(steps=horizon)
-        future_index = make_future_index(ts.index.max(), horizon)
-        future_forecast.index = future_index
+        submit_forecast = st.form_submit_button("Enter / Jalankan Forecast")
 
-        fig, ax = plt.subplots(figsize=(12, 5))
-        ax.plot(ts, label="Data Historis")
-        ax.plot(future_forecast, label=f"Prediksi {model_choice}", color="green")
-        ax.set_title(f"Prediksi Jumlah Sampah {horizon} Bulan ke Depan")
-        ax.set_xlabel("Tahun")
-        ax.set_ylabel("Ton")
-        ax.legend()
-        ax.grid(True)
-        st.pyplot(fig)
+    if submit_forecast:
+        fitted_model, best_order, best_seasonal, best_aic = get_fitted_model(model_choice, train)
 
-        result_future = pd.DataFrame({
-            "Periode": future_forecast.index.strftime("%Y-%m"),
-            "Prediksi Jumlah Sampah": np.round(future_forecast.values, 2)
-        })
-        st.dataframe(result_future, use_container_width=True)
+        st.subheader("Ringkasan Model")
+        if model_choice == "ARIMA":
+            st.write(f"Model terpilih: ARIMA{best_order}")
+            st.write(f"AIC: {best_aic:.3f}")
+        else:
+            st.write(f"Model terpilih: SARIMA{best_order}{best_seasonal}")
+            st.write(f"AIC: {best_aic:.3f}")
+
+        if forecast_mode == "Forecast pada Data Test":
+            forecast = fitted_model.forecast(steps=len(test))
+
+            fig, ax = plt.subplots(figsize=(12, 5))
+            ax.plot(train, label="Train")
+            ax.plot(test, label="Actual")
+            ax.plot(forecast, label=f"Forecast {model_choice}")
+            ax.set_title(f"{model_choice} Forecast vs Actual")
+            ax.set_xlabel("Tahun")
+            ax.set_ylabel("Ton")
+            ax.legend()
+            ax.grid(True)
+            st.pyplot(fig)
+
+            result_test = pd.DataFrame({
+                "Periode": test.index.strftime("%Y-%m"),
+                "Actual": np.round(test.values, 2),
+                "Forecast": np.round(forecast.values, 2)
+            })
+            st.dataframe(result_test, use_container_width=True)
+
+        else:
+            future_forecast = fitted_model.forecast(steps=horizon)
+            idx_future = future_index(ts.index.max(), horizon)
+            future_forecast.index = idx_future
+
+            fig, ax = plt.subplots(figsize=(12, 5))
+            ax.plot(ts, label="Data Historis")
+            ax.plot(future_forecast, label=f"Prediksi {model_choice}", color="green")
+            ax.set_title(f"Prediksi Jumlah Sampah {horizon} Bulan ke Depan")
+            ax.set_xlabel("Tahun")
+            ax.set_ylabel("Ton")
+            ax.legend()
+            ax.grid(True)
+            st.pyplot(fig)
+
+            result_future = pd.DataFrame({
+                "Periode": future_forecast.index.strftime("%Y-%m"),
+                "Prediksi Jumlah Sampah": np.round(future_forecast.values, 2)
+            })
+            st.dataframe(result_future, use_container_width=True)
 
 
-# =========================
-# EVALUASI
-# =========================
+# =========================================================
+# EVALUATION
+# =========================================================
 elif menu == "Evaluasi":
     st.title("Evaluasi Model")
 
     # ARIMA
-    best_order, _ = best_arima_order(train)
+    best_order, _ = search_best_arima(train)
     model_arima = ARIMA(train, order=best_order).fit()
     forecast_arima = model_arima.forecast(steps=len(test))
-    mae_a, rmse_a, mape_a, r2_a = calculate_metrics(test, forecast_arima)
+    mae_a, rmse_a, mape_a, r2_a = calc_metrics(test, forecast_arima)
 
     # SARIMA
-    best_order_s, best_seasonal_s, _ = best_sarima_order(train)
+    best_order_s, best_seasonal_s, _ = search_best_sarima(train)
     model_sarima = SARIMAX(
         train,
         order=best_order_s,
@@ -653,42 +586,25 @@ elif menu == "Evaluasi":
         enforce_invertibility=False
     ).fit(disp=False)
     forecast_sarima = model_sarima.forecast(steps=len(test))
-    mae_s, rmse_s, mape_s, r2_s = calculate_metrics(test, forecast_sarima)
+    mae_s, rmse_s, mape_s, r2_s = calc_metrics(test, forecast_sarima)
 
     st.subheader("Evaluasi ARIMA")
-    st.write(
-        "Evaluasi performa model dilakukan menggunakan beberapa metrik untuk mengukur tingkat kesalahan prediksi."
-    )
-    arima_eval_df = pd.DataFrame({
+    arima_eval = pd.DataFrame({
         "Metrik": ["MAE", "RMSE", "MAPE", "R²"],
         "Nilai": [mae_a, rmse_a, mape_a, r2_a]
     })
-    st.dataframe(arima_eval_df, use_container_width=True)
-
-    st.caption(
-        f"MAE sebesar {mae_a:.0f} menunjukkan rata-rata kesalahan prediksi sekitar {mae_a:.0f} ton\n\n"
-        f"RMSE sebesar {rmse_a:.0f} menunjukkan adanya error yang cukup besar pada beberapa periode tertentu\n\n"
-        f"MAPE sebesar {mape_a:.2f}% menunjukkan tingkat kesalahan yang rendah dalam persentase\n\n"
-        f"R² sebesar {r2_a:.3f} menunjukkan bahwa model tidak mampu menjelaskan variasi data dengan baik"
-    )
+    st.dataframe(arima_eval, use_container_width=True)
 
     st.subheader("Evaluasi SARIMA")
-    sarima_eval_df = pd.DataFrame({
+    sarima_eval = pd.DataFrame({
         "Metrik": ["MAE", "RMSE", "MAPE", "R²"],
         "Nilai": [mae_s, rmse_s, mape_s, r2_s]
     })
-    st.dataframe(sarima_eval_df, use_container_width=True)
-
-    st.caption(
-        f"MAE sebesar {mae_s:.0f} menunjukkan rata-rata kesalahan prediksi cukup besar\n\n"
-        f"RMSE sebesar {rmse_s:.0f} mengindikasikan adanya error yang sangat besar pada beberapa periode\n\n"
-        f"MAPE sebesar {mape_s:.2f}% menunjukkan tingkat kesalahan dalam kategori cukup\n\n"
-        f"R² sebesar {r2_s:.3f} menunjukkan bahwa model sangat buruk dalam menjelaskan variasi data"
-    )
+    st.dataframe(sarima_eval, use_container_width=True)
 
     st.subheader("Perbandingan ARIMA dan SARIMA")
     compare_df = pd.DataFrame({
-        "Model": ["ARIMA", "SARIMA"],
+        "Model": ["ARIMA(0,1,1)", f"SARIMA{best_order_s}{best_seasonal_s}"],
         "MAE": [round(mae_a, 2), round(mae_s, 2)],
         "RMSE": [round(rmse_a, 2), round(rmse_s, 2)],
         "MAPE": [round(mape_a, 2), round(mape_s, 2)],
@@ -699,12 +615,10 @@ elif menu == "Evaluasi":
     if mape_a < mape_s:
         st.success("Model terbaik berdasarkan hasil evaluasi adalah ARIMA(0,1,1).")
         st.write(
-            "Meskipun SARIMA mampu menangkap pola musiman secara visual, performanya pada data uji "
-            "lebih buruk dibandingkan ARIMA. Oleh karena itu, ARIMA dipilih sebagai model terbaik "
-            "untuk forecasting jumlah sampah pada penelitian ini."
+            "ARIMA memberikan error yang lebih rendah dan prediksi yang lebih stabil pada data uji."
         )
     else:
         st.success("Model terbaik berdasarkan hasil evaluasi adalah SARIMA.")
         st.write(
-            "SARIMA memberikan error lebih rendah dan lebih baik dalam menangkap pola musiman pada data."
+            "SARIMA memberikan error yang lebih rendah dan lebih baik dalam menangkap pola musiman."
         )
