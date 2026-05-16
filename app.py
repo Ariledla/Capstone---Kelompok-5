@@ -1198,17 +1198,31 @@ def apply_theme(mode):
             }}
 
             .desktop-chart {{
-                display: none !important;
+                display: block !important;
             }}
 
             .mobile-chart {{
-                display: block !important;
+                display: none !important;
             }}
+
 
             .stPlotlyChart {{
                 border-radius: 14px !important;
                 padding: 0px !important;
                 margin-bottom: 8px !important;
+                max-height: 360px !important;
+                overflow: hidden !important;
+            }}
+
+            .stPlotlyChart > div,
+            .stPlotlyChart .js-plotly-plot,
+            .stPlotlyChart .plot-container,
+            .stPlotlyChart .svg-container {{
+                max-height: 350px !important;
+            }}
+
+            .stPlotlyChart svg {{
+                max-height: 350px !important;
             }}
 
             .stPlotlyChart svg .gtitle {{
@@ -1938,9 +1952,9 @@ if menu == "Simulasi Pengelolaan":
     with row2_col4:
         kpi_card("Armada Maksimum per Hari", f"{format_integer(int(simulation_df['Estimasi Armada per Hari'].max()))} truk", f"Asumsi {rit_per_truk_per_hari} rit/truk/hari")
 
-    fig_forecast_mobile = make_forecast_chart_mobile(ts, forecast, theme)
+    fig_forecast = make_forecast_chart(ts, forecast, theme)
     st.plotly_chart(
-        fig_forecast_mobile,
+        fig_forecast,
         use_container_width=True,
         config={"displayModeBar": False, "responsive": True}
     )
