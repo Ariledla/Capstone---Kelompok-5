@@ -15,9 +15,10 @@ warnings.filterwarnings("ignore")
 # ============================================================
 
 st.set_page_config(
-    page_title="Prediksi Sampah Kota Bandung",
+    page_title="Simulasi Sampah Kota Bandung",
     page_icon="♻️",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
 FILE_NAME = "jumlah_capaian_penanganan_sampah_di_kota_bandung.xlsx"
@@ -43,7 +44,7 @@ BULAN_INDO = {
     3: "Maret",
     4: "April",
     5: "Mei",
-    6: "Juli" if False else "Juni",
+    6: "Juni",
     7: "Juli",
     8: "Agustus",
     9: "September",
@@ -51,6 +52,11 @@ BULAN_INDO = {
     11: "November",
     12: "Desember",
 }
+
+PAGES = [
+    "Simulasi Pengelolaan",
+    "Data & Evaluasi"
+]
 
 
 # ============================================================
@@ -235,7 +241,7 @@ def prepare_comparison_display(comparison_df):
 
 
 # ============================================================
-# TEMA DAN STYLE
+# TEMA DAN STYLE RESPONSIVE
 # ============================================================
 
 def apply_theme(mode):
@@ -298,6 +304,14 @@ def apply_theme(mode):
             color: {text} !important;
         }}
 
+        header, footer, #MainMenu {{
+            visibility: hidden;
+        }}
+
+        h1, h2, h3, h4, h5, h6, p, label, span, div {{
+            color: inherit;
+        }}
+
         [data-testid="stSidebar"] {{
             background: {sidebar_bg} !important;
             border-right: 1px solid {border};
@@ -324,6 +338,14 @@ def apply_theme(mode):
 
         [data-testid="stSidebar"] * {{
             color: {text} !important;
+        }}
+
+        .block-container {{
+            max-width: 1420px !important;
+            padding-top: 3.3rem !important;
+            padding-left: 0.95rem !important;
+            padding-right: 0.95rem !important;
+            padding-bottom: 1.5rem !important;
         }}
 
         .theme-label {{
@@ -430,28 +452,12 @@ def apply_theme(mode):
             align-items: center;
         }}
 
-        .block-container {{
-            max-width: 1420px !important;
-            padding-top: 4rem !important;
-            padding-left: 0.95rem !important;
-            padding-right: 0.95rem !important;
-            padding-bottom: 1.5rem !important;
-        }}
-
-        header, footer, #MainMenu {{
-            visibility: hidden;
-        }}
-
-        h1, h2, h3, h4, h5, h6, p, label, span, div {{
-            color: inherit;
-        }}
-
         .hero {{
             background: {hero};
             color: white !important;
-            padding: 25px 31px;
+            padding: 24px 31px;
             border-radius: 24px;
-            margin-bottom: 26px;
+            margin-bottom: 22px;
             box-shadow: 0 18px 42px rgba(31, 41, 51, 0.18);
         }}
 
@@ -460,7 +466,7 @@ def apply_theme(mode):
         }}
 
         .hero-title {{
-            font-size: 35px;
+            font-size: 34px;
             font-weight: 850;
             line-height: 1.12;
             margin-bottom: 8px;
@@ -471,6 +477,22 @@ def apply_theme(mode):
             max-width: 1120px;
             opacity: 0.96;
             line-height: 1.6;
+        }}
+
+        .top-menu-box {{
+            background: {card};
+            border: 1px solid {border};
+            border-radius: 18px;
+            padding: 14px 16px 2px 16px;
+            margin-bottom: 22px;
+            box-shadow: 0 8px 26px rgba(31, 41, 51, 0.06);
+        }}
+
+        .top-menu-title {{
+            font-size: 13px;
+            font-weight: 850;
+            color: {muted} !important;
+            margin-bottom: 8px;
         }}
 
         .section-title {{
@@ -527,7 +549,7 @@ def apply_theme(mode):
             flex-direction: column;
             justify-content: center;
             gap: 9px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }}
 
         .kpi-label {{
@@ -542,6 +564,7 @@ def apply_theme(mode):
             font-size: 23px;
             font-weight: 900;
             line-height: 1.12;
+            word-break: break-word;
         }}
 
         .kpi-note {{
@@ -741,6 +764,71 @@ def apply_theme(mode):
             margin-top: 1.2rem !important;
             margin-bottom: 1.2rem !important;
         }}
+
+        @media screen and (max-width: 900px) {{
+            .block-container {{
+                padding-top: 1.2rem !important;
+                padding-left: 0.75rem !important;
+                padding-right: 0.75rem !important;
+            }}
+
+            .hero {{
+                padding: 20px 18px;
+                border-radius: 20px;
+                margin-bottom: 18px;
+            }}
+
+            .hero-title {{
+                font-size: 25px;
+                line-height: 1.2;
+            }}
+
+            .hero-subtitle {{
+                font-size: 13.5px;
+                line-height: 1.55;
+            }}
+
+            .section-title {{
+                font-size: 22px;
+            }}
+
+            .section-desc {{
+                font-size: 13.5px;
+            }}
+
+            .kpi-card {{
+                min-height: auto;
+                padding: 16px 16px;
+                margin-bottom: 14px;
+            }}
+
+            .kpi-value {{
+                font-size: 20px;
+            }}
+
+            .card {{
+                padding: 16px 16px;
+                border-radius: 18px;
+            }}
+
+            .sidebar-visual {{
+                display: none !important;
+            }}
+
+            [data-testid="stSidebarUserContent"] {{
+                padding-bottom: 1rem !important;
+            }}
+
+            table.custom-table {{
+                font-size: 12px;
+            }}
+
+            table.custom-table thead tr th,
+            table.custom-table tbody tr td,
+            table.custom-table tbody tr th {{
+                padding: 9px 10px;
+            }}
+        }}
         </style>
         """,
         unsafe_allow_html=True
@@ -767,18 +855,6 @@ def kpi_card(label, value, note=None):
             <div class="kpi-label">{label}</div>
             <div class="kpi-value">{value}</div>
             {note_html}
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-def card(title, body):
-    st.markdown(
-        f"""
-        <div class="card">
-            <div class="small-title">{title}</div>
-            <div class="text-muted">{body}</div>
         </div>
         """,
         unsafe_allow_html=True
@@ -836,14 +912,21 @@ kota = ", ".join(df_raw["bps_nama_kabupaten_kota"].dropna().unique())
 satuan = ", ".join(df_raw["satuan"].dropna().unique())
 
 # ============================================================
-# SIDEBAR
+# SESSION STATE
 # ============================================================
 
 if "theme_mode" not in st.session_state:
     st.session_state.theme_mode = "Gelap"
 
+if "active_page" not in st.session_state:
+    st.session_state.active_page = "Simulasi Pengelolaan"
+
 theme = apply_theme(st.session_state.theme_mode)
 plot_bg = theme["plot_bg"]
+
+# ============================================================
+# SIDEBAR
+# ============================================================
 
 st.sidebar.markdown('<div class="theme-label">Pilih Tampilan</div>', unsafe_allow_html=True)
 
@@ -859,13 +942,13 @@ with theme_col2:
         st.session_state.theme_mode = "Gelap"
         st.rerun()
 
-menu = st.sidebar.radio(
+sidebar_page = st.sidebar.radio(
     "Menu Utama",
-    [
-        "Simulasi Pengelolaan",
-        "Data & Evaluasi"
-    ]
+    PAGES,
+    index=PAGES.index(st.session_state.active_page)
 )
+
+st.session_state.active_page = sidebar_page
 
 st.sidebar.markdown(
     """
@@ -884,7 +967,7 @@ st.sidebar.markdown(
 )
 
 # ============================================================
-# HERO
+# HERO DAN MENU ATAS
 # ============================================================
 
 st.markdown(
@@ -898,6 +981,29 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+st.markdown(
+    """
+    <div class="top-menu-box">
+        <div class="top-menu-title">Menu cepat</div>
+    """,
+    unsafe_allow_html=True
+)
+
+top_page = st.selectbox(
+    "Pilih halaman",
+    PAGES,
+    index=PAGES.index(st.session_state.active_page),
+    label_visibility="collapsed"
+)
+
+st.markdown("</div>", unsafe_allow_html=True)
+
+if top_page != st.session_state.active_page:
+    st.session_state.active_page = top_page
+    st.rerun()
+
+menu = st.session_state.active_page
 
 # ============================================================
 # HALAMAN 1: SIMULASI PENGELOLAAN
@@ -1054,6 +1160,9 @@ if menu == "Simulasi Pengelolaan":
     ax.set_ylabel("Jumlah Sampah (Ton)", fontsize=8)
     ax.legend(fontsize=7)
 
+    plt.xticks(rotation=25)
+    plt.tight_layout()
+
     st.pyplot(fig, use_container_width=True)
 
     st.markdown('<div class="small-title">Tabel Simulasi Kebutuhan Operasional</div>', unsafe_allow_html=True)
@@ -1122,7 +1231,7 @@ elif menu == "Data & Evaluasi":
             "Model yang dipakai",
             [
                 "Model utama pada dashboard: <b>SARIMA(1,2,2)(0,1,1,12)</b>.",
-                "Model digunakan karena dapat menangkap pola bulanan pada data historis.",
+                "Model digunakan untuk menghasilkan prediksi berbasis pola historis bulanan.",
                 "Prediksi pada aplikasi dibatasi maksimal <b>12 bulan ke depan</b>.",
                 "Detail pemilihan model dan pembahasan teknis dijelaskan di laporan."
             ]
@@ -1158,6 +1267,9 @@ elif menu == "Data & Evaluasi":
         ax.set_xlabel("Periode", fontsize=8)
         ax.set_ylabel("Jumlah Sampah (Ton)", fontsize=8)
         ax.legend(fontsize=7)
+
+        plt.xticks(rotation=25)
+        plt.tight_layout()
 
         st.pyplot(fig, use_container_width=True)
 
