@@ -821,6 +821,15 @@ def apply_theme(mode):
             overflow: hidden !important;
         }}
 
+
+        .desktop-chart {{
+            display: block;
+        }}
+
+        .mobile-chart {{
+            display: none;
+        }}
+
         @media screen and (max-width: 900px) {{
             .block-container {{
                 padding-top: 0.7rem !important;
@@ -834,7 +843,8 @@ def apply_theme(mode):
             [data-testid="stHeader"] {{
                 visibility: visible !important;
                 background: transparent !important;
-                height: 0px !important;
+                height: 46px !important;
+                min-height: 46px !important;
             }}
 
             [data-testid="stToolbar"],
@@ -933,13 +943,31 @@ def apply_theme(mode):
             }}
 
             div[data-testid="stHorizontalBlock"] {{
-                gap: 0.55rem !important;
+                gap: 0.45rem !important;
             }}
 
             div[data-testid="column"] {{
                 min-width: 0 !important;
                 padding-left: 0 !important;
                 padding-right: 0 !important;
+            }}
+
+            /* Mobile khusus: slider tetap full, 3 input angka dibuat 1 baris */
+            div[data-testid="stHorizontalBlock"]:has([data-testid="stNumberInput"]) {{
+                display: grid !important;
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                gap: 0.42rem !important;
+                align-items: start !important;
+            }}
+
+            div[data-testid="stHorizontalBlock"]:has([data-testid="stNumberInput"]) > div[data-testid="column"]:first-child {{
+                grid-column: 1 / -1 !important;
+                width: 100% !important;
+            }}
+
+            div[data-testid="stHorizontalBlock"]:has([data-testid="stNumberInput"]) > div[data-testid="column"]:not(:first-child) {{
+                width: 100% !important;
+                min-width: 0 !important;
             }}
 
             .stSlider {{
@@ -964,30 +992,34 @@ def apply_theme(mode):
             }}
 
             [data-testid="stNumberInput"] label {{
-                font-size: 12px !important;
+                font-size: 10.5px !important;
                 margin-bottom: 4px !important;
-                line-height: 1.2 !important;
+                line-height: 1.18 !important;
+                min-height: 24px !important;
             }}
 
             [data-testid="stNumberInput"] div[data-baseweb="input"] {{
-                min-height: 36px !important;
+                min-height: 34px !important;
             }}
 
             [data-testid="stNumberInput"] input {{
-                height: 36px !important;
-                min-height: 36px !important;
-                font-size: 12.5px !important;
+                height: 34px !important;
+                min-height: 34px !important;
+                font-size: 11.5px !important;
                 font-weight: 800 !important;
                 padding-top: 0 !important;
                 padding-bottom: 0 !important;
+                padding-left: 8px !important;
+                padding-right: 4px !important;
             }}
 
             [data-testid="stNumberInput"] button {{
-                height: 36px !important;
-                min-height: 36px !important;
-                width: 32px !important;
+                height: 34px !important;
+                min-height: 34px !important;
+                width: 24px !important;
+                min-width: 24px !important;
                 margin-top: -3px !important;
-                padding-bottom: 3px !important;
+                padding: 0 0 3px 0 !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
@@ -1071,14 +1103,22 @@ def apply_theme(mode):
                 margin-bottom: 5px !important;
             }}
 
+            .desktop-chart {{
+                display: none !important;
+            }}
+
+            .mobile-chart {{
+                display: block !important;
+            }}
+
             .stPlotlyChart {{
                 border-radius: 16px !important;
-                padding: 1px !important;
+                padding: 0px !important;
                 margin-bottom: 10px !important;
             }}
 
             .stPlotlyChart svg .gtitle {{
-                font-size: 14px !important;
+                font-size: 10.5px !important;
             }}
 
             .stPlotlyChart svg .xtitle,
@@ -1340,6 +1380,133 @@ def make_forecast_chart(ts, forecast, theme):
         gridcolor=theme["chart_grid"],
         tickfont=dict(size=12, color=theme["chart_axis"], family="Arial"),
         title_font=dict(size=14, color=theme["chart_axis"], family="Arial"),
+        zeroline=False,
+        range=[y_min, y_max],
+        automargin=True
+    )
+
+    return fig
+
+
+
+
+def make_forecast_chart_mobile(ts, forecast, theme):
+    hist = ts.tail(18)
+
+    forecast_start = forecast.index.min()
+    max_pred_value = forecast.max()
+    max_pred_date = forecast.idxmax()
+
+    y_min = min(hist.min(), forecast.min()) * 0.78
+    y_max = max(hist.max(), forecast.max()) * 1.08
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(
+        x=hist.index,
+        y=hist.values,
+        mode="lines+markers",
+        name="Historis",
+        line=dict(color=theme["chart_hist"], width=2.1, shape="linear"),
+        marker=dict(size=4.2, color=theme["chart_hist"], line=dict(color=theme["chart_bg"], width=0.8)),
+        fill="tozeroy",
+        fillcolor=theme["chart_hist_fill"],
+        hovertemplate="<b>%{x|%b %Y}</b><br>Historis: %{y:,.0f} ton<extra></extra>"
+    ))
+
+    fig.add_trace(go.Scatter(
+        x=forecast.index,
+        y=forecast.values,
+        mode="lines+markers",
+        name="Prediksi",
+        line=dict(color=theme["chart_pred"], width=2.1, shape="linear"),
+        marker=dict(size=4.2, color=theme["chart_pred"], line=dict(color=theme["chart_bg"], width=0.8)),
+        fill="tozeroy",
+        fillcolor=theme["chart_pred_fill"],
+        hovertemplate="<b>%{x|%b %Y}</b><br>Prediksi: %{y:,.0f} ton<extra></extra>"
+    ))
+
+    fig.add_vline(
+        x=forecast_start,
+        line_width=1,
+        line_dash="dash",
+        line_color=theme["chart_divider"]
+    )
+
+    fig.add_annotation(
+        x=forecast_start,
+        y=y_max * 0.96,
+        text="<b>Mulai</b>",
+        showarrow=False,
+        font=dict(size=8.5, color=theme["chart_font"], family="Arial"),
+        bgcolor=theme["annotation_bg"],
+        bordercolor=theme["annotation_border"],
+        borderwidth=1,
+        borderpad=2
+    )
+
+    fig.add_annotation(
+        x=max_pred_date,
+        y=max_pred_value,
+        text=f"<b>Tertinggi</b><br>{format_integer(max_pred_value)} ton",
+        showarrow=True,
+        arrowhead=2,
+        arrowsize=0.8,
+        arrowwidth=1,
+        arrowcolor=theme["chart_divider"],
+        ax=22,
+        ay=-24,
+        font=dict(size=8.5, color=theme["chart_font"], family="Arial"),
+        bgcolor=theme["annotation_bg"],
+        bordercolor=theme["annotation_border"],
+        borderwidth=1,
+        borderpad=2
+    )
+
+    fig.update_layout(
+        title=dict(
+            text="<b>Prediksi Sampah</b>",
+            x=0.5,
+            xanchor="center",
+            y=0.98,
+            font=dict(size=11, color=theme["chart_font"], family="Arial")
+        ),
+        paper_bgcolor=theme["chart_bg"],
+        plot_bgcolor=theme["chart_bg"],
+        margin=dict(l=40, r=5, t=48, b=42),
+        height=305,
+        hovermode="x unified",
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=0.99,
+            bgcolor=theme["chart_legend_bg"],
+            bordercolor=theme["chart_legend_border"],
+            borderwidth=1,
+            font=dict(size=8.5, color=theme["chart_font"], family="Arial")
+        )
+    )
+
+    fig.update_xaxes(
+        title="<b>Periode</b>",
+        showgrid=True,
+        gridcolor=theme["chart_grid"],
+        tickformat="%b %Y",
+        nticks=4,
+        tickfont=dict(size=8.5, color=theme["chart_axis"], family="Arial"),
+        title_font=dict(size=9.5, color=theme["chart_axis"], family="Arial"),
+        zeroline=False,
+        automargin=True
+    )
+
+    fig.update_yaxes(
+        title="<b>Ton</b>",
+        showgrid=True,
+        gridcolor=theme["chart_grid"],
+        tickfont=dict(size=8.5, color=theme["chart_axis"], family="Arial"),
+        title_font=dict(size=9.5, color=theme["chart_axis"], family="Arial"),
         zeroline=False,
         range=[y_min, y_max],
         automargin=True
@@ -1613,12 +1780,23 @@ if menu == "Simulasi Pengelolaan":
     with row2_col4:
         kpi_card("Armada Maksimum per Hari", f"{format_integer(int(simulation_df['Estimasi Armada per Hari'].max()))} truk", f"Asumsi {rit_per_truk_per_hari} rit/truk/hari")
 
+    st.markdown('<div class="desktop-chart">', unsafe_allow_html=True)
     fig_forecast = make_forecast_chart(ts, forecast, theme)
     st.plotly_chart(
         fig_forecast,
         use_container_width=True,
         config={"displayModeBar": False, "responsive": True}
     )
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown('<div class="mobile-chart">', unsafe_allow_html=True)
+    fig_forecast_mobile = make_forecast_chart_mobile(ts, forecast, theme)
+    st.plotly_chart(
+        fig_forecast_mobile,
+        use_container_width=True,
+        config={"displayModeBar": False, "responsive": True}
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="small-title">Tabel Simulasi Kebutuhan Operasional</div>', unsafe_allow_html=True)
     show_table(prepare_display_table(simulation_df))
