@@ -352,6 +352,10 @@ def apply_theme(mode):
             visibility: hidden;
         }}
 
+        .mobile-kpi-summary {{
+            display: none;
+        }}
+
         h1, h2, h3, h4, h5, h6, p, label, span, div {{
             color: inherit;
         }}
@@ -819,18 +823,36 @@ def apply_theme(mode):
 
         @media screen and (max-width: 900px) {{
             .block-container {{
-                padding-top: 0.75rem !important;
-                padding-left: 0.72rem !important;
-                padding-right: 0.72rem !important;
+                padding-top: 0.7rem !important;
+                padding-left: 0.62rem !important;
+                padding-right: 0.62rem !important;
                 padding-bottom: 1rem !important;
                 max-width: 100% !important;
             }}
 
-            [data-testid="stSidebarCollapsedControl"] {{
+            header,
+            [data-testid="stHeader"] {{
+                visibility: visible !important;
+                background: transparent !important;
+                height: 0px !important;
+            }}
+
+            [data-testid="stToolbar"],
+            [data-testid="stDecoration"],
+            [data-testid="stStatusWidget"] {{
+                display: none !important;
+            }}
+
+            [data-testid="stSidebarCollapsedControl"],
+            [data-testid="collapsedControl"],
+            button[title="Open sidebar"],
+            button[aria-label="Open sidebar"] {{
                 display: flex !important;
+                visibility: visible !important;
+                opacity: 1 !important;
                 position: fixed !important;
-                top: 12px !important;
-                left: 12px !important;
+                top: 10px !important;
+                left: 10px !important;
                 z-index: 999999 !important;
                 background: {cfg["card"]} !important;
                 border: 1px solid {cfg["border"]} !important;
@@ -838,15 +860,21 @@ def apply_theme(mode):
                 box-shadow: 0 8px 22px {cfg["shadow"]} !important;
                 width: 42px !important;
                 height: 42px !important;
+                min-width: 42px !important;
+                min-height: 42px !important;
                 align-items: center !important;
                 justify-content: center !important;
+                color: {cfg["text"]} !important;
             }}
 
-            [data-testid="stSidebarCollapsedControl"] button {{
-                width: 42px !important;
-                height: 42px !important;
-                border-radius: 13px !important;
+            [data-testid="stSidebarCollapsedControl"] svg,
+            [data-testid="collapsedControl"] svg,
+            button[title="Open sidebar"] svg,
+            button[aria-label="Open sidebar"] svg {{
+                width: 22px !important;
+                height: 22px !important;
                 color: {cfg["text"]} !important;
+                fill: {cfg["text"]} !important;
             }}
 
             [data-testid="stSidebar"] {{
@@ -870,41 +898,42 @@ def apply_theme(mode):
             }}
 
             .hero {{
-                padding: 18px 16px !important;
-                border-radius: 20px !important;
-                margin-top: 46px !important;
-                margin-bottom: 16px !important;
+                padding: 16px 14px !important;
+                border-radius: 19px !important;
+                margin-top: 50px !important;
+                margin-bottom: 14px !important;
             }}
 
             .hero-title {{
-                font-size: 20px !important;
+                font-size: 18px !important;
                 line-height: 1.25 !important;
                 margin-bottom: 7px !important;
+                letter-spacing: -0.2px !important;
             }}
 
             .hero-subtitle {{
-                font-size: 12.8px !important;
-                line-height: 1.55 !important;
+                font-size: 12px !important;
+                line-height: 1.5 !important;
             }}
 
             .section-title {{
-                font-size: 18px !important;
+                font-size: 17px !important;
                 margin-bottom: 5px !important;
             }}
 
             .section-desc {{
-                font-size: 12.8px !important;
-                line-height: 1.55 !important;
-                margin-bottom: 12px !important;
+                font-size: 12.2px !important;
+                line-height: 1.5 !important;
+                margin-bottom: 10px !important;
             }}
 
             .small-title {{
-                font-size: 15px !important;
-                margin-bottom: 8px !important;
+                font-size: 14px !important;
+                margin-bottom: 7px !important;
             }}
 
             div[data-testid="stHorizontalBlock"] {{
-                gap: 0.65rem !important;
+                gap: 0.55rem !important;
             }}
 
             div[data-testid="column"] {{
@@ -914,49 +943,49 @@ def apply_theme(mode):
             }}
 
             .stSlider {{
-                margin-bottom: 4px !important;
+                margin-bottom: 2px !important;
             }}
 
             [data-testid="stSlider"] {{
-                margin-bottom: 4px !important;
+                margin-bottom: 2px !important;
             }}
 
             [data-testid="stSlider"] span {{
-                font-size: 12px !important;
+                font-size: 11.5px !important;
             }}
 
             .stNumberInput {{
-                margin-bottom: 6px !important;
+                margin-bottom: 4px !important;
             }}
 
             [data-testid="stNumberInput"] {{
                 margin-top: 0px !important;
-                margin-bottom: 6px !important;
+                margin-bottom: 4px !important;
             }}
 
             [data-testid="stNumberInput"] label {{
-                font-size: 12.5px !important;
+                font-size: 12px !important;
                 margin-bottom: 4px !important;
-                line-height: 1.25 !important;
+                line-height: 1.2 !important;
             }}
 
             [data-testid="stNumberInput"] div[data-baseweb="input"] {{
-                min-height: 38px !important;
+                min-height: 36px !important;
             }}
 
             [data-testid="stNumberInput"] input {{
-                height: 38px !important;
-                min-height: 38px !important;
-                font-size: 13px !important;
+                height: 36px !important;
+                min-height: 36px !important;
+                font-size: 12.5px !important;
                 font-weight: 800 !important;
                 padding-top: 0 !important;
                 padding-bottom: 0 !important;
             }}
 
             [data-testid="stNumberInput"] button {{
-                height: 38px !important;
-                min-height: 38px !important;
-                width: 34px !important;
+                height: 36px !important;
+                min-height: 36px !important;
+                width: 32px !important;
                 margin-top: -3px !important;
                 padding-bottom: 3px !important;
                 display: flex !important;
@@ -964,69 +993,139 @@ def apply_theme(mode):
                 justify-content: center !important;
             }}
 
+            .mobile-kpi-summary {{
+                display: block !important;
+                background: {cfg["card"]};
+                border: 1px solid {cfg["border"]};
+                border-radius: 18px;
+                padding: 14px 14px 12px 14px;
+                margin: 10px 0 14px 0;
+                box-shadow: 0 8px 20px {cfg["shadow"]};
+            }}
+
+            .mobile-kpi-summary-title {{
+                font-size: 14px;
+                font-weight: 900;
+                color: {cfg["text"]} !important;
+                margin-bottom: 10px;
+            }}
+
+            .mobile-kpi-grid {{
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px 12px;
+            }}
+
+            .mobile-kpi-item {{
+                border-bottom: 1px solid {cfg["border"]};
+                padding-bottom: 8px;
+                min-width: 0;
+            }}
+
+            .mobile-kpi-item:nth-last-child(-n+2) {{
+                border-bottom: none;
+                padding-bottom: 0;
+            }}
+
+            .mobile-kpi-label {{
+                font-size: 10.5px;
+                line-height: 1.25;
+                font-weight: 850;
+                color: {cfg["muted"]} !important;
+                margin-bottom: 3px;
+            }}
+
+            .mobile-kpi-value {{
+                font-size: 13.5px;
+                line-height: 1.25;
+                font-weight: 950;
+                color: {cfg["text"]} !important;
+                overflow-wrap: anywhere;
+            }}
+
+            .mobile-kpi-note {{
+                font-size: 9.8px;
+                line-height: 1.25;
+                font-weight: 650;
+                color: {cfg["muted"]} !important;
+                margin-top: 2px;
+            }}
+
             .kpi-card {{
-                min-height: auto !important;
-                padding: 14px 15px !important;
-                border-radius: 17px !important;
-                margin-bottom: 10px !important;
-                gap: 5px !important;
-            }}
-
-            .kpi-label {{
-                font-size: 12.2px !important;
-                margin-bottom: 2px !important;
-            }}
-
-            .kpi-value {{
-                font-size: 16.8px !important;
-                line-height: 1.22 !important;
-            }}
-
-            .kpi-note {{
-                font-size: 11px !important;
-                margin-top: 1px !important;
+                display: none !important;
             }}
 
             .info-card {{
                 min-height: auto !important;
-                padding: 15px 15px !important;
-                border-radius: 17px !important;
-                margin-bottom: 12px !important;
+                padding: 13px 13px !important;
+                border-radius: 16px !important;
+                margin-bottom: 10px !important;
             }}
 
             .text-muted {{
-                font-size: 12.8px !important;
-                line-height: 1.55 !important;
+                font-size: 12.2px !important;
+                line-height: 1.5 !important;
             }}
 
             .text-muted li {{
-                margin-bottom: 6px !important;
+                margin-bottom: 5px !important;
             }}
 
             .stPlotlyChart {{
-                border-radius: 17px !important;
-                padding: 2px !important;
-                margin-bottom: 12px !important;
+                border-radius: 16px !important;
+                padding: 1px !important;
+                margin-bottom: 10px !important;
+            }}
+
+            .stPlotlyChart svg .gtitle {{
+                font-size: 14px !important;
+            }}
+
+            .stPlotlyChart svg .xtitle,
+            .stPlotlyChart svg .ytitle {{
+                font-size: 10px !important;
+            }}
+
+            .stPlotlyChart svg .legend text {{
+                font-size: 9px !important;
+            }}
+
+            .stPlotlyChart svg .annotation-text,
+            .stPlotlyChart svg .annotation text {{
+                font-size: 9px !important;
             }}
 
             .custom-table-wrapper {{
-                border-radius: 17px !important;
-                margin-bottom: 12px !important;
-                overflow-x: auto !important;
-                -webkit-overflow-scrolling: touch !important;
+                border-radius: 15px !important;
+                margin-bottom: 10px !important;
+                overflow-x: hidden !important;
+                width: 100% !important;
             }}
 
             table.custom-table {{
-                min-width: 720px !important;
-                font-size: 12px !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                table-layout: fixed !important;
+                font-size: 8.3px !important;
             }}
 
             table.custom-table thead tr th,
             table.custom-table tbody tr td,
             table.custom-table tbody tr th {{
-                padding: 9px 11px !important;
-                height: 38px !important;
-                font-size: 12px !important;
+                padding: 5px 3px !important;
+                height: auto !important;
+                min-height: 28px !important;
+                font-size: 8.3px !important;
+                line-height: 1.2 !important;
+                white-space: normal !important;
+                overflow-wrap: anywhere !important;
+                word-break: break-word !important;
+                vertical-align: middle !important;
+            }}
+
+            table.custom-table thead tr th {{
+                font-size: 8px !important;
+                font-weight: 900 !important;
             }}
 
             .sidebar-visual {{
@@ -1056,6 +1155,31 @@ def kpi_card(label, value, note=None):
             <div class="kpi-label">{label}</div>
             <div class="kpi-value">{value}</div>
             {note_html}
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+def mobile_kpi_summary(items):
+    html_items = ""
+    for item in items:
+        note_html = f'<div class="mobile-kpi-note">{item.get("note", "")}</div>' if item.get("note") else ""
+        html_items += (
+            f'<div class="mobile-kpi-item">'
+            f'<div class="mobile-kpi-label">{item["label"]}</div>'
+            f'<div class="mobile-kpi-value">{item["value"]}</div>'
+            f'{note_html}'
+            f'</div>'
+        )
+
+    st.markdown(
+        f"""
+        <div class="mobile-kpi-summary">
+            <div class="mobile-kpi-summary-title">Ringkasan Simulasi</div>
+            <div class="mobile-kpi-grid">
+                {html_items}
+            </div>
         </div>
         """,
         unsafe_allow_html=True
@@ -1449,6 +1573,17 @@ if menu == "Simulasi Pengelolaan":
 
     start_period = format_periode(simulation_df["Tanggal"].min())
     end_period = format_periode(simulation_df["Tanggal"].max())
+
+    mobile_kpi_summary([
+        {"label": "Periode", "value": f"{start_period} - {end_period}", "note": f"{forecast_steps} bulan ke depan"},
+        {"label": "Total Sampah", "value": f"{format_angka(total_sampah)} ton"},
+        {"label": "Total Anggaran", "value": format_rupiah(total_anggaran), "note": f"{format_rupiah(biaya_per_ton)} per ton"},
+        {"label": "Total Rit", "value": f"{format_integer(total_rit)} rit", "note": f"{kapasitas_truk} ton per rit"},
+        {"label": "Beban Tertinggi", "value": highest_row["Periode"], "note": f"{format_angka(highest_row['Prediksi Sampah (Ton)'])} ton"},
+        {"label": "Beban Terendah", "value": lowest_row["Periode"], "note": f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton"},
+        {"label": "Rit Maks/Hari", "value": f"{format_integer(int(simulation_df['Kebutuhan Rit per Hari'].max()))} rit/hari"},
+        {"label": "Armada Maks/Hari", "value": f"{format_integer(int(simulation_df['Estimasi Armada per Hari'].max()))} truk", "note": f"{rit_per_truk_per_hari} rit/truk/hari"},
+    ])
 
     row1_col1, row1_col2, row1_col3, row1_col4 = st.columns(4, gap="large")
 
