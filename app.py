@@ -1347,65 +1347,81 @@ def apply_theme(mode):
 
             /* FINAL MOBILE ONLY OVERRIDES */
             [data-testid="stSidebar"] .theme-label {{
-                margin-top: 4px !important;
-                margin-bottom: 8px !important;
+                margin-top: 0px !important;
+                margin-bottom: 7px !important;
                 font-size: 13px !important;
                 font-weight: 900 !important;
                 line-height: 1.15 !important;
             }}
 
-            /* Mobile: tombol ☀️ / 🌙 dibuat seperti 1 segmented control yang lebih penuh */
+            /* Mobile: segmented button ☀️ / 🌙 dibuat simetris */
             [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) {{
-                max-width: 230px !important;
-                width: 230px !important;
+                width: 188px !important;
+                max-width: 188px !important;
+                height: 48px !important;
+                min-height: 48px !important;
                 display: grid !important;
-                grid-template-columns: 1fr 1fr !important;
+                grid-template-columns: 94px 94px !important;
                 gap: 0 !important;
+                column-gap: 0 !important;
+                row-gap: 0 !important;
                 padding: 0 !important;
-                margin-top: 0 !important;
-                border-radius: 22px !important;
+                margin: 0 !important;
+                border-radius: 21px !important;
                 background: {cfg["card"]} !important;
                 border: 1px solid {cfg["border"]} !important;
                 box-shadow: 0 8px 18px {cfg["shadow"]} !important;
                 overflow: hidden !important;
             }}
 
+            [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) > div,
             [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) > div[data-testid="column"] {{
-                width: 100% !important;
-                min-width: 0 !important;
+                width: 94px !important;
+                min-width: 94px !important;
+                max-width: 94px !important;
+                flex: 0 0 94px !important;
                 padding: 0 !important;
-                flex: none !important;
+                margin: 0 !important;
             }}
 
             [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) .stButton {{
-                width: 100% !important;
+                width: 94px !important;
+                min-width: 94px !important;
+                max-width: 94px !important;
+                height: 48px !important;
+                padding: 0 !important;
                 margin: 0 !important;
             }}
 
             [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) .stButton > button {{
-                height: 56px !important;
-                min-height: 56px !important;
-                width: 100% !important;
-                padding: 0 0 0 8px !important;
+                width: 94px !important;
+                min-width: 94px !important;
+                max-width: 94px !important;
+                height: 48px !important;
+                min-height: 48px !important;
+                padding: 0 !important;
                 margin: 0 !important;
                 border: none !important;
                 box-shadow: none !important;
-                font-size: 28px !important;
+                outline: none !important;
+                font-size: 22px !important;
                 line-height: 1 !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
                 text-align: center !important;
+                background: transparent !important;
+                transform: none !important;
             }}
 
             [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) > div:nth-child(1) .stButton > button {{
-                border-radius: 22px 0 0 22px !important;
+                border-radius: 20px 0 0 20px !important;
                 background: {cfg["accent_hover"] if mode == "Terang" else "transparent"} !important;
                 color: {"white" if mode == "Terang" else cfg["text"]} !important;
             }}
 
             [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) > div:nth-child(2) .stButton > button {{
-                border-radius: 0 22px 22px 0 !important;
+                border-radius: 0 20px 20px 0 !important;
                 background: {cfg["accent_hover"] if mode == "Gelap" else "transparent"} !important;
                 color: {"white" if mode == "Gelap" else cfg["text"]} !important;
             }}
@@ -1494,31 +1510,50 @@ def apply_theme(mode):
             }}
 
             /* compact mobile chart-table spacing: hanya rapatkan jarak, visualisasi tidak diubah */
+            div[data-testid="stVerticalBlock"] {{
+                gap: 0rem !important;
+            }}
+
+            .stPlotlyChart {{
+                margin-bottom: -38px !important;
+                padding-bottom: 0 !important;
+            }}
+
             div[data-testid="stElementContainer"]:has(.stPlotlyChart),
             div[data-testid="element-container"]:has(.stPlotlyChart) {{
-                margin-bottom: -22px !important;
+                margin-bottom: -42px !important;
                 padding-bottom: 0 !important;
             }}
 
             div[data-testid="stElementContainer"]:has(.stPlotlyChart) + div[data-testid="stElementContainer"],
             div[data-testid="element-container"]:has(.stPlotlyChart) + div[data-testid="element-container"] {{
-                margin-top: -18px !important;
+                margin-top: -36px !important;
                 padding-top: 0 !important;
             }}
 
             .custom-table-wrapper {{
-                margin-top: -2px !important;
-                margin-bottom: 8px !important;
+                margin-top: -8px !important;
+                margin-bottom: 6px !important;
+                padding-top: 0 !important;
             }}
 
             .small-title {{
-                margin-top: 0 !important;
-                margin-bottom: 2px !important;
-                line-height: 1.12 !important;
+                margin-top: -18px !important;
+                margin-bottom: 0px !important;
+                padding-top: 0 !important;
+                line-height: 1.05 !important;
             }}
 
             .desktop-chart {{
                 margin-bottom: 0 !important;
+                padding-bottom: 0 !important;
+            }}
+
+            .table-title-mobile-tight {{
+                margin-top: -28px !important;
+                margin-bottom: 0px !important;
+                padding-top: 0 !important;
+                line-height: 1.05 !important;
             }}
         }}
         </style>
@@ -2200,7 +2235,7 @@ if menu == "Simulasi Pengelolaan":
         config={"displayModeBar": False, "responsive": True}
     )
 
-    st.markdown('<div class="small-title">Tabel Simulasi Kebutuhan Operasional</div>', unsafe_allow_html=True)
+    st.markdown('<div class="small-title table-title-mobile-tight">Tabel Simulasi Kebutuhan Operasional</div>', unsafe_allow_html=True)
     show_table(prepare_display_table(simulation_df))
 
     bullet_card(
@@ -2265,7 +2300,7 @@ elif menu == "Ringkasan Data & Model":
     fig_eval = make_eval_chart(test_actual, test_forecast, theme)
     st.plotly_chart(fig_eval, use_container_width=True, config={"displayModeBar": False, "responsive": True})
 
-    st.markdown('<div class="small-title">Tabel Aktual vs Prediksi</div>', unsafe_allow_html=True)
+    st.markdown('<div class="small-title table-title-mobile-tight">Tabel Aktual vs Prediksi</div>', unsafe_allow_html=True)
     show_table(prepare_comparison_display(comparison_df))
 
     bullet_card(
