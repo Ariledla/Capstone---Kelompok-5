@@ -5,6 +5,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
+import streamlit.components.v1 as components
 
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
@@ -78,8 +79,7 @@ def format_integer(value):
 def evaluate_model(actual, forecast):
     mae = mean_absolute_error(actual, forecast)
     rmse = np.sqrt(mean_squared_error(actual, forecast))
-    actual_safe = np.where(actual == 0, np.nan, actual)
-    mape = np.nanmean(np.abs((actual - forecast) / actual_safe)) * 100
+    mape = np.mean(np.abs((actual - forecast) / actual)) * 100
     r2 = r2_score(actual, forecast)
     return mae, rmse, mape, r2
 
@@ -349,27 +349,16 @@ def apply_theme(mode):
             color: {cfg["text"]} !important;
         }}
 
-        footer, #MainMenu {{
+        header, footer, #MainMenu {{
             visibility: hidden;
-        }}
-
-        header, [data-testid="stHeader"] {{
-            background: transparent !important;
-        }}
-
-        h1, h2, h3, h4, h5, h6, p, label, span, div {{
-            color: inherit;
         }}
 
         .mobile-kpi-summary {{
             display: none;
         }}
 
-        .desktop-kpi-grid {{
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 20px;
-            margin-bottom: 22px;
+        h1, h2, h3, h4, h5, h6, p, label, span, div {{
+            color: inherit;
         }}
 
         .block-container {{
@@ -595,6 +584,7 @@ def apply_theme(mode):
             justify-content: center;
             align-items: flex-start;
             gap: 7px;
+            margin-bottom: 22px;
             box-sizing: border-box;
             overflow: hidden;
         }}
@@ -800,6 +790,13 @@ def apply_theme(mode):
             border-left: 1px solid {cfg["border"]};
         }}
 
+        table.custom-table tbody tr:last-child td,
+        table.custom-table tbody tr:last-child th {{
+            height: 42px !important;
+            padding-top: 11px !important;
+            padding-bottom: 11px !important;
+        }}
+
         table.custom-table tbody tr:last-child td:first-child,
         table.custom-table tbody tr:last-child th:first-child {{
             border-bottom-left-radius: 18px;
@@ -814,7 +811,7 @@ def apply_theme(mode):
             background: {cfg["chart_bg"]} !important;
             border: 1.5px solid {cfg["border"]} !important;
             border-radius: 20px !important;
-            padding: 4px !important;
+            padding: 4px 4px 4px 4px !important;
             margin-bottom: 22px !important;
             box-shadow: 0 8px 26px {cfg["shadow"]} !important;
             overflow: hidden !important;
@@ -825,12 +822,16 @@ def apply_theme(mode):
             overflow: hidden !important;
         }}
 
-        /* =====================================================
-           MOBILE ONLY
-        ===================================================== */
+
+        .desktop-chart {{
+            display: block;
+        }}
+
+        .mobile-chart {{
+            display: none;
+        }}
 
         @media screen and (max-width: 900px) {{
-
             .block-container {{
                 padding-top: 0.7rem !important;
                 padding-left: 0.62rem !important;
@@ -839,18 +840,12 @@ def apply_theme(mode):
                 max-width: 100% !important;
             }}
 
+            header,
             [data-testid="stHeader"] {{
-                display: block !important;
                 visibility: visible !important;
-                opacity: 1 !important;
-                height: 56px !important;
-                min-height: 56px !important;
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                right: 0 !important;
-                z-index: 999990 !important;
                 background: transparent !important;
+                height: 46px !important;
+                min-height: 46px !important;
             }}
 
             [data-testid="stToolbar"],
@@ -861,15 +856,15 @@ def apply_theme(mode):
 
             [data-testid="stSidebarCollapsedControl"],
             [data-testid="collapsedControl"],
+            [data-testid="stSidebarNav"],
             button[title="Open sidebar"],
-            button[title="View sidebar"],
             button[aria-label="Open sidebar"],
-            button[aria-label="View sidebar"],
+            button[data-testid="stBaseButton-headerNoPadding"],
+            button[data-testid="baseButton-headerNoPadding"],
             button[kind="headerNoPadding"] {{
                 display: flex !important;
                 visibility: visible !important;
                 opacity: 1 !important;
-                pointer-events: auto !important;
                 position: fixed !important;
                 top: 10px !important;
                 left: 10px !important;
@@ -882,26 +877,36 @@ def apply_theme(mode):
                 height: 42px !important;
                 min-width: 42px !important;
                 min-height: 42px !important;
-                max-width: 42px !important;
-                max-height: 42px !important;
-                padding: 0 !important;
                 align-items: center !important;
                 justify-content: center !important;
+                color: {cfg["text"]} !important;
+            }}
+
+            [data-testid="stSidebarCollapsedControl"]::before,
+            [data-testid="collapsedControl"]::before,
+            button[title="Open sidebar"]::before,
+            button[aria-label="Open sidebar"]::before,
+            button[data-testid="stBaseButton-headerNoPadding"]::before,
+            button[data-testid="baseButton-headerNoPadding"]::before,
+            button[kind="headerNoPadding"]::before {{
+                content: "☰";
+                font-size: 22px;
+                line-height: 1;
+                font-weight: 900;
                 color: {cfg["text"]} !important;
             }}
 
             [data-testid="stSidebarCollapsedControl"] svg,
             [data-testid="collapsedControl"] svg,
             button[title="Open sidebar"] svg,
-            button[title="View sidebar"] svg,
             button[aria-label="Open sidebar"] svg,
-            button[aria-label="View sidebar"] svg,
+            button[data-testid="stBaseButton-headerNoPadding"] svg,
+            button[data-testid="baseButton-headerNoPadding"] svg,
             button[kind="headerNoPadding"] svg {{
-                width: 21px !important;
-                height: 21px !important;
+                width: 22px !important;
+                height: 22px !important;
                 color: {cfg["text"]} !important;
                 fill: {cfg["text"]} !important;
-                stroke: {cfg["text"]} !important;
             }}
 
             [data-testid="stSidebar"] {{
@@ -927,20 +932,20 @@ def apply_theme(mode):
             .hero {{
                 padding: 16px 14px !important;
                 border-radius: 19px !important;
-                margin-top: 54px !important;
+                margin-top: 50px !important;
                 margin-bottom: 14px !important;
             }}
 
             .hero-title {{
-                font-size: 17px !important;
-                line-height: 1.28 !important;
+                font-size: 18px !important;
+                line-height: 1.25 !important;
                 margin-bottom: 7px !important;
-                letter-spacing: -0.1px !important;
+                letter-spacing: -0.2px !important;
             }}
 
             .hero-subtitle {{
-                font-size: 11.5px !important;
-                line-height: 1.48 !important;
+                font-size: 12px !important;
+                line-height: 1.5 !important;
             }}
 
             .section-title {{
@@ -949,8 +954,8 @@ def apply_theme(mode):
             }}
 
             .section-desc {{
-                font-size: 12px !important;
-                line-height: 1.45 !important;
+                font-size: 12.2px !important;
+                line-height: 1.5 !important;
                 margin-bottom: 10px !important;
             }}
 
@@ -959,39 +964,115 @@ def apply_theme(mode):
                 margin-bottom: 7px !important;
             }}
 
+            div[data-testid="stHorizontalBlock"] {{
+                gap: 0.45rem !important;
+            }}
+
             div[data-testid="column"] {{
                 min-width: 0 !important;
                 padding-left: 0 !important;
                 padding-right: 0 !important;
             }}
 
-            div[data-testid="stHorizontalBlock"] {{
+            /* Mobile khusus: slider full 1 baris, 3 input angka sejajar 1 baris */
+            div[data-testid="stHorizontalBlock"]:has([data-testid="stNumberInput"]) {{
+                display: grid !important;
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                gap: 0.40rem !important;
+                align-items: end !important;
+            }}
+
+            div[data-testid="stHorizontalBlock"]:has([data-testid="stNumberInput"]) > div[data-testid="column"] {{
+                width: 100% !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+                flex: none !important;
+            }}
+
+            div[data-testid="stHorizontalBlock"]:has([data-testid="stNumberInput"]) > div[data-testid="column"]:first-child {{
+                grid-column: 1 / -1 !important;
+            }}
+
+            div[data-testid="stHorizontalBlock"]:has([data-testid="stNumberInput"]) > div[data-testid="column"]:nth-child(2) {{
+                grid-column: 1 / 2 !important;
+            }}
+
+            div[data-testid="stHorizontalBlock"]:has([data-testid="stNumberInput"]) > div[data-testid="column"]:nth-child(3) {{
+                grid-column: 2 / 3 !important;
+            }}
+
+            div[data-testid="stHorizontalBlock"]:has([data-testid="stNumberInput"]) > div[data-testid="column"]:nth-child(4) {{
+                grid-column: 3 / 4 !important;
+            }}
+
+            /* Perbaikan khusus HP: slider satu baris penuh, 3 input angka sejajar di bawahnya */
+            div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) [data-testid="stSlider"]):has(> div:nth-child(2) [data-testid="stNumberInput"]) {{
+                display: grid !important;
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
                 gap: 0.42rem !important;
+                align-items: end !important;
+                width: 100% !important;
+            }}
+
+            div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) [data-testid="stSlider"]):has(> div:nth-child(2) [data-testid="stNumberInput"]) > div:nth-child(1) {{
+                grid-column: 1 / -1 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }}
+
+            div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) [data-testid="stSlider"]):has(> div:nth-child(2) [data-testid="stNumberInput"]) > div:nth-child(2) {{
+                grid-column: 1 / 2 !important;
+            }}
+
+            div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) [data-testid="stSlider"]):has(> div:nth-child(2) [data-testid="stNumberInput"]) > div:nth-child(3) {{
+                grid-column: 2 / 3 !important;
+            }}
+
+            div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) [data-testid="stSlider"]):has(> div:nth-child(2) [data-testid="stNumberInput"]) > div:nth-child(4) {{
+                grid-column: 3 / 4 !important;
+            }}
+
+            div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) [data-testid="stSlider"]):has(> div:nth-child(2) [data-testid="stNumberInput"]) > div:nth-child(2),
+            div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) [data-testid="stSlider"]):has(> div:nth-child(2) [data-testid="stNumberInput"]) > div:nth-child(3),
+            div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) [data-testid="stSlider"]):has(> div:nth-child(2) [data-testid="stNumberInput"]) > div:nth-child(4) {{
+                width: 100% !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+                flex: none !important;
+            }}
+
+            div[data-testid="stHorizontalBlock"]:has(> div:nth-child(1) [data-testid="stSlider"]):has(> div:nth-child(2) [data-testid="stNumberInput"]) label p {{
+                font-size: 9.2px !important;
+                line-height: 1.12 !important;
+                white-space: normal !important;
             }}
 
             .stSlider {{
-                margin-bottom: 4px !important;
+                margin-bottom: 2px !important;
+            }}
+
+            [data-testid="stSlider"] {{
+                margin-bottom: 2px !important;
             }}
 
             [data-testid="stSlider"] span {{
-                font-size: 11px !important;
+                font-size: 11.5px !important;
             }}
 
             .stNumberInput {{
-                margin-bottom: 2px !important;
+                margin-bottom: 4px !important;
             }}
 
             [data-testid="stNumberInput"] {{
-                margin-top: 0 !important;
-                margin-bottom: 2px !important;
+                margin-top: 0px !important;
+                margin-bottom: 4px !important;
             }}
 
             [data-testid="stNumberInput"] label {{
-                font-size: 10.5px !important;
+                font-size: 9.2px !important;
                 margin-bottom: 4px !important;
-                line-height: 1.15 !important;
-                min-height: 28px !important;
-                display: block !important;
+                line-height: 1.10 !important;
+                min-height: 24px !important;
             }}
 
             [data-testid="stNumberInput"] div[data-baseweb="input"] {{
@@ -999,26 +1080,43 @@ def apply_theme(mode):
             }}
 
             [data-testid="stNumberInput"] input {{
-                height: 34px !important;
-                min-height: 34px !important;
-                font-size: 11.5px !important;
+                height: 32px !important;
+                min-height: 32px !important;
+                font-size: 9.8px !important;
                 font-weight: 800 !important;
                 padding-top: 0 !important;
                 padding-bottom: 0 !important;
+                padding-left: 6px !important;
+                padding-right: 2px !important;
+            }}
+
+            [data-testid="stNumberInput"] > div {{
+                width: 100% !important;
+                min-width: 0 !important;
+                overflow: hidden !important;
+            }}
+
+            [data-testid="stNumberInput"] div[data-baseweb="input"] > div {{
+                width: 100% !important;
+                min-width: 0 !important;
+                overflow: hidden !important;
             }}
 
             [data-testid="stNumberInput"] button {{
-                height: 34px !important;
-                min-height: 34px !important;
-                width: 28px !important;
-                padding-bottom: 2px !important;
+                height: 32px !important;
+                min-height: 32px !important;
+                width: 18px !important;
+                min-width: 18px !important;
+                max-width: 18px !important;
+                margin-top: -2px !important;
+                padding: 0 0 2px 0 !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-            }}
-
-            .desktop-kpi-grid {{
-                display: none !important;
+                font-size: 10px !important;
+                line-height: 1 !important;
+                overflow: hidden !important;
+                box-sizing: border-box !important;
             }}
 
             .mobile-kpi-summary {{
@@ -1027,7 +1125,7 @@ def apply_theme(mode):
                 border: 1px solid {cfg["border"]};
                 border-radius: 18px;
                 padding: 14px 14px 12px 14px;
-                margin: 10px 0 12px 0 !important;
+                margin: 10px 0 14px 0;
                 box-shadow: 0 8px 20px {cfg["shadow"]};
             }}
 
@@ -1079,6 +1177,10 @@ def apply_theme(mode):
                 margin-top: 2px;
             }}
 
+            .kpi-card {{
+                display: none !important;
+            }}
+
             .info-card {{
                 min-height: auto !important;
                 padding: 13px 13px !important;
@@ -1087,37 +1189,44 @@ def apply_theme(mode):
             }}
 
             .text-muted {{
-                font-size: 12px !important;
-                line-height: 1.48 !important;
+                font-size: 12.2px !important;
+                line-height: 1.5 !important;
             }}
 
             .text-muted li {{
                 margin-bottom: 5px !important;
             }}
 
+            .desktop-chart {{
+                display: none !important;
+            }}
+
+            .mobile-chart {{
+                display: block !important;
+            }}
+
             .stPlotlyChart {{
-                border-radius: 16px !important;
-                padding: 1px !important;
-                margin-top: 0px !important;
-                margin-bottom: 10px !important;
+                border-radius: 14px !important;
+                padding: 0px !important;
+                margin-bottom: 8px !important;
             }}
 
             .stPlotlyChart svg .gtitle {{
-                font-size: 12px !important;
+                font-size: 10.5px !important;
             }}
 
             .stPlotlyChart svg .xtitle,
             .stPlotlyChart svg .ytitle {{
-                font-size: 9px !important;
+                font-size: 10px !important;
             }}
 
             .stPlotlyChart svg .legend text {{
-                font-size: 8px !important;
+                font-size: 9px !important;
             }}
 
             .stPlotlyChart svg .annotation-text,
             .stPlotlyChart svg .annotation text {{
-                font-size: 8px !important;
+                font-size: 9px !important;
             }}
 
             .custom-table-wrapper {{
@@ -1131,7 +1240,7 @@ def apply_theme(mode):
                 width: 100% !important;
                 min-width: 0 !important;
                 table-layout: fixed !important;
-                font-size: 8.2px !important;
+                font-size: 8.3px !important;
             }}
 
             table.custom-table thead tr th,
@@ -1140,7 +1249,7 @@ def apply_theme(mode):
                 padding: 5px 3px !important;
                 height: auto !important;
                 min-height: 28px !important;
-                font-size: 8.2px !important;
+                font-size: 8.3px !important;
                 line-height: 1.2 !important;
                 white-space: normal !important;
                 overflow-wrap: anywhere !important;
@@ -1154,30 +1263,7 @@ def apply_theme(mode):
             }}
 
             .sidebar-visual {{
-                left: 20px !important;
-                bottom: 18px !important;
-                width: 238px !important;
-                max-width: 238px !important;
-                display: block !important;
-                padding: 15px 14px !important;
-                border-radius: 19px !important;
-            }}
-
-            .sidebar-emoji {{
-                font-size: 38px !important;
-            }}
-
-            .sidebar-visual-title {{
-                font-size: 16px !important;
-            }}
-
-            .sidebar-visual-subtitle {{
-                font-size: 11.5px !important;
-            }}
-
-            .team-name {{
-                font-size: 11px !important;
-                padding: 8px 9px !important;
+                display: none !important;
             }}
         }}
         </style>
@@ -1191,35 +1277,82 @@ def apply_theme(mode):
 theme = apply_theme(st.session_state.theme_mode)
 
 
+def inject_mobile_sidebar_button():
+    components.html(
+        """
+        <script>
+        (function() {
+          const doc = window.parent.document;
+          const isMobile = () => window.parent.innerWidth <= 900;
+          function findNativeSidebarButton() {
+            return doc.querySelector('[data-testid="stSidebarCollapsedControl"] button') ||
+                   doc.querySelector('[data-testid="stSidebarCollapsedControl"]') ||
+                   doc.querySelector('[data-testid="collapsedControl"] button') ||
+                   doc.querySelector('[data-testid="collapsedControl"]') ||
+                   doc.querySelector('button[title="Open sidebar"]') ||
+                   doc.querySelector('button[aria-label="Open sidebar"]') ||
+                   doc.querySelector('button[kind="headerNoPadding"]') ||
+                   doc.querySelector('button[data-testid="baseButton-headerNoPadding"]') ||
+                   doc.querySelector('button[data-testid="stBaseButton-headerNoPadding"]');
+          }
+          function makeButton() {
+            let b = doc.getElementById('custom-mobile-sidebar-button');
+            if (!b) {
+              b = doc.createElement('button');
+              b.id = 'custom-mobile-sidebar-button';
+              b.innerHTML = '☰';
+              b.setAttribute('aria-label', 'Buka menu');
+              b.onclick = function() {
+                const native = findNativeSidebarButton();
+                if (native) native.click();
+              };
+              doc.body.appendChild(b);
+            }
+            b.style.cssText = `
+              display: ${isMobile() ? 'flex' : 'none'};
+              position: fixed;
+              top: 10px;
+              left: 10px;
+              z-index: 2147483647;
+              width: 42px;
+              height: 42px;
+              align-items: center;
+              justify-content: center;
+              border-radius: 13px;
+              border: 1px solid rgba(120,145,125,.55);
+              background: rgba(20,32,25,.96);
+              color: #F8FAF7;
+              font-size: 23px;
+              font-weight: 900;
+              line-height: 1;
+              box-shadow: 0 8px 22px rgba(0,0,0,.24);
+              cursor: pointer;
+            `;
+          }
+          makeButton();
+          window.parent.addEventListener('resize', makeButton);
+          setInterval(makeButton, 900);
+        })();
+        </script>
+        """,
+        height=0,
+    )
+
+inject_mobile_sidebar_button()
+
+
 # ============================================================
 # UI COMPONENTS
 # ============================================================
 
-def kpi_card_html(label, value, note=None):
+def kpi_card(label, value, note=None):
     note_html = f'<div class="kpi-note">{note}</div>' if note else ""
-    return f"""
-    <div class="kpi-card">
-        <div class="kpi-label">{label}</div>
-        <div class="kpi-value">{value}</div>
-        {note_html}
-    </div>
-    """
-
-
-def desktop_kpi_grid(items):
-    html = "".join([
-        kpi_card_html(
-            item["label"],
-            item["value"],
-            item.get("note")
-        )
-        for item in items
-    ])
-
     st.markdown(
         f"""
-        <div class="desktop-kpi-grid">
-            {html}
+        <div class="kpi-card">
+            <div class="kpi-label">{label}</div>
+            <div class="kpi-value">{value}</div>
+            {note_html}
         </div>
         """,
         unsafe_allow_html=True
@@ -1299,11 +1432,11 @@ def make_forecast_chart(ts, forecast, theme):
         y=hist.values,
         mode="lines+markers",
         name="Data historis",
-        line=dict(color=theme["chart_hist"], width=2.8, shape="linear"),
+        line=dict(color=theme["chart_hist"], width=3, shape="linear"),
         marker=dict(
-            size=6,
+            size=7,
             color=theme["chart_hist"],
-            line=dict(color=theme["chart_bg"], width=1.2)
+            line=dict(color=theme["chart_bg"], width=1.5)
         ),
         fill="tozeroy",
         fillcolor=theme["chart_hist_fill"],
@@ -1315,11 +1448,11 @@ def make_forecast_chart(ts, forecast, theme):
         y=forecast.values,
         mode="lines+markers",
         name="Prediksi",
-        line=dict(color=theme["chart_pred"], width=2.8, shape="linear"),
+        line=dict(color=theme["chart_pred"], width=3, shape="linear"),
         marker=dict(
-            size=6,
+            size=7,
             color=theme["chart_pred"],
-            line=dict(color=theme["chart_bg"], width=1.2)
+            line=dict(color=theme["chart_bg"], width=1.5)
         ),
         fill="tozeroy",
         fillcolor=theme["chart_pred_fill"],
@@ -1328,17 +1461,17 @@ def make_forecast_chart(ts, forecast, theme):
 
     fig.add_vline(
         x=forecast_start,
-        line_width=1.5,
+        line_width=1.6,
         line_dash="dash",
         line_color=theme["chart_divider"]
     )
 
     fig.add_annotation(
         x=forecast_start,
-        y=y_max * 0.96,
+        y=y_max * 0.98,
         text="<b>Mulai prediksi</b>",
         showarrow=False,
-        font=dict(size=10, color=theme["chart_font"], family="Arial"),
+        font=dict(size=12, color=theme["chart_font"], family="Arial"),
         bgcolor=theme["annotation_bg"],
         bordercolor=theme["annotation_border"],
         borderwidth=1,
@@ -1352,11 +1485,11 @@ def make_forecast_chart(ts, forecast, theme):
         showarrow=True,
         arrowhead=2,
         arrowsize=1,
-        arrowwidth=1.2,
+        arrowwidth=1.4,
         arrowcolor=theme["chart_divider"],
-        ax=45,
-        ay=-35,
-        font=dict(size=10, color=theme["chart_font"], family="Arial"),
+        ax=55,
+        ay=-40,
+        font=dict(size=12, color=theme["chart_font"], family="Arial"),
         bgcolor=theme["annotation_bg"],
         bordercolor=theme["annotation_border"],
         borderwidth=1,
@@ -1368,23 +1501,23 @@ def make_forecast_chart(ts, forecast, theme):
             text="<b>Prediksi Jumlah Sampah Kota Bandung</b>",
             x=0.5,
             xanchor="center",
-            font=dict(size=17, color=theme["chart_font"], family="Arial")
+            font=dict(size=20, color=theme["chart_font"], family="Arial")
         ),
         paper_bgcolor=theme["chart_bg"],
         plot_bgcolor=theme["chart_bg"],
-        margin=dict(l=48, r=8, t=72, b=48),
-        height=410,
+        margin=dict(l=54, r=8, t=86, b=52),
+        height=470,
         hovermode="x unified",
         legend=dict(
             orientation="h",
             yanchor="bottom",
-            y=1.02,
+            y=1.07,
             xanchor="right",
             x=0.99,
             bgcolor=theme["chart_legend_bg"],
             bordercolor=theme["chart_legend_border"],
             borderwidth=1,
-            font=dict(size=11, color=theme["chart_font"], family="Arial")
+            font=dict(size=12, color=theme["chart_font"], family="Arial")
         )
     )
 
@@ -1393,8 +1526,8 @@ def make_forecast_chart(ts, forecast, theme):
         showgrid=True,
         gridcolor=theme["chart_grid"],
         tickformat="%b %Y",
-        tickfont=dict(size=11, color=theme["chart_axis"], family="Arial"),
-        title_font=dict(size=12, color=theme["chart_axis"], family="Arial"),
+        tickfont=dict(size=12, color=theme["chart_axis"], family="Arial"),
+        title_font=dict(size=14, color=theme["chart_axis"], family="Arial"),
         zeroline=False,
         automargin=True
     )
@@ -1403,8 +1536,135 @@ def make_forecast_chart(ts, forecast, theme):
         title="<b>Jumlah sampah (ton)</b>",
         showgrid=True,
         gridcolor=theme["chart_grid"],
-        tickfont=dict(size=11, color=theme["chart_axis"], family="Arial"),
-        title_font=dict(size=12, color=theme["chart_axis"], family="Arial"),
+        tickfont=dict(size=12, color=theme["chart_axis"], family="Arial"),
+        title_font=dict(size=14, color=theme["chart_axis"], family="Arial"),
+        zeroline=False,
+        range=[y_min, y_max],
+        automargin=True
+    )
+
+    return fig
+
+
+
+
+def make_forecast_chart_mobile(ts, forecast, theme):
+    hist = ts.tail(15)
+
+    forecast_start = forecast.index.min()
+    max_pred_value = forecast.max()
+    max_pred_date = forecast.idxmax()
+
+    y_min = min(hist.min(), forecast.min()) * 0.78
+    y_max = max(hist.max(), forecast.max()) * 1.08
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(
+        x=hist.index,
+        y=hist.values,
+        mode="lines+markers",
+        name="Historis",
+        line=dict(color=theme["chart_hist"], width=1.8, shape="linear"),
+        marker=dict(size=3.4, color=theme["chart_hist"], line=dict(color=theme["chart_bg"], width=0.7)),
+        fill="tozeroy",
+        fillcolor=theme["chart_hist_fill"],
+        hovertemplate="<b>%{x|%b %Y}</b><br>Historis: %{y:,.0f} ton<extra></extra>"
+    ))
+
+    fig.add_trace(go.Scatter(
+        x=forecast.index,
+        y=forecast.values,
+        mode="lines+markers",
+        name="Prediksi",
+        line=dict(color=theme["chart_pred"], width=1.8, shape="linear"),
+        marker=dict(size=3.4, color=theme["chart_pred"], line=dict(color=theme["chart_bg"], width=0.7)),
+        fill="tozeroy",
+        fillcolor=theme["chart_pred_fill"],
+        hovertemplate="<b>%{x|%b %Y}</b><br>Prediksi: %{y:,.0f} ton<extra></extra>"
+    ))
+
+    fig.add_vline(
+        x=forecast_start,
+        line_width=1,
+        line_dash="dash",
+        line_color=theme["chart_divider"]
+    )
+
+    fig.add_annotation(
+        x=forecast_start,
+        y=y_max * 0.96,
+        text="<b>Mulai</b>",
+        showarrow=False,
+        font=dict(size=7.2, color=theme["chart_font"], family="Arial"),
+        bgcolor=theme["annotation_bg"],
+        bordercolor=theme["annotation_border"],
+        borderwidth=1,
+        borderpad=2
+    )
+
+    fig.add_annotation(
+        x=max_pred_date,
+        y=max_pred_value,
+        text=f"<b>Tertinggi</b><br>{format_integer(max_pred_value)} ton",
+        showarrow=True,
+        arrowhead=2,
+        arrowsize=0.8,
+        arrowwidth=1,
+        arrowcolor=theme["chart_divider"],
+        ax=22,
+        ay=-24,
+        font=dict(size=7.2, color=theme["chart_font"], family="Arial"),
+        bgcolor=theme["annotation_bg"],
+        bordercolor=theme["annotation_border"],
+        borderwidth=1,
+        borderpad=2
+    )
+
+    fig.update_layout(
+        title=dict(
+            text="<b>Prediksi Sampah</b>",
+            x=0.5,
+            xanchor="center",
+            y=0.96,
+            font=dict(size=8.5, color=theme["chart_font"], family="Arial")
+        ),
+        paper_bgcolor=theme["chart_bg"],
+        plot_bgcolor=theme["chart_bg"],
+        margin=dict(l=28, r=4, t=30, b=30),
+        height=210,
+        hovermode="x unified",
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.00,
+            xanchor="right",
+            x=0.99,
+            bgcolor=theme["chart_legend_bg"],
+            bordercolor=theme["chart_legend_border"],
+            borderwidth=1,
+            font=dict(size=7.2, color=theme["chart_font"], family="Arial")
+        )
+    )
+
+    fig.update_xaxes(
+        title="<b>Periode</b>",
+        showgrid=True,
+        gridcolor=theme["chart_grid"],
+        tickformat="%b %Y",
+        nticks=4,
+        tickfont=dict(size=7.2, color=theme["chart_axis"], family="Arial"),
+        title_font=dict(size=8, color=theme["chart_axis"], family="Arial"),
+        zeroline=False,
+        automargin=True
+    )
+
+    fig.update_yaxes(
+        title="<b>Ton</b>",
+        showgrid=True,
+        gridcolor=theme["chart_grid"],
+        tickfont=dict(size=7.2, color=theme["chart_axis"], family="Arial"),
+        title_font=dict(size=8, color=theme["chart_axis"], family="Arial"),
         zeroline=False,
         range=[y_min, y_max],
         automargin=True
@@ -1424,11 +1684,11 @@ def make_eval_chart(actual, predicted, theme):
         y=actual.values,
         mode="lines+markers",
         name="Aktual",
-        line=dict(color=theme["chart_hist"], width=2.8, shape="linear"),
+        line=dict(color=theme["chart_hist"], width=3, shape="linear"),
         marker=dict(
-            size=6,
+            size=7,
             color=theme["chart_hist"],
-            line=dict(color=theme["chart_bg"], width=1.2)
+            line=dict(color=theme["chart_bg"], width=1.4)
         ),
         hovertemplate="<b>%{x|%b %Y}</b><br>Aktual: %{y:,.0f} ton<extra></extra>"
     ))
@@ -1438,11 +1698,11 @@ def make_eval_chart(actual, predicted, theme):
         y=predicted.values,
         mode="lines+markers",
         name="Prediksi",
-        line=dict(color=theme["chart_pred"], width=2.8, shape="linear"),
+        line=dict(color=theme["chart_pred"], width=3, shape="linear"),
         marker=dict(
-            size=6,
+            size=7,
             color=theme["chart_pred"],
-            line=dict(color=theme["chart_bg"], width=1.2)
+            line=dict(color=theme["chart_bg"], width=1.4)
         ),
         hovertemplate="<b>%{x|%b %Y}</b><br>Prediksi: %{y:,.0f} ton<extra></extra>"
     ))
@@ -1452,23 +1712,23 @@ def make_eval_chart(actual, predicted, theme):
             text="<b>Aktual vs Prediksi Data Uji</b>",
             x=0.5,
             xanchor="center",
-            font=dict(size=17, color=theme["chart_font"], family="Arial")
+            font=dict(size=20, color=theme["chart_font"], family="Arial")
         ),
         paper_bgcolor=theme["chart_bg"],
         plot_bgcolor=theme["chart_bg"],
-        margin=dict(l=48, r=8, t=72, b=48),
-        height=390,
+        margin=dict(l=54, r=8, t=86, b=52),
+        height=430,
         hovermode="x unified",
         legend=dict(
             orientation="h",
             yanchor="bottom",
-            y=1.02,
+            y=1.07,
             xanchor="right",
             x=0.99,
             bgcolor=theme["chart_legend_bg"],
             bordercolor=theme["chart_legend_border"],
             borderwidth=1,
-            font=dict(size=11, color=theme["chart_font"], family="Arial")
+            font=dict(size=12, color=theme["chart_font"], family="Arial")
         )
     )
 
@@ -1477,8 +1737,8 @@ def make_eval_chart(actual, predicted, theme):
         showgrid=True,
         gridcolor=theme["chart_grid"],
         tickformat="%b %Y",
-        tickfont=dict(size=11, color=theme["chart_axis"], family="Arial"),
-        title_font=dict(size=12, color=theme["chart_axis"], family="Arial"),
+        tickfont=dict(size=12, color=theme["chart_axis"], family="Arial"),
+        title_font=dict(size=14, color=theme["chart_axis"], family="Arial"),
         zeroline=False,
         automargin=True
     )
@@ -1487,8 +1747,8 @@ def make_eval_chart(actual, predicted, theme):
         title="<b>Jumlah sampah (ton)</b>",
         showgrid=True,
         gridcolor=theme["chart_grid"],
-        tickfont=dict(size=11, color=theme["chart_axis"], family="Arial"),
-        title_font=dict(size=12, color=theme["chart_axis"], family="Arial"),
+        tickfont=dict(size=12, color=theme["chart_axis"], family="Arial"),
+        title_font=dict(size=14, color=theme["chart_axis"], family="Arial"),
         zeroline=False,
         range=[y_min, y_max],
         automargin=True
@@ -1585,25 +1845,23 @@ if menu == "Simulasi Pengelolaan":
         unsafe_allow_html=True
     )
 
-    st.slider(
-        "Simulasi untuk berapa bulan ke depan?",
-        min_value=1,
-        max_value=12,
-        value=12,
-        step=1,
-        key="forecast_steps"
-    )
-    forecast_steps = st.session_state["forecast_steps"]
+    input1, input2, input3, input4 = st.columns(4, gap="large")
 
-    input2, input3, input4 = st.columns(3, gap="small")
+    with input1:
+        forecast_steps = st.slider(
+            "Simulasi untuk berapa bulan ke depan?",
+            min_value=1,
+            max_value=12,
+            value=12,
+            step=1
+        )
 
     with input2:
         biaya_per_ton = st.number_input(
             "Biaya penanganan per ton",
             min_value=0,
             value=300000,
-            step=50000,
-            key="biaya_per_ton"
+            step=50000
         )
 
     with input3:
@@ -1611,8 +1869,7 @@ if menu == "Simulasi Pengelolaan":
             "Kapasitas truk per rit (ton)",
             min_value=1.0,
             value=5.0,
-            step=0.5,
-            key="kapasitas_truk"
+            step=0.5
         )
 
     with input4:
@@ -1620,8 +1877,7 @@ if menu == "Simulasi Pengelolaan":
             "Rit per truk per hari",
             min_value=1,
             value=2,
-            step=1,
-            key="rit_per_truk_per_hari"
+            step=1
         )
 
     forecast = make_sarima_forecast(ts, forecast_steps)
@@ -1643,7 +1899,7 @@ if menu == "Simulasi Pengelolaan":
     start_period = format_periode(simulation_df["Tanggal"].min())
     end_period = format_periode(simulation_df["Tanggal"].max())
 
-    mobile_items = [
+    mobile_kpi_summary([
         {"label": "Periode", "value": f"{start_period} - {end_period}", "note": f"{forecast_steps} bulan ke depan"},
         {"label": "Total Sampah", "value": f"{format_angka(total_sampah)} ton"},
         {"label": "Total Anggaran", "value": format_rupiah(total_anggaran), "note": f"{format_rupiah(biaya_per_ton)} per ton"},
@@ -1652,25 +1908,39 @@ if menu == "Simulasi Pengelolaan":
         {"label": "Beban Terendah", "value": lowest_row["Periode"], "note": f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton"},
         {"label": "Rit Maks/Hari", "value": f"{format_integer(int(simulation_df['Kebutuhan Rit per Hari'].max()))} rit/hari"},
         {"label": "Armada Maks/Hari", "value": f"{format_integer(int(simulation_df['Estimasi Armada per Hari'].max()))} truk", "note": f"{rit_per_truk_per_hari} rit/truk/hari"},
-    ]
+    ])
 
-    desktop_items = [
-        {"label": "Periode Simulasi", "value": f"{start_period} - {end_period}", "note": f"{forecast_steps} bulan ke depan"},
-        {"label": "Total Prediksi Sampah", "value": f"{format_angka(total_sampah)} ton"},
-        {"label": "Total Estimasi Anggaran", "value": format_rupiah(total_anggaran), "note": f"Asumsi {format_rupiah(biaya_per_ton)} per ton"},
-        {"label": "Total Kebutuhan Rit", "value": f"{format_integer(total_rit)} rit", "note": f"Kapasitas {kapasitas_truk} ton per rit"},
-        {"label": "Beban Tertinggi", "value": highest_row["Periode"], "note": f"{format_angka(highest_row['Prediksi Sampah (Ton)'])} ton"},
-        {"label": "Beban Terendah", "value": lowest_row["Periode"], "note": f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton"},
-        {"label": "Rit Maksimum per Hari", "value": f"{format_integer(int(simulation_df['Kebutuhan Rit per Hari'].max()))} rit/hari"},
-        {"label": "Armada Maksimum per Hari", "value": f"{format_integer(int(simulation_df['Estimasi Armada per Hari'].max()))} truk", "note": f"Asumsi {rit_per_truk_per_hari} rit/truk/hari"},
-    ]
+    row1_col1, row1_col2, row1_col3, row1_col4 = st.columns(4, gap="large")
 
-    mobile_kpi_summary(mobile_items)
-    desktop_kpi_grid(desktop_items)
+    with row1_col1:
+        kpi_card("Periode Simulasi", f"{start_period} - {end_period}", f"{forecast_steps} bulan ke depan")
 
-    fig_forecast = make_forecast_chart(ts, forecast, theme)
+    with row1_col2:
+        kpi_card("Total Prediksi Sampah", f"{format_angka(total_sampah)} ton")
+
+    with row1_col3:
+        kpi_card("Total Estimasi Anggaran", format_rupiah(total_anggaran), f"Asumsi {format_rupiah(biaya_per_ton)} per ton")
+
+    with row1_col4:
+        kpi_card("Total Kebutuhan Rit", f"{format_integer(total_rit)} rit", f"Kapasitas {kapasitas_truk} ton per rit")
+
+    row2_col1, row2_col2, row2_col3, row2_col4 = st.columns(4, gap="large")
+
+    with row2_col1:
+        kpi_card("Beban Tertinggi", highest_row["Periode"], f"{format_angka(highest_row['Prediksi Sampah (Ton)'])} ton")
+
+    with row2_col2:
+        kpi_card("Beban Terendah", lowest_row["Periode"], f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton")
+
+    with row2_col3:
+        kpi_card("Rit Maksimum per Hari", f"{format_integer(int(simulation_df['Kebutuhan Rit per Hari'].max()))} rit/hari")
+
+    with row2_col4:
+        kpi_card("Armada Maksimum per Hari", f"{format_integer(int(simulation_df['Estimasi Armada per Hari'].max()))} truk", f"Asumsi {rit_per_truk_per_hari} rit/truk/hari")
+
+    fig_forecast_mobile = make_forecast_chart_mobile(ts, forecast, theme)
     st.plotly_chart(
-        fig_forecast,
+        fig_forecast_mobile,
         use_container_width=True,
         config={"displayModeBar": False, "responsive": True}
     )
@@ -1738,11 +2008,7 @@ elif menu == "Ringkasan Data & Model":
 
     st.markdown('<div class="small-title">Aktual vs Prediksi Data Uji</div>', unsafe_allow_html=True)
     fig_eval = make_eval_chart(test_actual, test_forecast, theme)
-    st.plotly_chart(
-        fig_eval,
-        use_container_width=True,
-        config={"displayModeBar": False, "responsive": True}
-    )
+    st.plotly_chart(fig_eval, use_container_width=True, config={"displayModeBar": False, "responsive": True})
 
     st.markdown('<div class="small-title">Tabel Aktual vs Prediksi</div>', unsafe_allow_html=True)
     show_table(prepare_comparison_display(comparison_df))
