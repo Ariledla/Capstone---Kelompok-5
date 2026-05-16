@@ -1347,34 +1347,65 @@ def apply_theme(mode):
 
             /* FINAL MOBILE ONLY OVERRIDES */
             [data-testid="stSidebar"] .theme-label {{
-                margin-top: 38px !important;
+                margin-top: 12px !important;
                 margin-bottom: 6px !important;
+                font-size: 12.5px !important;
             }}
 
-            [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] {{
-                max-width: 226px !important;
+            /* Mobile: tombol ☀️ / 🌙 dibuat seperti 1 segmented control */
+            [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) {{
+                max-width: 142px !important;
+                width: 142px !important;
                 display: grid !important;
                 grid-template-columns: 1fr 1fr !important;
-                gap: 0.38rem !important;
+                gap: 0 !important;
+                padding: 3px !important;
+                border-radius: 15px !important;
+                background: {cfg["card"]} !important;
+                border: 1px solid {cfg["border"]} !important;
+                box-shadow: 0 8px 18px {cfg["shadow"]} !important;
+                overflow: hidden !important;
             }}
 
-            [data-testid="stSidebar"] .stButton > button {{
-                height: 34px !important;
-                min-height: 34px !important;
-                border-radius: 12px !important;
+            [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) > div[data-testid="column"] {{
+                width: 100% !important;
+                min-width: 0 !important;
                 padding: 0 !important;
+                flex: none !important;
             }}
 
-            [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] > div:nth-child(1) .stButton > button {{
-                background: {cfg["accent_hover"] if mode == "Terang" else cfg["card"]} !important;
+            [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) .stButton {{
+                width: 100% !important;
+                margin: 0 !important;
+            }}
+
+            [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) .stButton > button {{
+                height: 32px !important;
+                min-height: 32px !important;
+                width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                border: none !important;
+                box-shadow: none !important;
+                font-size: 15px !important;
+            }}
+
+            [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) > div:nth-child(1) .stButton > button {{
+                border-radius: 12px 5px 5px 12px !important;
+                background: {cfg["accent_hover"] if mode == "Terang" else "transparent"} !important;
                 color: {"white" if mode == "Terang" else cfg["text"]} !important;
-                border-color: {cfg["accent_hover"] if mode == "Terang" else cfg["border"]} !important;
             }}
 
-            [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] > div:nth-child(2) .stButton > button {{
-                background: {cfg["accent_hover"] if mode == "Gelap" else cfg["card"]} !important;
+            [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) > div:nth-child(2) .stButton > button {{
+                border-radius: 5px 12px 12px 5px !important;
+                background: {cfg["accent_hover"] if mode == "Gelap" else "transparent"} !important;
                 color: {"white" if mode == "Gelap" else cfg["text"]} !important;
-                border-color: {cfg["accent_hover"] if mode == "Gelap" else cfg["border"]} !important;
+            }}
+
+            [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) .stButton > button:hover {{
+                background: {cfg["accent_hover"]} !important;
+                color: white !important;
+                transform: none !important;
             }}
 
             /* mobile number input: rapikan area input dan tombol +/- */
@@ -1456,8 +1487,9 @@ def apply_theme(mode):
 
             /* compact mobile chart-table spacing */
             .stPlotlyChart {{
-                max-height: 315px !important;
-                margin-bottom: 0px !important;
+                max-height: 300px !important;
+                margin-bottom: -12px !important;
+                padding-bottom: 0px !important;
             }}
 
             .stPlotlyChart > div,
@@ -1465,17 +1497,24 @@ def apply_theme(mode):
             .stPlotlyChart .plot-container,
             .stPlotlyChart .svg-container,
             .stPlotlyChart svg {{
-                max-height: 315px !important;
+                max-height: 300px !important;
+            }}
+
+            div[data-testid="stElementContainer"]:has(.stPlotlyChart),
+            div[data-testid="element-container"]:has(.stPlotlyChart) {{
+                margin-bottom: 0px !important;
+                padding-bottom: 0px !important;
             }}
 
             .custom-table-wrapper {{
-                margin-top: 0px !important;
+                margin-top: -6px !important;
                 margin-bottom: 8px !important;
             }}
 
             .small-title {{
-                margin-top: 0px !important;
-                margin-bottom: 4px !important;
+                margin-top: -4px !important;
+                margin-bottom: 2px !important;
+                line-height: 1.15 !important;
             }}
 
             .desktop-chart {{
@@ -1995,7 +2034,7 @@ theme_col1, theme_col2 = st.sidebar.columns(2)
 
 with theme_col1:
     st.button(
-        "   ☀️   ",
+        "☀️",
         use_container_width=True,
         on_click=set_theme,
         args=("Terang",)
@@ -2003,7 +2042,7 @@ with theme_col1:
 
 with theme_col2:
     st.button(
-        "   🌙   ",
+        "🌙",
         use_container_width=True,
         on_click=set_theme,
         args=("Gelap",)
