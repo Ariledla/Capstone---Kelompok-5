@@ -287,8 +287,8 @@ def apply_theme(mode):
             "chart_grid": "rgba(23, 32, 24, 0.12)",
             "chart_font": "#172018",
             "chart_axis": "#172018",
-            "chart_hist": "#67F0C1",
-            "chart_pred": "#E7B84D",
+            "chart_hist": "#2E6F4F",
+            "chart_pred": "#B88A3D",
             "chart_hist_fill": "rgba(46, 111, 79, 0.14)",
             "chart_pred_fill": "rgba(184, 138, 61, 0.16)",
             "chart_divider": "rgba(23, 32, 24, 0.42)",
@@ -357,12 +357,19 @@ def apply_theme(mode):
             background: transparent !important;
         }}
 
+        h1, h2, h3, h4, h5, h6, p, label, span, div {{
+            color: inherit;
+        }}
+
         .mobile-kpi-summary {{
             display: none;
         }}
 
-        h1, h2, h3, h4, h5, h6, p, label, span, div {{
-            color: inherit;
+        .desktop-kpi-grid {{
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 20px;
+            margin-bottom: 22px;
         }}
 
         .block-container {{
@@ -588,7 +595,6 @@ def apply_theme(mode):
             justify-content: center;
             align-items: flex-start;
             gap: 7px;
-            margin-bottom: 22px;
             box-sizing: border-box;
             overflow: hidden;
         }}
@@ -819,8 +825,12 @@ def apply_theme(mode):
             overflow: hidden !important;
         }}
 
-        /* ================= MOBILE ONLY ================= */
+        /* =====================================================
+           MOBILE ONLY
+        ===================================================== */
+
         @media screen and (max-width: 900px) {{
+
             .block-container {{
                 padding-top: 0.7rem !important;
                 padding-left: 0.62rem !important;
@@ -830,6 +840,9 @@ def apply_theme(mode):
             }}
 
             [data-testid="stHeader"] {{
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
                 height: 56px !important;
                 min-height: 56px !important;
                 position: fixed !important;
@@ -837,6 +850,7 @@ def apply_theme(mode):
                 left: 0 !important;
                 right: 0 !important;
                 z-index: 999990 !important;
+                background: transparent !important;
             }}
 
             [data-testid="stToolbar"],
@@ -855,6 +869,7 @@ def apply_theme(mode):
                 display: flex !important;
                 visibility: visible !important;
                 opacity: 1 !important;
+                pointer-events: auto !important;
                 position: fixed !important;
                 top: 10px !important;
                 left: 10px !important;
@@ -867,6 +882,9 @@ def apply_theme(mode):
                 height: 42px !important;
                 min-width: 42px !important;
                 min-height: 42px !important;
+                max-width: 42px !important;
+                max-height: 42px !important;
+                padding: 0 !important;
                 align-items: center !important;
                 justify-content: center !important;
                 color: {cfg["text"]} !important;
@@ -879,10 +897,11 @@ def apply_theme(mode):
             button[aria-label="Open sidebar"] svg,
             button[aria-label="View sidebar"] svg,
             button[kind="headerNoPadding"] svg {{
-                width: 20px !important;
-                height: 20px !important;
+                width: 21px !important;
+                height: 21px !important;
                 color: {cfg["text"]} !important;
                 fill: {cfg["text"]} !important;
+                stroke: {cfg["text"]} !important;
             }}
 
             [data-testid="stSidebar"] {{
@@ -946,7 +965,10 @@ def apply_theme(mode):
                 padding-right: 0 !important;
             }}
 
-            /* input area mobile */
+            div[data-testid="stHorizontalBlock"] {{
+                gap: 0.42rem !important;
+            }}
+
             .stSlider {{
                 margin-bottom: 4px !important;
             }}
@@ -995,13 +1017,17 @@ def apply_theme(mode):
                 justify-content: center !important;
             }}
 
+            .desktop-kpi-grid {{
+                display: none !important;
+            }}
+
             .mobile-kpi-summary {{
                 display: block !important;
                 background: {cfg["card"]};
                 border: 1px solid {cfg["border"]};
                 border-radius: 18px;
                 padding: 14px 14px 12px 14px;
-                margin: 10px 0 14px 0;
+                margin: 10px 0 12px 0 !important;
                 box-shadow: 0 8px 20px {cfg["shadow"]};
             }}
 
@@ -1053,10 +1079,6 @@ def apply_theme(mode):
                 margin-top: 2px;
             }}
 
-            .kpi-card {{
-                display: none !important;
-            }}
-
             .info-card {{
                 min-height: auto !important;
                 padding: 13px 13px !important;
@@ -1073,10 +1095,10 @@ def apply_theme(mode):
                 margin-bottom: 5px !important;
             }}
 
-            /* plotly mobile */
             .stPlotlyChart {{
                 border-radius: 16px !important;
                 padding: 1px !important;
+                margin-top: 0px !important;
                 margin-bottom: 10px !important;
             }}
 
@@ -1132,7 +1154,30 @@ def apply_theme(mode):
             }}
 
             .sidebar-visual {{
-                display: none !important;
+                left: 20px !important;
+                bottom: 18px !important;
+                width: 238px !important;
+                max-width: 238px !important;
+                display: block !important;
+                padding: 15px 14px !important;
+                border-radius: 19px !important;
+            }}
+
+            .sidebar-emoji {{
+                font-size: 38px !important;
+            }}
+
+            .sidebar-visual-title {{
+                font-size: 16px !important;
+            }}
+
+            .sidebar-visual-subtitle {{
+                font-size: 11.5px !important;
+            }}
+
+            .team-name {{
+                font-size: 11px !important;
+                padding: 8px 9px !important;
             }}
         }}
         </style>
@@ -1150,14 +1195,31 @@ theme = apply_theme(st.session_state.theme_mode)
 # UI COMPONENTS
 # ============================================================
 
-def kpi_card(label, value, note=None):
+def kpi_card_html(label, value, note=None):
     note_html = f'<div class="kpi-note">{note}</div>' if note else ""
+    return f"""
+    <div class="kpi-card">
+        <div class="kpi-label">{label}</div>
+        <div class="kpi-value">{value}</div>
+        {note_html}
+    </div>
+    """
+
+
+def desktop_kpi_grid(items):
+    html = "".join([
+        kpi_card_html(
+            item["label"],
+            item["value"],
+            item.get("note")
+        )
+        for item in items
+    ])
+
     st.markdown(
         f"""
-        <div class="kpi-card">
-            <div class="kpi-label">{label}</div>
-            <div class="kpi-value">{value}</div>
-            {note_html}
+        <div class="desktop-kpi-grid">
+            {html}
         </div>
         """,
         unsafe_allow_html=True
@@ -1523,10 +1585,6 @@ if menu == "Simulasi Pengelolaan":
         unsafe_allow_html=True
     )
 
-    # ===== INPUT AREA =====
-    # Mobile-friendly:
-    # slider full width
-    # 3 input lain sejajar dan seragam
     st.slider(
         "Simulasi untuk berapa bulan ke depan?",
         min_value=1,
@@ -1585,7 +1643,7 @@ if menu == "Simulasi Pengelolaan":
     start_period = format_periode(simulation_df["Tanggal"].min())
     end_period = format_periode(simulation_df["Tanggal"].max())
 
-    mobile_kpi_summary([
+    mobile_items = [
         {"label": "Periode", "value": f"{start_period} - {end_period}", "note": f"{forecast_steps} bulan ke depan"},
         {"label": "Total Sampah", "value": f"{format_angka(total_sampah)} ton"},
         {"label": "Total Anggaran", "value": format_rupiah(total_anggaran), "note": f"{format_rupiah(biaya_per_ton)} per ton"},
@@ -1594,35 +1652,21 @@ if menu == "Simulasi Pengelolaan":
         {"label": "Beban Terendah", "value": lowest_row["Periode"], "note": f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton"},
         {"label": "Rit Maks/Hari", "value": f"{format_integer(int(simulation_df['Kebutuhan Rit per Hari'].max()))} rit/hari"},
         {"label": "Armada Maks/Hari", "value": f"{format_integer(int(simulation_df['Estimasi Armada per Hari'].max()))} truk", "note": f"{rit_per_truk_per_hari} rit/truk/hari"},
-    ])
+    ]
 
-    row1_col1, row1_col2, row1_col3, row1_col4 = st.columns(4, gap="large")
+    desktop_items = [
+        {"label": "Periode Simulasi", "value": f"{start_period} - {end_period}", "note": f"{forecast_steps} bulan ke depan"},
+        {"label": "Total Prediksi Sampah", "value": f"{format_angka(total_sampah)} ton"},
+        {"label": "Total Estimasi Anggaran", "value": format_rupiah(total_anggaran), "note": f"Asumsi {format_rupiah(biaya_per_ton)} per ton"},
+        {"label": "Total Kebutuhan Rit", "value": f"{format_integer(total_rit)} rit", "note": f"Kapasitas {kapasitas_truk} ton per rit"},
+        {"label": "Beban Tertinggi", "value": highest_row["Periode"], "note": f"{format_angka(highest_row['Prediksi Sampah (Ton)'])} ton"},
+        {"label": "Beban Terendah", "value": lowest_row["Periode"], "note": f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton"},
+        {"label": "Rit Maksimum per Hari", "value": f"{format_integer(int(simulation_df['Kebutuhan Rit per Hari'].max()))} rit/hari"},
+        {"label": "Armada Maksimum per Hari", "value": f"{format_integer(int(simulation_df['Estimasi Armada per Hari'].max()))} truk", "note": f"Asumsi {rit_per_truk_per_hari} rit/truk/hari"},
+    ]
 
-    with row1_col1:
-        kpi_card("Periode Simulasi", f"{start_period} - {end_period}", f"{forecast_steps} bulan ke depan")
-
-    with row1_col2:
-        kpi_card("Total Prediksi Sampah", f"{format_angka(total_sampah)} ton")
-
-    with row1_col3:
-        kpi_card("Total Estimasi Anggaran", format_rupiah(total_anggaran), f"Asumsi {format_rupiah(biaya_per_ton)} per ton")
-
-    with row1_col4:
-        kpi_card("Total Kebutuhan Rit", f"{format_integer(total_rit)} rit", f"Kapasitas {kapasitas_truk} ton per rit")
-
-    row2_col1, row2_col2, row2_col3, row2_col4 = st.columns(4, gap="large")
-
-    with row2_col1:
-        kpi_card("Beban Tertinggi", highest_row["Periode"], f"{format_angka(highest_row['Prediksi Sampah (Ton)'])} ton")
-
-    with row2_col2:
-        kpi_card("Beban Terendah", lowest_row["Periode"], f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton")
-
-    with row2_col3:
-        kpi_card("Rit Maksimum per Hari", f"{format_integer(int(simulation_df['Kebutuhan Rit per Hari'].max()))} rit/hari")
-
-    with row2_col4:
-        kpi_card("Armada Maksimum per Hari", f"{format_integer(int(simulation_df['Estimasi Armada per Hari'].max()))} truk", f"Asumsi {rit_per_truk_per_hari} rit/truk/hari")
+    mobile_kpi_summary(mobile_items)
+    desktop_kpi_grid(desktop_items)
 
     fig_forecast = make_forecast_chart(ts, forecast, theme)
     st.plotly_chart(
@@ -1694,7 +1738,11 @@ elif menu == "Ringkasan Data & Model":
 
     st.markdown('<div class="small-title">Aktual vs Prediksi Data Uji</div>', unsafe_allow_html=True)
     fig_eval = make_eval_chart(test_actual, test_forecast, theme)
-    st.plotly_chart(fig_eval, use_container_width=True, config={"displayModeBar": False, "responsive": True})
+    st.plotly_chart(
+        fig_eval,
+        use_container_width=True,
+        config={"displayModeBar": False, "responsive": True}
+    )
 
     st.markdown('<div class="small-title">Tabel Aktual vs Prediksi</div>', unsafe_allow_html=True)
     show_table(prepare_comparison_display(comparison_df))
