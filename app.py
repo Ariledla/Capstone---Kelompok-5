@@ -1509,39 +1509,39 @@ def apply_theme(mode):
                 height: 12px !important;
             }}
 
-            /* compact mobile chart-table spacing: hanya rapatkan jarak, visualisasi tidak diubah */
+            /* compact mobile chart-table spacing: rapat, tapi tidak sampai nabrak */
             div[data-testid="stVerticalBlock"] {{
-                gap: 0rem !important;
+                gap: 0.18rem !important;
             }}
 
             .stPlotlyChart {{
-                margin-bottom: -38px !important;
+                margin-bottom: 4px !important;
                 padding-bottom: 0 !important;
             }}
 
             div[data-testid="stElementContainer"]:has(.stPlotlyChart),
             div[data-testid="element-container"]:has(.stPlotlyChart) {{
-                margin-bottom: -42px !important;
+                margin-bottom: 4px !important;
                 padding-bottom: 0 !important;
             }}
 
             div[data-testid="stElementContainer"]:has(.stPlotlyChart) + div[data-testid="stElementContainer"],
             div[data-testid="element-container"]:has(.stPlotlyChart) + div[data-testid="element-container"] {{
-                margin-top: -36px !important;
+                margin-top: 2px !important;
                 padding-top: 0 !important;
             }}
 
             .custom-table-wrapper {{
-                margin-top: -8px !important;
-                margin-bottom: 6px !important;
+                margin-top: 3px !important;
+                margin-bottom: 7px !important;
                 padding-top: 0 !important;
             }}
 
             .small-title {{
-                margin-top: -18px !important;
-                margin-bottom: 0px !important;
+                margin-top: 8px !important;
+                margin-bottom: 4px !important;
                 padding-top: 0 !important;
-                line-height: 1.05 !important;
+                line-height: 1.12 !important;
             }}
 
             .desktop-chart {{
@@ -1550,11 +1550,12 @@ def apply_theme(mode):
             }}
 
             .table-title-mobile-tight {{
-                margin-top: -28px !important;
-                margin-bottom: 0px !important;
+                margin-top: 10px !important;
+                margin-bottom: 4px !important;
                 padding-top: 0 !important;
-                line-height: 1.05 !important;
+                line-height: 1.12 !important;
             }}
+
         }}
         </style>
         """,
