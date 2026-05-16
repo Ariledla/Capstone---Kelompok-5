@@ -429,6 +429,18 @@ def apply_theme(mode):
             transform: translateY(-1px);
         }}
 
+        [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] > div:nth-child(1) .stButton > button {{
+            background: {cfg["accent_hover"] if mode == "Terang" else cfg["card"]} !important;
+            color: {"white" if mode == "Terang" else cfg["text"]} !important;
+            border-color: {cfg["accent_hover"] if mode == "Terang" else cfg["border"]} !important;
+        }}
+
+        [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] > div:nth-child(2) .stButton > button {{
+            background: {cfg["accent_hover"] if mode == "Gelap" else cfg["card"]} !important;
+            color: {"white" if mode == "Gelap" else cfg["text"]} !important;
+            border-color: {cfg["accent_hover"] if mode == "Gelap" else cfg["border"]} !important;
+        }}
+
         .sidebar-visual {{
             background: {cfg["sidebar_visual"]};
             border: 1px solid rgba(255,255,255,0.18);
@@ -1331,6 +1343,143 @@ def apply_theme(mode):
                 font-size: 10.5px !important;
                 padding: 7px 8px !important;
                 margin-top: 8px !important;
+            }}
+
+            /* FINAL MOBILE ONLY OVERRIDES */
+            [data-testid="stSidebar"] .theme-label {{
+                margin-top: 38px !important;
+                margin-bottom: 6px !important;
+            }}
+
+            [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] {{
+                max-width: 226px !important;
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 0.38rem !important;
+            }}
+
+            [data-testid="stSidebar"] .stButton > button {{
+                height: 34px !important;
+                min-height: 34px !important;
+                border-radius: 12px !important;
+                padding: 0 !important;
+            }}
+
+            [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] > div:nth-child(1) .stButton > button {{
+                background: {cfg["accent_hover"] if mode == "Terang" else cfg["card"]} !important;
+                color: {"white" if mode == "Terang" else cfg["text"]} !important;
+                border-color: {cfg["accent_hover"] if mode == "Terang" else cfg["border"]} !important;
+            }}
+
+            [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] > div:nth-child(2) .stButton > button {{
+                background: {cfg["accent_hover"] if mode == "Gelap" else cfg["card"]} !important;
+                color: {"white" if mode == "Gelap" else cfg["text"]} !important;
+                border-color: {cfg["accent_hover"] if mode == "Gelap" else cfg["border"]} !important;
+            }}
+
+            /* mobile number input: rapikan area input dan tombol +/- */
+            [data-testid="stNumberInput"] {{
+                margin-top: 0 !important;
+                margin-bottom: 3px !important;
+            }}
+
+            [data-testid="stNumberInput"] > div {{
+                border-radius: 14px !important;
+                min-height: 36px !important;
+                height: 36px !important;
+                overflow: hidden !important;
+                background: {cfg["input_bg"]} !important;
+                border: 1px solid {cfg["border"]} !important;
+                box-shadow: none !important;
+            }}
+
+            [data-testid="stNumberInput"] div[data-baseweb="input"] {{
+                min-height: 36px !important;
+                height: 36px !important;
+                background: {cfg["input_bg"]} !important;
+                overflow: hidden !important;
+                border: none !important;
+                box-shadow: none !important;
+            }}
+
+            [data-testid="stNumberInput"] div[data-baseweb="input"] > div {{
+                height: 36px !important;
+                min-height: 36px !important;
+                background: {cfg["input_bg"]} !important;
+                border: none !important;
+                box-shadow: none !important;
+                overflow: hidden !important;
+            }}
+
+            [data-testid="stNumberInput"] input {{
+                height: 36px !important;
+                min-height: 36px !important;
+                background: {cfg["input_bg"]} !important;
+                color: {cfg["text"]} !important;
+                border: none !important;
+                box-shadow: none !important;
+                outline: none !important;
+                padding-left: 7px !important;
+                font-size: 9.8px !important;
+            }}
+
+            [data-testid="stNumberInput"] button {{
+                height: 36px !important;
+                min-height: 36px !important;
+                width: 25px !important;
+                min-width: 25px !important;
+                max-width: 25px !important;
+                margin-top: 0 !important;
+                padding: 0 !important;
+                background: {cfg["input_btn"]} !important;
+                border-radius: 0 !important;
+                border-top: none !important;
+                border-bottom: none !important;
+                border-left: 1px solid {cfg["border"]} !important;
+                border-right: none !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                box-sizing: border-box !important;
+                overflow: hidden !important;
+            }}
+
+            [data-testid="stNumberInput"] button:last-child {{
+                border-top-right-radius: 14px !important;
+                border-bottom-right-radius: 14px !important;
+            }}
+
+            [data-testid="stNumberInput"] button svg {{
+                width: 12px !important;
+                height: 12px !important;
+            }}
+
+            /* compact mobile chart-table spacing */
+            .stPlotlyChart {{
+                max-height: 315px !important;
+                margin-bottom: 0px !important;
+            }}
+
+            .stPlotlyChart > div,
+            .stPlotlyChart .js-plotly-plot,
+            .stPlotlyChart .plot-container,
+            .stPlotlyChart .svg-container,
+            .stPlotlyChart svg {{
+                max-height: 315px !important;
+            }}
+
+            .custom-table-wrapper {{
+                margin-top: 0px !important;
+                margin-bottom: 8px !important;
+            }}
+
+            .small-title {{
+                margin-top: 0px !important;
+                margin-bottom: 4px !important;
+            }}
+
+            .desktop-chart {{
+                margin-bottom: 0px !important;
             }}
         }}
         </style>
