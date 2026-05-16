@@ -909,20 +909,6 @@ def apply_theme(mode):
                 fill: {cfg["text"]} !important;
             }}
 
-            /* Sembunyikan tombol bawaan yang kadang muncul sebagai tanda << agar tidak tabrakan dengan tombol custom */
-            [data-testid="stSidebarCollapsedControl"],
-            [data-testid="collapsedControl"],
-            button[title="Open sidebar"],
-            button[aria-label="Open sidebar"],
-            button[title="Close sidebar"],
-            button[aria-label="Close sidebar"],
-            button[data-testid="stBaseButton-headerNoPadding"],
-            button[data-testid="baseButton-headerNoPadding"],
-            button[kind="headerNoPadding"] {{
-                opacity: 0 !important;
-                pointer-events: none !important;
-            }}
-
             [data-testid="stSidebar"] {{
                 width: 286px !important;
                 min-width: 286px !important;
@@ -935,9 +921,31 @@ def apply_theme(mode):
             [data-testid="stSidebarUserContent"] {{
                 padding-left: 1rem !important;
                 padding-right: 1rem !important;
-                padding-top: 58px !important;
-                padding-bottom: 1rem !important;
-                margin-top: 0 !important;
+                padding-bottom: 260px !important;
+                margin-top: 0rem !important;
+            }}
+
+            [data-testid="stSidebar"] .theme-label {{
+                margin-top: 48px !important;
+                margin-bottom: 8px !important;
+            }}
+
+            [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] {{
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 0.55rem !important;
+                width: 100% !important;
+            }}
+
+            [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {{
+                width: 100% !important;
+                min-width: 0 !important;
+                flex: none !important;
+            }}
+
+            [data-testid="stSidebar"] .stButton > button {{
+                height: 38px !important;
+                border-radius: 13px !important;
             }}
 
             [data-testid="stAppViewContainer"] {{
@@ -976,7 +984,8 @@ def apply_theme(mode):
 
             .small-title {{
                 font-size: 14px !important;
-                margin-bottom: 7px !important;
+                margin-top: 2px !important;
+                margin-bottom: 5px !important;
             }}
 
             div[data-testid="stHorizontalBlock"] {{
@@ -1091,8 +1100,7 @@ def apply_theme(mode):
             }}
 
             [data-testid="stNumberInput"] div[data-baseweb="input"] {{
-                min-height: 34px !important;
-                height: 34px !important;
+                min-height: 36px !important;
                 overflow: hidden !important;
             }}
 
@@ -1125,12 +1133,12 @@ def apply_theme(mode):
                 width: 24px !important;
                 min-width: 24px !important;
                 max-width: 24px !important;
-                margin-top: 0 !important;
+                margin-top: 0px !important;
                 padding: 0 !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                font-size: 12px !important;
+                font-size: 11px !important;
                 line-height: 1 !important;
                 overflow: visible !important;
                 box-sizing: border-box !important;
@@ -1226,8 +1234,8 @@ def apply_theme(mode):
             .stPlotlyChart {{
                 border-radius: 14px !important;
                 padding: 0px !important;
-                margin-bottom: 3px !important;
-                max-height: 360px !important;
+                margin-bottom: 2px !important;
+                max-height: 340px !important;
                 overflow: hidden !important;
             }}
 
@@ -1235,11 +1243,11 @@ def apply_theme(mode):
             .stPlotlyChart .js-plotly-plot,
             .stPlotlyChart .plot-container,
             .stPlotlyChart .svg-container {{
-                max-height: 350px !important;
+                max-height: 340px !important;
             }}
 
             .stPlotlyChart svg {{
-                max-height: 350px !important;
+                max-height: 340px !important;
             }}
 
             .stPlotlyChart svg .gtitle {{
@@ -1293,38 +1301,36 @@ def apply_theme(mode):
                 font-weight: 900 !important;
             }}
 
-            /* Sidebar card tetap muncul di HP, tapi tidak fixed */
             .sidebar-visual {{
                 display: block !important;
-                position: relative !important;
-                left: auto !important;
-                bottom: auto !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                margin: 18px 0 0 0 !important;
+                position: fixed !important;
+                left: 16px !important;
+                bottom: 22px !important;
+                width: 218px !important;
+                max-width: 218px !important;
                 padding: 14px 13px !important;
-                border-radius: 18px !important;
-                box-sizing: border-box !important;
+                border-radius: 20px !important;
+                z-index: 25 !important;
             }}
 
             .sidebar-emoji {{
-                font-size: 34px !important;
+                font-size: 30px !important;
                 margin-bottom: 6px !important;
             }}
 
             .sidebar-visual-title {{
-                font-size: 16px !important;
+                font-size: 15px !important;
             }}
 
             .sidebar-visual-subtitle {{
-                font-size: 11.5px !important;
+                font-size: 10.8px !important;
                 line-height: 1.35 !important;
             }}
 
             .team-name {{
-                font-size: 11.5px !important;
+                font-size: 10.5px !important;
                 padding: 7px 8px !important;
-                border-radius: 13px !important;
+                margin-top: 8px !important;
             }}
         }}
         </style>
@@ -1352,8 +1358,6 @@ def inject_mobile_sidebar_button():
                    doc.querySelector('[data-testid="collapsedControl"]') ||
                    doc.querySelector('button[title="Open sidebar"]') ||
                    doc.querySelector('button[aria-label="Open sidebar"]') ||
-                   doc.querySelector('button[title="Close sidebar"]') ||
-                   doc.querySelector('button[aria-label="Close sidebar"]') ||
                    doc.querySelector('button[kind="headerNoPadding"]') ||
                    doc.querySelector('button[data-testid="baseButton-headerNoPadding"]') ||
                    doc.querySelector('button[data-testid="stBaseButton-headerNoPadding"]');
