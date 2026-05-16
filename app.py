@@ -17,7 +17,7 @@ st.set_page_config(
     page_title="Simulasi Sampah Kota Bandung",
     page_icon="♻️",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="auto"
 )
 
 FILE_NAME = "jumlah_capaian_penanganan_sampah_di_kota_bandung.xlsx"
@@ -819,56 +819,218 @@ def apply_theme(mode):
 
         @media screen and (max-width: 900px) {{
             .block-container {{
-                padding-top: 1.2rem !important;
-                padding-left: 0.75rem !important;
-                padding-right: 0.75rem !important;
+                padding-top: 0.75rem !important;
+                padding-left: 0.72rem !important;
+                padding-right: 0.72rem !important;
+                padding-bottom: 1rem !important;
+                max-width: 100% !important;
+            }}
+
+            [data-testid="stSidebarCollapsedControl"] {{
+                display: flex !important;
+                position: fixed !important;
+                top: 12px !important;
+                left: 12px !important;
+                z-index: 999999 !important;
+                background: {cfg["card"]} !important;
+                border: 1px solid {cfg["border"]} !important;
+                border-radius: 13px !important;
+                box-shadow: 0 8px 22px {cfg["shadow"]} !important;
+                width: 42px !important;
+                height: 42px !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }}
+
+            [data-testid="stSidebarCollapsedControl"] button {{
+                width: 42px !important;
+                height: 42px !important;
+                border-radius: 13px !important;
+                color: {cfg["text"]} !important;
+            }}
+
+            [data-testid="stSidebar"] {{
+                width: 286px !important;
+                min-width: 286px !important;
+            }}
+
+            [data-testid="stSidebarContent"] {{
+                width: 286px !important;
+            }}
+
+            [data-testid="stSidebarUserContent"] {{
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+                padding-bottom: 1rem !important;
+                margin-top: -1.6rem !important;
+            }}
+
+            [data-testid="stAppViewContainer"] {{
+                overflow-x: hidden !important;
             }}
 
             .hero {{
-                padding: 20px 18px;
-                border-radius: 20px;
-                margin-bottom: 18px;
+                padding: 18px 16px !important;
+                border-radius: 20px !important;
+                margin-top: 46px !important;
+                margin-bottom: 16px !important;
             }}
 
             .hero-title {{
-                font-size: 25px;
-                line-height: 1.2;
+                font-size: 20px !important;
+                line-height: 1.25 !important;
+                margin-bottom: 7px !important;
             }}
 
             .hero-subtitle {{
-                font-size: 13.5px;
-                line-height: 1.55;
+                font-size: 12.8px !important;
+                line-height: 1.55 !important;
             }}
 
             .section-title {{
-                font-size: 22px;
+                font-size: 18px !important;
+                margin-bottom: 5px !important;
             }}
 
             .section-desc {{
-                font-size: 13.5px;
+                font-size: 12.8px !important;
+                line-height: 1.55 !important;
+                margin-bottom: 12px !important;
             }}
 
-            .info-card {{
-                min-height: auto;
+            .small-title {{
+                font-size: 15px !important;
+                margin-bottom: 8px !important;
+            }}
+
+            div[data-testid="stHorizontalBlock"] {{
+                gap: 0.65rem !important;
+            }}
+
+            div[data-testid="column"] {{
+                min-width: 0 !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }}
+
+            .stSlider {{
+                margin-bottom: 4px !important;
+            }}
+
+            [data-testid="stSlider"] {{
+                margin-bottom: 4px !important;
+            }}
+
+            [data-testid="stSlider"] span {{
+                font-size: 12px !important;
+            }}
+
+            .stNumberInput {{
+                margin-bottom: 6px !important;
+            }}
+
+            [data-testid="stNumberInput"] {{
+                margin-top: 0px !important;
+                margin-bottom: 6px !important;
+            }}
+
+            [data-testid="stNumberInput"] label {{
+                font-size: 12.5px !important;
+                margin-bottom: 4px !important;
+                line-height: 1.25 !important;
+            }}
+
+            [data-testid="stNumberInput"] div[data-baseweb="input"] {{
+                min-height: 38px !important;
+            }}
+
+            [data-testid="stNumberInput"] input {{
+                height: 38px !important;
+                min-height: 38px !important;
+                font-size: 13px !important;
+                font-weight: 800 !important;
+                padding-top: 0 !important;
+                padding-bottom: 0 !important;
+            }}
+
+            [data-testid="stNumberInput"] button {{
+                height: 38px !important;
+                min-height: 38px !important;
+                width: 34px !important;
+                margin-top: -3px !important;
+                padding-bottom: 3px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
             }}
 
             .kpi-card {{
-                min-height: auto;
-                padding: 16px 16px;
-                margin-bottom: 14px;
-                border-radius: 18px;
+                min-height: auto !important;
+                padding: 14px 15px !important;
+                border-radius: 17px !important;
+                margin-bottom: 10px !important;
+                gap: 5px !important;
+            }}
+
+            .kpi-label {{
+                font-size: 12.2px !important;
+                margin-bottom: 2px !important;
             }}
 
             .kpi-value {{
-                font-size: 20px;
+                font-size: 16.8px !important;
+                line-height: 1.22 !important;
+            }}
+
+            .kpi-note {{
+                font-size: 11px !important;
+                margin-top: 1px !important;
+            }}
+
+            .info-card {{
+                min-height: auto !important;
+                padding: 15px 15px !important;
+                border-radius: 17px !important;
+                margin-bottom: 12px !important;
+            }}
+
+            .text-muted {{
+                font-size: 12.8px !important;
+                line-height: 1.55 !important;
+            }}
+
+            .text-muted li {{
+                margin-bottom: 6px !important;
+            }}
+
+            .stPlotlyChart {{
+                border-radius: 17px !important;
+                padding: 2px !important;
+                margin-bottom: 12px !important;
+            }}
+
+            .custom-table-wrapper {{
+                border-radius: 17px !important;
+                margin-bottom: 12px !important;
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+            }}
+
+            table.custom-table {{
+                min-width: 720px !important;
+                font-size: 12px !important;
+            }}
+
+            table.custom-table thead tr th,
+            table.custom-table tbody tr td,
+            table.custom-table tbody tr th {{
+                padding: 9px 11px !important;
+                height: 38px !important;
+                font-size: 12px !important;
             }}
 
             .sidebar-visual {{
                 display: none !important;
-            }}
-
-            [data-testid="stSidebarUserContent"] {{
-                padding-bottom: 1rem !important;
             }}
         }}
         </style>
