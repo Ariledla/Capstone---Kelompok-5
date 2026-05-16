@@ -4,11 +4,8 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
 
-from statsmodels.tsa.arima.model import ARIMA
 from statsmodels.tsa.statespace.sarimax import SARIMAX
-from statsmodels.tsa.seasonal import seasonal_decompose
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 warnings.filterwarnings("ignore")
@@ -46,7 +43,7 @@ BULAN_INDO = {
     3: "Maret",
     4: "April",
     5: "Mei",
-    6: "Juni",
+    6: "Juli" if False else "Juni",
     7: "Juli",
     8: "Agustus",
     9: "September",
@@ -57,11 +54,23 @@ BULAN_INDO = {
 
 
 # ============================================================
-# FUNGSI UTAMA
+# FUNGSI DASAR
 # ============================================================
 
 def format_periode(date_value):
     return f"{BULAN_INDO[date_value.month]} {date_value.year}"
+
+
+def format_rupiah(value):
+    return "Rp{:,.0f}".format(value).replace(",", ".")
+
+
+def format_angka(value):
+    return "{:,.2f}".format(value).replace(",", "X").replace(".", ",").replace("X", ".")
+
+
+def format_integer(value):
+    return "{:,.0f}".format(value).replace(",", ".")
 
 
 def evaluate_model(actual, forecast):
@@ -92,6 +101,142 @@ def load_data():
 
     return df_raw, df, ts
 
+
+@st.cache_data
+def make_sarima_forecast(ts, forecast_steps):
+    model = SARIMAX(
+        ts,
+        order=(1, 2, 2),
+        seasonal_order=(0, 1, 1, 12),
+        enforce_stationarity=False,
+        enforce_invertibility=False
+    )
+
+    fit = model.fit(disp=False)
+
+    future_index = pd.date_range(
+        start=ts.index.max() + pd.DateOffset(months=1),
+        periods=forecast_steps,
+        freq="MS"
+    )
+
+    forecast = fit.forecast(steps=forecast_steps)
+    forecast = pd.Series(forecast.values, index=future_index)
+
+    return forecast
+
+
+@st.cache_data
+def evaluate_sarima(ts):
+    train = ts.iloc[:-12]
+    test = ts.iloc[-12:]
+
+    model = SARIMAX(
+        train,
+        order=(1, 2, 2),
+        seasonal_order=(0, 1, 1, 12),
+        enforce_stationarity=False,
+        enforce_invertibility=False
+    )
+
+    fit = model.fit(disp=False)
+    forecast = fit.forecast(steps=len(test))
+    forecast.index = test.index
+
+    mae, rmse, mape, r2 = evaluate_model(test, forecast)
+
+    eval_df = pd.DataFrame({
+        "Model": ["SARIMA(1,2,2)(0,1,1,12)"],
+        "MAE": [mae],
+        "RMSE": [rmse],
+        "MAPE (%)": [mape],
+        "R²": [r2]
+    })
+
+    comparison_df = pd.DataFrame({
+        "Periode": [format_periode(date) for date in test.index],
+        "Aktual": test.values,
+        "Prediksi": forecast.values
+    })
+
+    return eval_df, comparison_df, test, forecast
+
+
+def build_simulation_table(
+    forecast,
+    biaya_per_ton,
+    kapasitas_truk,
+    rit_per_truk_per_hari
+):
+    output = pd.DataFrame({
+        "Tanggal": forecast.index,
+        "Periode": [format_periode(date) for date in forecast.index],
+        "Prediksi Sampah (Ton)": forecast.values
+    })
+
+    output["Jumlah Hari"] = output["Tanggal"].dt.days_in_month
+
+    output["Estimasi Anggaran"] = (
+        output["Prediksi Sampah (Ton)"] * biaya_per_ton
+    )
+
+    output["Kebutuhan Rit Bulanan"] = np.ceil(
+        output["Prediksi Sampah (Ton)"] / kapasitas_truk
+    )
+
+    output["Kebutuhan Rit per Hari"] = np.ceil(
+        output["Kebutuhan Rit Bulanan"] / output["Jumlah Hari"]
+    )
+
+    output["Estimasi Armada per Hari"] = np.ceil(
+        output["Kebutuhan Rit per Hari"] / rit_per_truk_per_hari
+    )
+
+    return output
+
+
+def prepare_display_table(output):
+    display = output.copy()
+
+    display["Prediksi Sampah (Ton)"] = display["Prediksi Sampah (Ton)"].apply(format_angka)
+    display["Estimasi Anggaran"] = display["Estimasi Anggaran"].apply(format_rupiah)
+    display["Kebutuhan Rit Bulanan"] = display["Kebutuhan Rit Bulanan"].astype(int).apply(format_integer)
+    display["Kebutuhan Rit per Hari"] = display["Kebutuhan Rit per Hari"].astype(int).apply(format_integer)
+    display["Estimasi Armada per Hari"] = display["Estimasi Armada per Hari"].astype(int).apply(format_integer)
+
+    display = display[
+        [
+            "Periode",
+            "Prediksi Sampah (Ton)",
+            "Estimasi Anggaran",
+            "Kebutuhan Rit Bulanan",
+            "Kebutuhan Rit per Hari",
+            "Estimasi Armada per Hari"
+        ]
+    ]
+
+    return display
+
+
+def prepare_eval_display(eval_df):
+    display = eval_df.copy()
+    display["MAE"] = display["MAE"].apply(format_angka)
+    display["RMSE"] = display["RMSE"].apply(format_angka)
+    display["MAPE (%)"] = display["MAPE (%)"].apply(lambda x: f"{x:.2f}%")
+    display["R²"] = display["R²"].apply(lambda x: f"{x:.4f}")
+    return display
+
+
+def prepare_comparison_display(comparison_df):
+    display = comparison_df.copy()
+    display["Aktual"] = display["Aktual"].apply(format_angka)
+    display["Prediksi"] = display["Prediksi"].apply(format_angka)
+    return display
+
+
+# ============================================================
+# TEMA DAN STYLE
+# ============================================================
 
 def apply_theme(mode):
     if mode == "Terang":
@@ -156,13 +301,16 @@ def apply_theme(mode):
         [data-testid="stSidebar"] {{
             background: {sidebar_bg} !important;
             border-right: 1px solid {border};
-        }}
-
-        section[data-testid="stSidebar"] > div {{
-            padding-top: 0rem !important;
+            width: 304px !important;
+            min-width: 304px !important;
         }}
 
         [data-testid="stSidebarContent"] {{
+            width: 304px !important;
+            padding-top: 0rem !important;
+        }}
+
+        section[data-testid="stSidebar"] > div {{
             padding-top: 0rem !important;
         }}
 
@@ -210,25 +358,6 @@ def apply_theme(mode):
             transform: translateY(-1px);
         }}
 
-        [data-testid="stSidebar"] .stButton > button:focus,
-        [data-testid="stSidebar"] .stButton > button:active {{
-            background: {accent_hover} !important;
-            color: white !important;
-            border-color: {accent_hover} !important;
-            box-shadow: 0 0 0 2px {accent_soft} !important;
-        }}
-
-        [data-testid="stSidebar"] {{
-            width: 304px !important;
-            min-width: 304px !important;
-            background: {sidebar_bg} !important;
-            border-right: 1px solid {border};
-        }}
-
-        [data-testid="stSidebarContent"] {{
-            width: 304px !important;
-        }}        
-
         .sidebar-visual {{
             background: {sidebar_visual};
             border: 1px solid rgba(255,255,255,0.18);
@@ -255,11 +384,6 @@ def apply_theme(mode):
             top: -28px;
             background: rgba(255, 255, 255, 0.14);
             border-radius: 50%;
-        }}
-
-        .sidebar-visual::after {{
-            display: none !important;
-            content: none !important;
         }}
 
         .sidebar-emoji {{
@@ -346,6 +470,7 @@ def apply_theme(mode):
             font-size: 15px;
             max-width: 1120px;
             opacity: 0.96;
+            line-height: 1.6;
         }}
 
         .section-title {{
@@ -360,6 +485,7 @@ def apply_theme(mode):
             font-size: 14px;
             font-weight: 500;
             margin-bottom: 22px;
+            line-height: 1.65;
         }}
 
         .small-title {{
@@ -394,94 +520,35 @@ def apply_theme(mode):
             background: {card};
             border: 1px solid {border};
             border-radius: 21px;
-            padding: 20px 22px;
-            min-height: 112px;
+            padding: 18px 19px;
+            min-height: 116px;
             box-shadow: 0 8px 26px rgba(31, 41, 51, 0.06);
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
-            text-align: center;
-            gap: 10px;
+            gap: 9px;
             margin-bottom: 24px;
         }}
 
         .kpi-label {{
             color: {muted} !important;
-            font-size: 17px;
+            font-size: 14px;
             font-weight: 900;
             line-height: 1.2;
-            text-align: center;
-            white-space: nowrap;
         }}
 
         .kpi-value {{
             color: {text} !important;
-            font-size: 27px;
+            font-size: 23px;
             font-weight: 900;
             line-height: 1.12;
-            text-align: center;
-            white-space: nowrap;
         }}
 
-        .kpi-value.small {{
-            font-size: 26px;
-        }}
-
-        .model-card {{
-            background:
-                linear-gradient(145deg, {card} 0%, {accent_soft} 100%);
-            border: 1px solid {border};
-            border-radius: 24px;
-            padding: 22px 20px;
-            min-height: 180px;
-            box-shadow: 0 10px 28px rgba(31, 41, 51, 0.07);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            text-align: center;
-            gap: 11px;
-            margin-bottom: 34px;
-            position: relative;
-            overflow: hidden;
-        }}
-
-        .model-card::before {{
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 20%;
-            right: 20%;
-            height: 5px;
-            background: {accent};
-            border-radius: 0 0 999px 999px;
-        }}
-
-        .model-icon {{
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: {accent_soft};
-            border: 1px solid {border};
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            margin-top: 5px;
-        }}
-
-        .model-title {{
-            font-size: 16px;
-            font-weight: 900;
-            color: {text} !important;
-        }}
-
-        .model-text {{
-            font-size: 13.5px;
-            line-height: 1.6;
+        .kpi-note {{
             color: {muted} !important;
-            font-weight: 500;
+            font-size: 12px;
+            font-weight: 600;
+            line-height: 1.45;
         }}
 
         div[data-baseweb="select"] > div {{
@@ -544,10 +611,6 @@ def apply_theme(mode):
             transition: all 0.15s ease-in-out !important;
         }}
 
-        div[data-baseweb="popover"] [role="option"]:last-child {{
-            margin-bottom: 0 !important;
-        }}
-
         div[data-baseweb="popover"] [role="option"] > div {{
             width: 100% !important;
             min-height: 42px !important;
@@ -588,13 +651,21 @@ def apply_theme(mode):
             color: white !important;
         }}
 
-        .stSlider label, .stSelectbox label, .stRadio label {{
+        .stSlider label, .stSelectbox label, .stRadio label, .stNumberInput label {{
             color: {text} !important;
             font-weight: 700 !important;
         }}
 
         [data-testid="stSlider"] span {{
             color: {text} !important;
+        }}
+
+        [data-testid="stNumberInput"] input {{
+            background: {card} !important;
+            border: 1px solid {border} !important;
+            border-radius: 14px !important;
+            color: {text} !important;
+            min-height: 42px !important;
         }}
 
         [data-testid="stSidebar"] [role="radiogroup"] label {{
@@ -656,7 +727,7 @@ def apply_theme(mode):
             border-bottom: none;
         }}
 
-        .stPlotlyChart, .stPyplot {{
+        .stPyplot {{
             margin-bottom: 22px !important;
         }}
 
@@ -675,16 +746,27 @@ def apply_theme(mode):
         unsafe_allow_html=True
     )
 
-    return {"plot_bg": plot_bg}
+    return {
+        "plot_bg": plot_bg,
+        "text": text,
+        "muted": muted,
+        "card": card,
+        "border": border
+    }
 
 
-def kpi_card(label, value, small=False):
-    small_class = "small" if small else ""
+# ============================================================
+# KOMPONEN UI
+# ============================================================
+
+def kpi_card(label, value, note=None):
+    note_html = f'<div class="kpi-note">{note}</div>' if note else ""
     st.markdown(
         f"""
         <div class="kpi-card">
             <div class="kpi-label">{label}</div>
-            <div class="kpi-value {small_class}">{value}</div>
+            <div class="kpi-value">{value}</div>
+            {note_html}
         </div>
         """,
         unsafe_allow_html=True
@@ -718,29 +800,8 @@ def bullet_card(title, items):
     )
 
 
-def model_card(icon, title, body):
-    st.markdown(
-        f"""
-        <div class="model-card">
-            <div class="model-icon">{icon}</div>
-            <div class="model-title">{title}</div>
-            <div class="model-text">{body}</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-def style_plot(ax, title):
-    ax.set_title(title, fontsize=10, fontweight="bold")
-    ax.tick_params(axis="both", labelsize=7)
-    ax.grid(True, alpha=0.30)
-    return ax
-
-
 def show_table(data):
-    table_data = data.copy()
-    html = table_data.to_html(
+    html = data.to_html(
         classes="custom-table",
         border=0,
         index=False,
@@ -757,81 +818,22 @@ def show_table(data):
     )
 
 
+def style_plot(ax, title):
+    ax.set_title(title, fontsize=10, fontweight="bold")
+    ax.tick_params(axis="both", labelsize=8)
+    ax.grid(True, alpha=0.30)
+    return ax
+
+
 # ============================================================
 # LOAD DATA
 # ============================================================
 
 df_raw, df, ts = load_data()
 
-train = ts.iloc[:-12]
-test = ts.iloc[-12:]
-
 provinsi = ", ".join(df_raw["nama_provinsi"].dropna().unique())
 kota = ", ".join(df_raw["bps_nama_kabupaten_kota"].dropna().unique())
 satuan = ", ".join(df_raw["satuan"].dropna().unique())
-
-# ============================================================
-# MODEL EVALUASI 2024
-# ============================================================
-
-naive_forecast = pd.Series([train.iloc[-1]] * len(test), index=test.index)
-
-seasonal_naive_forecast = train.iloc[-12:].copy()
-seasonal_naive_forecast.index = test.index
-
-arima_model = ARIMA(train, order=(0, 1, 1))
-arima_fit = arima_model.fit()
-arima_forecast = arima_fit.forecast(steps=len(test))
-arima_forecast.index = test.index
-
-sarima_model = SARIMAX(
-    train,
-    order=(1, 2, 2),
-    seasonal_order=(0, 1, 1, 12),
-    enforce_stationarity=False,
-    enforce_invertibility=False
-)
-sarima_fit = sarima_model.fit(disp=False)
-sarima_forecast = sarima_fit.forecast(steps=len(test))
-sarima_forecast.index = test.index
-
-naive_eval = evaluate_model(test, naive_forecast)
-seasonal_naive_eval = evaluate_model(test, seasonal_naive_forecast)
-arima_eval = evaluate_model(test, arima_forecast)
-sarima_eval = evaluate_model(test, sarima_forecast)
-
-eval_df = pd.DataFrame({
-    "Model": [
-        "Naive Forecast",
-        "Seasonal Naive Forecast",
-        "ARIMA(0,1,1)",
-        "SARIMA(1,2,2)(0,1,1,12)"
-    ],
-    "MAE": [
-        naive_eval[0],
-        seasonal_naive_eval[0],
-        arima_eval[0],
-        sarima_eval[0]
-    ],
-    "RMSE": [
-        naive_eval[1],
-        seasonal_naive_eval[1],
-        arima_eval[1],
-        sarima_eval[1]
-    ],
-    "MAPE (%)": [
-        naive_eval[2],
-        seasonal_naive_eval[2],
-        arima_eval[2],
-        sarima_eval[2]
-    ],
-    "R²": [
-        naive_eval[3],
-        seasonal_naive_eval[3],
-        arima_eval[3],
-        sarima_eval[3]
-    ]
-})
 
 # ============================================================
 # SIDEBAR
@@ -848,32 +850,20 @@ st.sidebar.markdown('<div class="theme-label">Pilih Tampilan</div>', unsafe_allo
 theme_col1, theme_col2 = st.sidebar.columns(2)
 
 with theme_col1:
-    light_label = "   ☀️   "
-    if st.session_state.theme_mode == "Terang":
-        light_label = "   ☀️   "
-
-    if st.button(light_label, use_container_width=True):
+    if st.button("   ☀️   ", use_container_width=True):
         st.session_state.theme_mode = "Terang"
         st.rerun()
 
 with theme_col2:
-    dark_label = "   🌙   "
-    if st.session_state.theme_mode == "Gelap":
-        dark_label = "   🌙   "
-
-    if st.button(dark_label, use_container_width=True):
+    if st.button("   🌙   ", use_container_width=True):
         st.session_state.theme_mode = "Gelap"
         st.rerun()
 
 menu = st.sidebar.radio(
     "Menu Utama",
     [
-        "Beranda",
-        "Data yang Dipakai",
-        "Pola Data",
-        "Prediksi Sampah",
-        "Ketepatan Prediksi",
-        "Ringkasan"
+        "Simulasi Pengelolaan",
+        "Data & Evaluasi"
     ]
 )
 
@@ -883,7 +873,7 @@ st.sidebar.markdown(
         <div class="sidebar-emoji">♻️ 🗑️ 🍃</div>
         <div class="sidebar-visual-title">Dashboard Sampah</div>
         <div class="sidebar-visual-subtitle">
-            Analisis pola dan prediksi jumlah sampah Kota Bandung.
+            Prediksi, anggaran, rit pengangkutan, dan kebutuhan armada.
         </div>
         <div class="team-name">
             Kelompok 5 Capstone
@@ -900,10 +890,9 @@ st.sidebar.markdown(
 st.markdown(
     """
     <div class="hero">
-        <div class="hero-title">Prediksi Jumlah Sampah Kota Bandung</div>
+        <div class="hero-title">Simulasi Pengelolaan Sampah Kota Bandung</div>
         <div class="hero-subtitle">
-            Dashboard ini membantu membaca pola jumlah sampah dari waktu ke waktu dan memperkirakan jumlah sampah pada periode berikutnya.
-            Tampilan dibuat agar mudah dipahami oleh pengguna umum, bukan hanya pengguna yang memahami proses pemodelan.
+            Prediksi jumlah sampah, estimasi anggaran, kebutuhan rit, dan armada untuk mendukung perencanaan DLH.
         </div>
     </div>
     """,
@@ -911,674 +900,279 @@ st.markdown(
 )
 
 # ============================================================
-# BERANDA
+# HALAMAN 1: SIMULASI PENGELOLAAN
 # ============================================================
 
-if menu == "Beranda":
-    st.markdown('<div class="section-title">Gambaran Umum</div>', unsafe_allow_html=True)
+if menu == "Simulasi Pengelolaan":
+    st.markdown('<div class="section-title">Simulasi Pengelolaan</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="section-desc">Ringkasan awal mengenai data, tujuan dashboard, dan hasil penting.</div>',
+        '<div class="section-desc">Isi asumsi operasional, lalu sistem akan menghitung kebutuhan sampah, anggaran, rit, dan armada.</div>',
         unsafe_allow_html=True
     )
 
-    col1, col2, col3, col4 = st.columns(4, gap="large")
+    input_col1, input_col2, input_col3, input_col4 = st.columns(4, gap="large")
 
-    with col1:
-        kpi_card("Jumlah Data", f"{len(df_raw)} baris")
-
-    with col2:
-        kpi_card("Periode", f"{ts.index.min().year}–{ts.index.max().year}")
-
-    with col3:
-        kpi_card("Wilayah", kota)
-
-    with col4:
-        kpi_card("Satuan", satuan)
-
-    left, right = st.columns(2, gap="large")
-
-    with left:
-        card(
-            "Untuk apa dashboard ini dibuat?",
-            """
-            Dashboard ini dibuat untuk membantu melihat perubahan jumlah sampah Kota Bandung dari waktu ke waktu.
-            Selain itu, dashboard ini menyediakan fitur prediksi untuk memperkirakan jumlah sampah beberapa bulan ke depan.
-            """
-        )
-
-        bullet_card(
-            "Pertanyaan yang ingin dijawab",
-            [
-                "Apakah jumlah sampah cenderung naik atau turun?",
-                "Pada tahun atau bulan mana jumlah sampah terlihat tinggi atau rendah?",
-                "Model prediksi mana yang kesalahannya paling kecil?",
-                "Berapa perkiraan jumlah sampah untuk beberapa bulan ke depan?"
-            ]
-        )
-
-    with right:
-        bullet_card(
-            "Hasil singkat",
-            [
-                "Jumlah sampah meningkat sampai sekitar 2019–2020.",
-                "Setelah itu, jumlah sampah mulai menurun.",
-                "Penurunan cukup tajam terlihat pada 2023–2024.",
-                "Model ARIMA menjadi model terbaik berdasarkan kesalahan prediksi paling kecil.",
-                "Model masih belum sepenuhnya mampu menangkap perubahan tajam."
-            ]
-        )
-
-        card(
-            "Catatan",
-            """
-            Prediksi pada dashboard ini adalah perkiraan berbasis data historis, bukan angka pasti.
-            Semakin jauh bulan yang diprediksi, hasilnya bisa semakin tidak pasti.
-            """
-        )
-
-# ============================================================
-# DATA
-# ============================================================
-
-elif menu == "Data yang Dipakai":
-    st.markdown('<div class="section-title">Data yang Dipakai</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="section-desc">Bagian ini menjelaskan isi data secara sederhana sebelum dianalisis dan diprediksi.</div>',
-        unsafe_allow_html=True
-    )
-
-    col1, col2, col3 = st.columns(3, gap="large")
-
-    with col1:
-        kpi_card("Jumlah Baris", f"{len(df_raw)}")
-
-    with col2:
-        kpi_card("Jumlah Kolom", f"{df_raw.shape[1]}")
-
-    with col3:
-        kpi_card(
-            "Periode Data",
-            f"{format_periode(ts.index.min())} - {format_periode(ts.index.max())}",
-            small=True
-        )
-
-    left, right = st.columns(2, gap="large")
-
-    with left:
-        bullet_card(
-            "Identitas data",
-            [
-                f"Provinsi: <b>{provinsi}</b>",
-                f"Kota/Kabupaten: <b>{kota}</b>",
-                f"Satuan: <b>{satuan}</b>",
-                "Variabel utama: <b>jumlah_sampah</b>",
-                "Data berbentuk bulanan."
-            ]
-        )
-
-    with right:
-        bullet_card(
-            "Pemeriksaan awal",
-            [
-                f"Missing value: <b>{int(df_raw.isnull().sum().sum())}</b>",
-                f"Data duplikat: <b>{int(df_raw.duplicated().sum())}</b>",
-                "Setiap tahun memiliki 12 bulan data.",
-                "Data siap digunakan untuk membaca pola dan membuat prediksi."
-            ]
-        )
-
-    st.markdown('<div class="small-title">Contoh Data</div>', unsafe_allow_html=True)
-    show_table(df_raw.head(8))
-
-    col1, col2 = st.columns(2, gap="large")
-
-    with col1:
-        st.markdown('<div class="small-title">Ringkasan Jumlah Sampah</div>', unsafe_allow_html=True)
-        ringkasan = df_raw[["jumlah_sampah"]].describe().T.reset_index()
-        ringkasan = ringkasan.rename(columns={"index": "Variabel"})
-        show_table(ringkasan)
-
-    with col2:
-        st.markdown('<div class="small-title">Jumlah Data per Tahun</div>', unsafe_allow_html=True)
-        data_per_tahun = df_raw["tahun"].value_counts().sort_index().reset_index()
-        data_per_tahun.columns = ["Tahun", "Jumlah Data"]
-        show_table(data_per_tahun)
-
-# ============================================================
-# POLA DATA
-# ============================================================
-
-elif menu == "Pola Data":
-    st.markdown('<div class="section-title">Pola Data Jumlah Sampah</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="section-desc">Pilih grafik yang ingin dilihat. Setiap grafik diberi penjelasan singkat agar mudah dibaca.</div>',
-        unsafe_allow_html=True
-    )
-
-    pilih_col, kosong_col = st.columns([0.42, 0.58], gap="large")
-
-    with pilih_col:
-        pilihan_grafik = st.selectbox(
-            "Pilih grafik",
-            [
-                "Perubahan jumlah sampah dari waktu ke waktu",
-                "Tren jangka panjang",
-                "Perbandingan sebaran per tahun",
-                "Rata-rata jumlah sampah per tahun",
-                "Rata-rata jumlah sampah per bulan",
-                "Peta warna tahun dan bulan",
-                "Sebaran nilai jumlah sampah",
-                "Pemisahan pola data"
-            ]
-        )
-
-    left, right = st.columns([1.15, 1], gap="large")
-
-    if pilihan_grafik == "Perubahan jumlah sampah dari waktu ke waktu":
-        with left:
-            st.markdown('<div class="small-title">Perubahan Jumlah Sampah 2017–2024</div>', unsafe_allow_html=True)
-            fig, ax = plt.subplots(figsize=(5.6, 2.6), facecolor=plot_bg)
-            ax.plot(ts, marker="o", linewidth=1.1, markersize=3, label="Jumlah Sampah")
-            style_plot(ax, "Jumlah Sampah Kota Bandung")
-            ax.set_xlabel("Tahun", fontsize=8)
-            ax.set_ylabel("Ton", fontsize=8)
-            ax.legend(fontsize=7)
-            st.pyplot(fig, use_container_width=False)
-
-        with right:
-            bullet_card(
-                "Cara membaca grafik",
-                [
-                    "Garis naik berarti jumlah sampah meningkat.",
-                    "Garis turun berarti jumlah sampah menurun.",
-                    "Grafik ini menunjukkan perubahan dari bulan ke bulan."
-                ]
-            )
-            bullet_card(
-                "Temuan utama",
-                [
-                    "Jumlah sampah meningkat dari 2017 sampai sekitar 2019–2020.",
-                    "Setelah 2020, pola mulai menurun.",
-                    "Penurunan tajam terlihat pada periode 2023–2024."
-                ]
-            )
-
-    elif pilihan_grafik == "Tren jangka panjang":
-        rolling_mean = ts.rolling(window=12).mean()
-
-        with left:
-            st.markdown('<div class="small-title">Tren Jangka Panjang</div>', unsafe_allow_html=True)
-            fig, ax = plt.subplots(figsize=(5.6, 2.6), facecolor=plot_bg)
-            ax.plot(ts, marker="o", linewidth=0.9, markersize=2.5, label="Data Asli")
-            ax.plot(rolling_mean, linewidth=2, label="Rata-rata Bergerak 12 Bulan")
-            style_plot(ax, "Tren Jumlah Sampah")
-            ax.set_xlabel("Tahun", fontsize=8)
-            ax.set_ylabel("Ton", fontsize=8)
-            ax.legend(fontsize=7)
-            st.pyplot(fig, use_container_width=False)
-
-        with right:
-            bullet_card(
-                "Apa maksud grafik ini?",
-                [
-                    "Grafik ini memperhalus data bulanan.",
-                    "Tujuannya agar arah jangka panjang lebih mudah terlihat.",
-                    "Garis rata-rata bergerak membantu melihat pola besar."
-                ]
-            )
-            bullet_card(
-                "Temuan utama",
-                [
-                    "Tren meningkat sampai sekitar 2020.",
-                    "Setelah 2021, tren mulai turun.",
-                    "Penurunan semakin jelas pada 2023–2024."
-                ]
-            )
-
-    elif pilihan_grafik == "Perbandingan sebaran per tahun":
-        df_box = df.copy()
-        df_box["tahun_plot"] = df_box.index.year
-
-        with left:
-            st.markdown('<div class="small-title">Sebaran Jumlah Sampah per Tahun</div>', unsafe_allow_html=True)
-            fig, ax = plt.subplots(figsize=(5.6, 2.6), facecolor=plot_bg)
-            sns.boxplot(x="tahun_plot", y="jumlah_sampah", data=df_box, ax=ax)
-            style_plot(ax, "Sebaran per Tahun")
-            ax.set_xlabel("Tahun", fontsize=8)
-            ax.set_ylabel("Ton", fontsize=8)
-            st.pyplot(fig, use_container_width=False)
-
-        with right:
-            bullet_card(
-                "Apa yang dilihat?",
-                [
-                    "Grafik ini membandingkan tinggi-rendah jumlah sampah setiap tahun.",
-                    "Bagian tengah kotak menunjukkan nilai tengah.",
-                    "Kotak yang lebih besar menunjukkan variasi yang lebih besar."
-                ]
-            )
-            bullet_card(
-                "Temuan utama",
-                [
-                    "Nilai tengah tertinggi terlihat pada 2019–2020.",
-                    "Tahun 2023 memiliki variasi yang besar.",
-                    "Tahun 2024 lebih rendah dibanding tahun-tahun sebelumnya."
-                ]
-            )
-
-    elif pilihan_grafik == "Rata-rata jumlah sampah per tahun":
-        rata_tahun = df.groupby(df.index.year)["jumlah_sampah"].mean().reset_index()
-        rata_tahun.columns = ["Tahun", "Rata-rata Jumlah Sampah"]
-
-        with left:
-            st.markdown('<div class="small-title">Rata-rata per Tahun</div>', unsafe_allow_html=True)
-            fig, ax = plt.subplots(figsize=(5.6, 2.6), facecolor=plot_bg)
-            ax.bar(rata_tahun["Tahun"], rata_tahun["Rata-rata Jumlah Sampah"])
-            style_plot(ax, "Rata-rata Jumlah Sampah per Tahun")
-            ax.set_xlabel("Tahun", fontsize=8)
-            ax.set_ylabel("Ton", fontsize=8)
-            st.pyplot(fig, use_container_width=False)
-
-        with right:
-            st.markdown('<div class="small-title">Tabel Rata-rata</div>', unsafe_allow_html=True)
-            show_table(rata_tahun)
-            bullet_card(
-                "Temuan utama",
-                [
-                    "Rata-rata tertinggi terjadi pada 2019 dan 2020.",
-                    "Setelah 2020, rata-rata mulai menurun.",
-                    "Tahun 2024 menjadi yang paling rendah."
-                ]
-            )
-
-    elif pilihan_grafik == "Rata-rata jumlah sampah per bulan":
-        urutan_bulan = [
-            "JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI",
-            "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"
-        ]
-
-        rata_bulan_series = df.groupby("bulan")["jumlah_sampah"].mean().reindex(urutan_bulan)
-        rata_bulan = rata_bulan_series.reset_index()
-        rata_bulan.columns = ["Bulan", "Rata-rata Jumlah Sampah"]
-
-        with left:
-            st.markdown('<div class="small-title">Rata-rata per Bulan</div>', unsafe_allow_html=True)
-            fig, ax = plt.subplots(figsize=(5.6, 2.6), facecolor=plot_bg)
-            ax.bar(rata_bulan["Bulan"], rata_bulan["Rata-rata Jumlah Sampah"])
-            style_plot(ax, "Rata-rata Jumlah Sampah per Bulan")
-            ax.set_xlabel("Bulan", fontsize=8)
-            ax.set_ylabel("Ton", fontsize=8)
-            ax.tick_params(axis="x", labelsize=6, rotation=45)
-            st.pyplot(fig, use_container_width=False)
-
-        with right:
-            st.markdown('<div class="small-title">Tabel Rata-rata</div>', unsafe_allow_html=True)
-            show_table(rata_bulan)
-            bullet_card(
-                "Temuan utama",
-                [
-                    "Rata-rata bulanan tidak berbeda terlalu jauh.",
-                    "Bulan Juli memiliki rata-rata tertinggi.",
-                    "Bulan Februari memiliki rata-rata terendah.",
-                    "Pola bulanan ada, tetapi tidak terlalu kuat."
-                ]
-            )
-
-    elif pilihan_grafik == "Peta warna tahun dan bulan":
-        urutan_bulan = [
-            "JANUARI", "FEBRUARI", "MARET", "APRIL", "MEI", "JUNI",
-            "JULI", "AGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DESEMBER"
-        ]
-
-        df_heatmap = df.copy()
-        df_heatmap["tahun_plot"] = df_heatmap.index.year
-        df_heatmap["bulan_plot"] = df_heatmap["bulan"]
-
-        pivot_heatmap = df_heatmap.pivot_table(
-            values="jumlah_sampah",
-            index="tahun_plot",
-            columns="bulan_plot",
-            aggfunc="mean"
-        )
-
-        pivot_heatmap = pivot_heatmap[urutan_bulan]
-
-        with left:
-            st.markdown('<div class="small-title">Peta Warna Tahun-Bulan</div>', unsafe_allow_html=True)
-            fig, ax = plt.subplots(figsize=(6.2, 2.9), facecolor=plot_bg)
-            sns.heatmap(
-                pivot_heatmap,
-                annot=True,
-                fmt=".0f",
-                cmap="YlOrBr",
-                ax=ax,
-                annot_kws={"size": 5},
-                cbar_kws={"shrink": 0.7}
-            )
-            ax.set_title("Jumlah Sampah per Tahun dan Bulan", fontsize=10, fontweight="bold")
-            ax.set_xlabel("Bulan", fontsize=8)
-            ax.set_ylabel("Tahun", fontsize=8)
-            ax.tick_params(axis="x", labelsize=5.5, rotation=45)
-            ax.tick_params(axis="y", labelsize=7)
-            st.pyplot(fig, use_container_width=False)
-
-        with right:
-            bullet_card(
-                "Cara membaca warna",
-                [
-                    "Warna yang lebih pekat menunjukkan jumlah sampah lebih tinggi.",
-                    "Warna yang lebih terang menunjukkan jumlah sampah lebih rendah."
-                ]
-            )
-            bullet_card(
-                "Temuan utama",
-                [
-                    "Periode 2019–2020 relatif tinggi.",
-                    "Tahun 2023 mulai menunjukkan penurunan.",
-                    "Tahun 2024 terlihat lebih rendah hampir di semua bulan."
-                ]
-            )
-
-    elif pilihan_grafik == "Sebaran nilai jumlah sampah":
-        with left:
-            st.markdown('<div class="small-title">Sebaran Nilai Jumlah Sampah</div>', unsafe_allow_html=True)
-            fig, ax = plt.subplots(figsize=(5.6, 2.6), facecolor=plot_bg)
-            sns.histplot(df["jumlah_sampah"], kde=True, ax=ax)
-            style_plot(ax, "Sebaran Jumlah Sampah")
-            ax.set_xlabel("Jumlah Sampah (Ton)", fontsize=8)
-            ax.set_ylabel("Frekuensi", fontsize=8)
-            st.pyplot(fig, use_container_width=False)
-
-        with right:
-            bullet_card(
-                "Apa yang dilihat?",
-                [
-                    "Grafik ini menunjukkan nilai jumlah sampah yang paling sering muncul.",
-                    "Jika sebaran tidak seimbang, berarti ada periode yang berbeda dari pola umum."
-                ]
-            )
-            bullet_card(
-                "Temuan utama",
-                [
-                    "Sebagian besar data berada pada rentang sekitar 36.000–42.000 ton.",
-                    "Terdapat beberapa nilai rendah.",
-                    "Nilai rendah berkaitan dengan penurunan besar pada periode tertentu."
-                ]
-            )
-
-    elif pilihan_grafik == "Pemisahan pola data":
-        with left:
-            st.markdown('<div class="small-title">Pemisahan Pola Data</div>', unsafe_allow_html=True)
-            decomp = seasonal_decompose(ts, model="additive", period=12)
-            fig = decomp.plot()
-            fig.set_size_inches(5.7, 3.7)
-            for ax in fig.axes:
-                ax.tick_params(axis="both", labelsize=6)
-                ax.set_xlabel("")
-            st.pyplot(fig, use_container_width=False)
-
-        with right:
-            bullet_card(
-                "Apa maksud grafik ini?",
-                [
-                    "Grafik ini memisahkan data menjadi arah utama, pola bulanan, dan sisa naik-turun acak.",
-                    "Tujuannya agar pola data lebih mudah dipahami."
-                ]
-            )
-            bullet_card(
-                "Temuan utama",
-                [
-                    "Arah utama naik sampai sekitar 2020.",
-                    "Setelah itu, arah utama menurun sampai 2024.",
-                    "Pola bulanan terlihat, tetapi tidak terlalu dominan.",
-                    "Masih ada fluktuasi acak dan beberapa lonjakan."
-                ]
-            )
-
-# ============================================================
-# PREDIKSI SAMPAH
-# ============================================================
-
-elif menu == "Prediksi Sampah":
-    st.markdown('<div class="section-title">Prediksi Jumlah Sampah</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="section-desc">Pilih cara prediksi, lalu geser jumlah bulan ke depan yang ingin diperkirakan.</div>',
-        unsafe_allow_html=True
-    )
-
-    left_input, right_input = st.columns([1, 1], gap="large")
-
-    with left_input:
-        selected_model = st.selectbox(
-            "Pilih cara prediksi ♻️",
-            [
-                "ARIMA(0,1,1)",
-                "SARIMA(1,2,2)(0,1,1,12)",
-                "Naive Forecast",
-                "Seasonal Naive Forecast"
-            ]
-        )
-
-    with right_input:
+    with input_col1:
         forecast_steps = st.slider(
-            "Geser jumlah bulan ke depan",
+            "Simulasi untuk berapa bulan ke depan?",
             min_value=1,
-            max_value=36,
+            max_value=12,
             value=12,
             step=1
         )
 
-    st.markdown('<div style="height: 12px;"></div>', unsafe_allow_html=True)
-    st.markdown('<div class="small-title">Arti Model Prediksi</div>', unsafe_allow_html=True)
-
-    m1, m2, m3, m4 = st.columns(4, gap="large")
-
-    with m1:
-        model_card(
-            "📈",
-            "ARIMA",
-            "Model time series yang melihat pola data masa lalu, tren perubahan, dan error sebelumnya. Cocok untuk data yang tidak terlalu kuat pola musimannya."
+    with input_col2:
+        biaya_per_ton = st.number_input(
+            "Biaya penanganan per ton",
+            min_value=0,
+            value=300000,
+            step=50000
         )
 
-    with m2:
-        model_card(
-            "🔁",
-            "SARIMA",
-            "Pengembangan ARIMA yang menambahkan pola musiman. Model ini mencoba menangkap pola berulang, misalnya pola tahunan pada data bulanan."
+    with input_col3:
+        kapasitas_truk = st.number_input(
+            "Kapasitas truk per rit (ton)",
+            min_value=1.0,
+            value=5.0,
+            step=0.5
         )
 
-    with m3:
-        model_card(
-            "📌",
-            "Naive Forecast",
-            "Model pembanding sederhana. Prediksi bulan depan dianggap sama dengan nilai terakhir pada data historis."
+    with input_col4:
+        rit_per_truk_per_hari = st.number_input(
+            "Rit per truk per hari",
+            min_value=1,
+            value=2,
+            step=1
         )
 
-    with m4:
-        model_card(
-            "🗓️",
-            "Seasonal Naive",
-            "Model pembanding musiman. Prediksi bulan tertentu mengikuti nilai pada bulan yang sama di periode sebelumnya."
-        )
+    forecast = make_sarima_forecast(ts, forecast_steps)
 
-    future_index = pd.date_range(
-        start=ts.index.max() + pd.DateOffset(months=1),
-        periods=forecast_steps,
-        freq="MS"
+    simulation_df = build_simulation_table(
+        forecast=forecast,
+        biaya_per_ton=biaya_per_ton,
+        kapasitas_truk=kapasitas_truk,
+        rit_per_truk_per_hari=rit_per_truk_per_hari
     )
 
-    if selected_model == "ARIMA(0,1,1)":
-        final_model = ARIMA(ts, order=(0, 1, 1))
-        final_fit = final_model.fit()
-        future_forecast = final_fit.forecast(steps=forecast_steps)
+    total_sampah = simulation_df["Prediksi Sampah (Ton)"].sum()
+    total_anggaran = simulation_df["Estimasi Anggaran"].sum()
+    total_rit = simulation_df["Kebutuhan Rit Bulanan"].sum()
 
-    elif selected_model == "SARIMA(1,2,2)(0,1,1,12)":
-        final_model = SARIMAX(
-            ts,
-            order=(1, 2, 2),
-            seasonal_order=(0, 1, 1, 12),
-            enforce_stationarity=False,
-            enforce_invertibility=False
-        )
-        final_fit = final_model.fit(disp=False)
-        future_forecast = final_fit.forecast(steps=forecast_steps)
+    highest_row = simulation_df.loc[
+        simulation_df["Prediksi Sampah (Ton)"].idxmax()
+    ]
 
-    elif selected_model == "Naive Forecast":
-        future_forecast = pd.Series([ts.iloc[-1]] * forecast_steps)
+    lowest_row = simulation_df.loc[
+        simulation_df["Prediksi Sampah (Ton)"].idxmin()
+    ]
 
-    else:
-        seasonal_values = np.resize(ts.iloc[-12:].values, forecast_steps)
-        future_forecast = pd.Series(seasonal_values)
+    start_period = format_periode(simulation_df["Tanggal"].min())
+    end_period = format_periode(simulation_df["Tanggal"].max())
 
-    future_forecast = pd.Series(future_forecast.values, index=future_index)
-
-    forecast_output = pd.DataFrame({
-        "Periode": [format_periode(date) for date in future_forecast.index],
-        "Model": selected_model,
-        "Prediksi Jumlah Sampah (Ton)": future_forecast.values
-    })
-
-    total_prediksi = forecast_output["Prediksi Jumlah Sampah (Ton)"].sum()
-    rata_prediksi = forecast_output["Prediksi Jumlah Sampah (Ton)"].mean()
-
-    start_period = format_periode(future_forecast.index.min())
-    end_period = format_periode(future_forecast.index.max())
-
-    col1, col2, col3 = st.columns(3, gap="large")
+    col1, col2, col3, col4 = st.columns(4, gap="large")
 
     with col1:
-        kpi_card("Periode Prediksi", f"{start_period} - {end_period}", small=True)
+        kpi_card(
+            "Periode Simulasi",
+            f"{start_period} - {end_period}",
+            f"{forecast_steps} bulan ke depan"
+        )
 
     with col2:
-        kpi_card("Total Prediksi", f"{total_prediksi:,.2f} ton", small=True)
+        kpi_card(
+            "Total Prediksi Sampah",
+            f"{format_angka(total_sampah)} ton"
+        )
 
     with col3:
-        kpi_card("Rata-rata per Bulan", f"{rata_prediksi:,.2f} ton", small=True)
+        kpi_card(
+            "Total Estimasi Anggaran",
+            format_rupiah(total_anggaran),
+            f"Asumsi {format_rupiah(biaya_per_ton)} per ton"
+        )
 
-    left, right = st.columns([1.15, 1], gap="large")
+    with col4:
+        kpi_card(
+            "Total Kebutuhan Rit",
+            f"{format_integer(total_rit)} rit",
+            f"Kapasitas {kapasitas_truk} ton per rit"
+        )
+
+    col5, col6, col7, col8 = st.columns(4, gap="large")
+
+    with col5:
+        kpi_card(
+            "Beban Tertinggi",
+            highest_row["Periode"],
+            f"{format_angka(highest_row['Prediksi Sampah (Ton)'])} ton"
+        )
+
+    with col6:
+        kpi_card(
+            "Beban Terendah",
+            lowest_row["Periode"],
+            f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton"
+        )
+
+    with col7:
+        max_rit_harian = int(simulation_df["Kebutuhan Rit per Hari"].max())
+        kpi_card(
+            "Rit Maksimum per Hari",
+            f"{format_integer(max_rit_harian)} rit/hari"
+        )
+
+    with col8:
+        max_armada = int(simulation_df["Estimasi Armada per Hari"].max())
+        kpi_card(
+            "Armada Maksimum per Hari",
+            f"{format_integer(max_armada)} truk",
+            f"Asumsi {rit_per_truk_per_hari} rit/truk/hari"
+        )
+
+    st.markdown('<div class="small-title">Prediksi Jumlah Sampah</div>', unsafe_allow_html=True)
+
+    fig, ax = plt.subplots(figsize=(10.5, 3.6), facecolor=plot_bg)
+
+    ax.plot(
+        ts.tail(24),
+        marker="o",
+        linewidth=1.2,
+        markersize=3,
+        label="Data Historis"
+    )
+
+    ax.plot(
+        forecast,
+        marker="o",
+        linewidth=2,
+        markersize=3,
+        label="Prediksi"
+    )
+
+    style_plot(ax, "Prediksi Jumlah Sampah Kota Bandung")
+    ax.set_xlabel("Periode", fontsize=8)
+    ax.set_ylabel("Jumlah Sampah (Ton)", fontsize=8)
+    ax.legend(fontsize=7)
+
+    st.pyplot(fig, use_container_width=True)
+
+    st.markdown('<div class="small-title">Tabel Simulasi Kebutuhan Operasional</div>', unsafe_allow_html=True)
+
+    display_table = prepare_display_table(simulation_df)
+    show_table(display_table)
+
+    bullet_card(
+        "Catatan simulasi",
+        [
+            f"Biaya penanganan sampah: <b>{format_rupiah(biaya_per_ton)} per ton</b>.",
+            f"Kapasitas truk: <b>{kapasitas_truk} ton per rit</b>.",
+            f"Rit per truk: <b>{rit_per_truk_per_hari} rit per hari</b>.",
+            "Kebutuhan rit dan armada dibulatkan ke atas agar estimasi tidak kurang dari kebutuhan operasional.",
+            "Hasil prediksi merupakan simulasi berbasis data historis dan tetap perlu disesuaikan dengan kondisi lapangan."
+        ]
+    )
+
+# ============================================================
+# HALAMAN 2: DATA & EVALUASI
+# ============================================================
+
+elif menu == "Data & Evaluasi":
+    st.markdown('<div class="section-title">Data & Evaluasi</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-desc">Ringkasan data dan evaluasi model ditampilkan singkat. Detail teori, EDA, dan proses pemodelan dijelaskan pada laporan.</div>',
+        unsafe_allow_html=True
+    )
+
+    eval_df, comparison_df, test_actual, test_forecast = evaluate_sarima(ts)
+
+    col1, col2, col3, col4 = st.columns(4, gap="large")
+
+    with col1:
+        kpi_card("Wilayah", kota)
+
+    with col2:
+        kpi_card(
+            "Periode Data",
+            f"{format_periode(ts.index.min())} - {format_periode(ts.index.max())}"
+        )
+
+    with col3:
+        kpi_card("Jumlah Data", f"{len(df_raw)} baris")
+
+    with col4:
+        kpi_card("Satuan", satuan)
+
+    left, right = st.columns([1, 1], gap="large")
 
     with left:
-        st.markdown('<div class="small-title">Grafik Prediksi</div>', unsafe_allow_html=True)
-        fig, ax = plt.subplots(figsize=(5.8, 2.8), facecolor=plot_bg)
-        ax.plot(ts.tail(24), marker="o", linewidth=1.1, markersize=3, label="Data Historis")
+        bullet_card(
+            "Data yang digunakan",
+            [
+                f"Provinsi: <b>{provinsi}</b>",
+                f"Kota/Kabupaten: <b>{kota}</b>",
+                "Variabel utama: <b>jumlah_sampah</b>.",
+                "Data berbentuk bulanan.",
+                f"Missing value: <b>{int(df_raw.isnull().sum().sum())}</b>.",
+                f"Data duplikat: <b>{int(df_raw.duplicated().sum())}</b>."
+            ]
+        )
+
+    with right:
+        bullet_card(
+            "Model yang dipakai",
+            [
+                "Model utama pada dashboard: <b>SARIMA(1,2,2)(0,1,1,12)</b>.",
+                "Model digunakan karena dapat menangkap pola bulanan pada data historis.",
+                "Prediksi pada aplikasi dibatasi maksimal <b>12 bulan ke depan</b>.",
+                "Detail pemilihan model dan pembahasan teknis dijelaskan di laporan."
+            ]
+        )
+
+    st.markdown('<div class="small-title">Evaluasi Model pada Data Uji</div>', unsafe_allow_html=True)
+    show_table(prepare_eval_display(eval_df))
+
+    left_plot, right_table = st.columns([1.15, 1], gap="large")
+
+    with left_plot:
+        st.markdown('<div class="small-title">Aktual vs Prediksi Data Uji</div>', unsafe_allow_html=True)
+
+        fig, ax = plt.subplots(figsize=(6.2, 3.0), facecolor=plot_bg)
+
         ax.plot(
-            future_forecast,
+            test_actual,
             marker="o",
-            linewidth=1.8,
+            linewidth=1.5,
             markersize=3,
-            label=f"Prediksi {selected_model}"
+            label="Aktual"
         )
-        style_plot(ax, f"Prediksi {forecast_steps} Bulan ke Depan")
+
+        ax.plot(
+            test_forecast,
+            marker="o",
+            linewidth=1.5,
+            markersize=3,
+            label="Prediksi"
+        )
+
+        style_plot(ax, "Perbandingan Aktual dan Prediksi")
         ax.set_xlabel("Periode", fontsize=8)
-        ax.set_ylabel("Ton", fontsize=8)
+        ax.set_ylabel("Jumlah Sampah (Ton)", fontsize=8)
         ax.legend(fontsize=7)
-        st.pyplot(fig, use_container_width=False)
 
-    with right:
-        st.markdown('<div class="small-title">Tabel Prediksi</div>', unsafe_allow_html=True)
-        show_table(forecast_output)
+        st.pyplot(fig, use_container_width=True)
 
-    bullet_card(
-        "Catatan pembacaan hasil",
-        [
-            "Prediksi dibuat dari data terakhir yang tersedia, yaitu Desember 2024.",
-            "Input prediksi menggunakan jumlah bulan karena data asli berbentuk bulanan.",
-            "Semakin jauh jumlah bulan yang diprediksi, semakin besar kemungkinan hasil meleset."
-        ]
-    )
+    with right_table:
+        st.markdown('<div class="small-title">Tabel Aktual vs Prediksi</div>', unsafe_allow_html=True)
+        show_table(prepare_comparison_display(comparison_df))
 
-# ============================================================
-# KETEPATAN PREDIKSI
-# ============================================================
-
-elif menu == "Ketepatan Prediksi":
-    st.markdown('<div class="section-title">Ketepatan Prediksi</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="section-desc">Bagian ini membandingkan beberapa cara prediksi menggunakan data tahun 2024 sebagai pembanding.</div>',
-        unsafe_allow_html=True
-    )
-
-    left, right = st.columns([1.1, 1], gap="large")
-
-    with left:
-        st.markdown('<div class="small-title">Tabel Perbandingan</div>', unsafe_allow_html=True)
-        show_table(eval_df)
-
-    with right:
-        st.markdown('<div class="small-title">Perbandingan Kesalahan Persentase</div>', unsafe_allow_html=True)
-        fig, ax = plt.subplots(figsize=(5.3, 2.6), facecolor=plot_bg)
-        ax.bar(eval_df["Model"], eval_df["MAPE (%)"])
-        style_plot(ax, "Perbandingan MAPE")
-        ax.set_xlabel("Model", fontsize=8)
-        ax.set_ylabel("MAPE (%)", fontsize=8)
-        ax.tick_params(axis="x", labelsize=6, rotation=20)
-        st.pyplot(fig, use_container_width=False)
+    st.markdown('<div class="small-title">Contoh Data</div>', unsafe_allow_html=True)
+    show_table(df_raw.head(10))
 
     bullet_card(
-        "Cara membaca hasil",
+        "Catatan",
         [
-            "Semakin kecil MAE, RMSE, dan MAPE, semakin baik hasil prediksi.",
-            "MAPE menunjukkan rata-rata kesalahan dalam bentuk persen.",
-            "R² negatif berarti model belum mampu menjelaskan variasi data uji dengan baik."
+            "Evaluasi model ditampilkan secara ringkas agar dashboard tetap fokus pada kebutuhan pengguna.",
+            "Penjelasan detail seperti EDA, parameter model, dan alasan pemilihan model dapat diletakkan pada laporan.",
+            "Nilai evaluasi digunakan sebagai gambaran kesalahan prediksi, bukan sebagai satu-satunya dasar keputusan operasional."
         ]
-    )
-
-    bullet_card(
-        "Temuan utama",
-        [
-            "ARIMA memiliki nilai kesalahan paling kecil.",
-            "Naive Forecast berada dekat dengan ARIMA.",
-            "SARIMA lebih dinamis secara visual, tetapi kesalahannya lebih besar.",
-            "Seasonal Naive Forecast memiliki kesalahan paling besar."
-        ]
-    )
-
-# ============================================================
-# RINGKASAN
-# ============================================================
-
-elif menu == "Ringkasan":
-    st.markdown('<div class="section-title">Ringkasan Hasil</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="section-desc">Ringkasan akhir dari data, pola, prediksi, dan hasil perbandingan model.</div>',
-        unsafe_allow_html=True
-    )
-
-    left, right = st.columns(2, gap="large")
-
-    with left:
-        bullet_card(
-            "Pembahasan",
-            [
-                f"Data berasal dari Provinsi <b>{provinsi}</b>.",
-                f"Wilayah yang dianalisis adalah <b>{kota}</b>.",
-                f"Satuan jumlah sampah adalah <b>{satuan}</b>.",
-                "Jumlah sampah tidak sepenuhnya stabil dari tahun ke tahun.",
-                "Pola naik terlihat sampai sekitar 2020, lalu mulai menurun.",
-                "Penurunan tajam pada 2023–2024 membuat prediksi menjadi lebih sulit.",
-                "ARIMA menghasilkan prediksi yang cenderung datar.",
-                "SARIMA lebih dinamis, tetapi kesalahannya lebih besar."
-            ]
-        )
-
-    with right:
-        bullet_card(
-            "Kesimpulan",
-            [
-                f"Data yang digunakan adalah data jumlah sampah bulanan <b>{kota}</b>.",
-                f"Periode data: <b>{format_periode(ts.index.min())}</b> sampai <b>{format_periode(ts.index.max())}</b>.",
-                "Model terbaik berdasarkan MAE, RMSE, dan MAPE adalah <b>ARIMA(0,1,1)</b>.",
-                "ARIMA memperoleh MAPE sekitar <b>6.067%</b>.",
-                "Semua model memiliki R² negatif.",
-                "Model sederhana belum sepenuhnya mampu menangkap perubahan tajam pada data tahun 2024."
-            ]
-        )
-
-    card(
-        "Catatan akhir",
-        """
-        Dashboard ini dapat digunakan sebagai alat bantu awal untuk membaca pola jumlah sampah dan memperkirakan kebutuhan penanganan sampah.
-        Namun, hasil prediksi tetap perlu dipertimbangkan bersama faktor nyata lain, seperti kebijakan pengelolaan sampah,
-        aktivitas masyarakat, perubahan sistem pencatatan, dan kondisi khusus pada tahun tertentu.
-        """
     )
