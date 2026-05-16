@@ -1,17 +1,16 @@
 import warnings
+warnings.filterwarnings("ignore")
 
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
-warnings.filterwarnings("ignore")
-
 # ============================================================
-# KONFIGURASI DASAR
+# PAGE CONFIG
 # ============================================================
 
 st.set_page_config(
@@ -53,14 +52,11 @@ BULAN_INDO = {
     12: "Desember",
 }
 
-PAGES = [
-    "Simulasi Pengelolaan",
-    "Data & Evaluasi"
-]
+MENU_OPTIONS = ["Simulasi Pengelolaan", "Ringkasan Data & Model"]
 
 
 # ============================================================
-# FUNGSI DASAR
+# FORMATTER
 # ============================================================
 
 def format_periode(date_value):
@@ -87,12 +83,16 @@ def evaluate_model(actual, forecast):
     return mae, rmse, mape, r2
 
 
+# ============================================================
+# LOAD DATA
+# ============================================================
+
 @st.cache_data
 def load_data():
     df_raw = pd.read_excel(FILE_NAME)
 
     df = df_raw.copy()
-    df["bulan_num"] = df["bulan"].str.upper().map(BULAN_MAP)
+    df["bulan_num"] = df["bulan"].astype(str).str.upper().map(BULAN_MAP)
 
     df["tanggal"] = pd.to_datetime({
         "year": df["tahun"],
@@ -168,12 +168,11 @@ def evaluate_sarima(ts):
     return eval_df, comparison_df, test, forecast
 
 
-def build_simulation_table(
-    forecast,
-    biaya_per_ton,
-    kapasitas_truk,
-    rit_per_truk_per_hari
-):
+# ============================================================
+# OPERASIONAL
+# ============================================================
+
+def build_simulation_table(forecast, biaya_per_ton, kapasitas_truk, rit_per_truk_per_hari):
     output = pd.DataFrame({
         "Tanggal": forecast.index,
         "Periode": [format_periode(date) for date in forecast.index],
@@ -181,10 +180,7 @@ def build_simulation_table(
     })
 
     output["Jumlah Hari"] = output["Tanggal"].dt.days_in_month
-
-    output["Estimasi Anggaran"] = (
-        output["Prediksi Sampah (Ton)"] * biaya_per_ton
-    )
+    output["Estimasi Anggaran"] = output["Prediksi Sampah (Ton)"] * biaya_per_ton
 
     output["Kebutuhan Rit Bulanan"] = np.ceil(
         output["Prediksi Sampah (Ton)"] / kapasitas_truk
@@ -241,58 +237,106 @@ def prepare_comparison_display(comparison_df):
 
 
 # ============================================================
-# TEMA DAN STYLE RESPONSIVE
+# SESSION STATE
+# ============================================================
+
+if "theme_mode" not in st.session_state:
+    st.session_state.theme_mode = "Gelap"
+
+if "active_menu" not in st.session_state:
+    st.session_state.active_menu = "Simulasi Pengelolaan"
+
+if st.session_state.active_menu == "Data Singkat":
+    st.session_state.active_menu = "Ringkasan Data & Model"
+
+if st.session_state.active_menu not in MENU_OPTIONS:
+    st.session_state.active_menu = "Simulasi Pengelolaan"
+
+
+def set_theme(mode):
+    st.session_state.theme_mode = mode
+
+
+# ============================================================
+# THEME
 # ============================================================
 
 def apply_theme(mode):
     if mode == "Terang":
-        bg = "#EFE9DC"
-        card = "#FFFDF7"
-        text = "#172018"
-        muted = "#3F4B3E"
-        border = "#CFC7B8"
-        accent = "#2E6F4F"
-        accent_soft = "rgba(46, 111, 79, 0.11)"
-        accent_hover = "#2E6F4F"
-        hero = "linear-gradient(135deg, #2E6F4F 0%, #6B9A61 56%, #B88A3D 100%)"
-        sidebar_bg = """
-            radial-gradient(circle at 14% 8%, rgba(107, 154, 97, 0.22), transparent 24%),
-            radial-gradient(circle at 90% 23%, rgba(184, 138, 61, 0.18), transparent 25%),
-            linear-gradient(180deg, #EFECDD 0%, #E7E3D3 48%, #EDE3CF 100%)
-        """
-        sidebar_visual = "linear-gradient(135deg, #2E6F4F 0%, #527D52 60%, #8C6B31 100%)"
-        plot_bg = "#FFFFFF"
-
-        table_bg = "#FFFDF7"
-        table_header = "#DDEADB"
-        table_text = "#172018"
-        table_border = "#CFC7B8"
-        table_stripe = "#F5F1E8"
-
+        cfg = {
+            "bg": "#EFE9DC",
+            "card": "#FFFDF7",
+            "card2": "#F5F1E8",
+            "text": "#172018",
+            "muted": "#3F4B3E",
+            "border": "#CFC7B8",
+            "accent": "#2E6F4F",
+            "accent2": "#B88A3D",
+            "accent_soft": "rgba(46, 111, 79, 0.11)",
+            "accent_hover": "#2E6F4F",
+            "shadow": "rgba(31, 41, 51, 0.06)",
+            "hero": "linear-gradient(135deg, #2E6F4F 0%, #6B9A61 56%, #B88A3D 100%)",
+            "sidebar_bg": """
+                radial-gradient(circle at 14% 8%, rgba(107, 154, 97, 0.22), transparent 24%),
+                radial-gradient(circle at 90% 23%, rgba(184, 138, 61, 0.18), transparent 25%),
+                linear-gradient(180deg, #EFECDD 0%, #E7E3D3 48%, #EDE3CF 100%)
+            """,
+            "sidebar_visual": "linear-gradient(135deg, #2E6F4F 0%, #527D52 60%, #8C6B31 100%)",
+            "chart_bg": "#FFFDF7",
+            "chart_grid": "rgba(23, 32, 24, 0.12)",
+            "chart_font": "#172018",
+            "chart_axis": "#172018",
+            "chart_hist": "#2E6F4F",
+            "chart_pred": "#B88A3D",
+            "chart_hist_fill": "rgba(46, 111, 79, 0.14)",
+            "chart_pred_fill": "rgba(184, 138, 61, 0.16)",
+            "chart_divider": "rgba(23, 32, 24, 0.42)",
+            "chart_legend_bg": "rgba(255,253,247,0.96)",
+            "chart_legend_border": "rgba(63,75,62,0.25)",
+            "annotation_bg": "rgba(255,253,247,0.97)",
+            "annotation_border": "rgba(63,75,62,0.26)",
+            "input_bg": "#FFFDF7",
+            "input_btn": "#E6DECE",
+            "input_btn_hover": "#2E6F4F",
+        }
     else:
-        bg = "#151A17"
-        card = "#222A24"
-        text = "#F5F7F2"
-        muted = "#D8E0D4"
-        border = "#3D4A40"
-        accent = "#8BCB88"
-        accent_soft = "rgba(139, 203, 136, 0.12)"
-        accent_hover = "#2F7D52"
-        hero = "linear-gradient(135deg, #1F4D36 0%, #4F8B59 55%, #B78335 100%)"
-        sidebar_bg = """
-            radial-gradient(circle at 8% 12%, rgba(139, 203, 136, 0.28), transparent 16%),
-            radial-gradient(circle at 92% 28%, rgba(47, 111, 78, 0.18), transparent 17%),
-            radial-gradient(circle at 18% 88%, rgba(226, 177, 93, 0.18), transparent 18%),
-            linear-gradient(180deg, #1E241F 0%, #1B241C 60%, #222819 100%)
-        """
-        sidebar_visual = "linear-gradient(135deg, #26382C 0%, #2F6F4E 65%, #6A4A1E 100%)"
-        plot_bg = "#FFFFFF"
-
-        table_bg = "#222A24"
-        table_header = "#2B342D"
-        table_text = "#F5F7F2"
-        table_border = "#3D4A40"
-        table_stripe = "#263029"
+        cfg = {
+            "bg": "#151A17",
+            "card": "#222A24",
+            "card2": "#263029",
+            "text": "#F5F7F2",
+            "muted": "#D8E0D4",
+            "border": "#3D4A40",
+            "accent": "#8BCB88",
+            "accent2": "#E2B15D",
+            "accent_soft": "rgba(139, 203, 136, 0.12)",
+            "accent_hover": "#2F7D52",
+            "shadow": "rgba(0, 0, 0, 0.14)",
+            "hero": "linear-gradient(135deg, #1F4D36 0%, #4F8B59 55%, #B78335 100%)",
+            "sidebar_bg": """
+                radial-gradient(circle at 8% 12%, rgba(139, 203, 136, 0.28), transparent 16%),
+                radial-gradient(circle at 92% 28%, rgba(47, 111, 78, 0.18), transparent 17%),
+                radial-gradient(circle at 18% 88%, rgba(226, 177, 93, 0.18), transparent 18%),
+                linear-gradient(180deg, #1E241F 0%, #1B241C 60%, #222819 100%)
+            """,
+            "sidebar_visual": "linear-gradient(135deg, #26382C 0%, #2F6F4E 65%, #6A4A1E 100%)",
+            "chart_bg": "#111915",
+            "chart_grid": "rgba(255,255,255,0.08)",
+            "chart_font": "#F2F5F1",
+            "chart_axis": "#F2F5F1",
+            "chart_hist": "#67F0C1",
+            "chart_pred": "#F1BE54",
+            "chart_hist_fill": "rgba(103,240,193,0.18)",
+            "chart_pred_fill": "rgba(241,190,84,0.18)",
+            "chart_divider": "rgba(255,255,255,0.35)",
+            "chart_legend_bg": "rgba(20,28,24,0.90)",
+            "chart_legend_border": "rgba(255,255,255,0.15)",
+            "annotation_bg": "rgba(20,28,24,0.92)",
+            "annotation_border": "rgba(255,255,255,0.22)",
+            "input_bg": "#222A24",
+            "input_btn": "#2B2D3A",
+            "input_btn_hover": "#2F7D52",
+        }
 
     st.markdown(
         f"""
@@ -300,8 +344,8 @@ def apply_theme(mode):
         .stApp {{
             background:
                 radial-gradient(circle at 2% 4%, rgba(139, 203, 136, 0.06), transparent 20%),
-                {bg} !important;
-            color: {text} !important;
+                {cfg["bg"]} !important;
+            color: {cfg["text"]} !important;
         }}
 
         header, footer, #MainMenu {{
@@ -312,9 +356,17 @@ def apply_theme(mode):
             color: inherit;
         }}
 
+        .block-container {{
+            max-width: 1420px !important;
+            padding-top: 4rem !important;
+            padding-left: 0.95rem !important;
+            padding-right: 0.95rem !important;
+            padding-bottom: 1.5rem !important;
+        }}
+
         [data-testid="stSidebar"] {{
-            background: {sidebar_bg} !important;
-            border-right: 1px solid {border};
+            background: {cfg["sidebar_bg"]} !important;
+            border-right: 1px solid {cfg["border"]};
             width: 304px !important;
             min-width: 304px !important;
         }}
@@ -337,22 +389,14 @@ def apply_theme(mode):
         }}
 
         [data-testid="stSidebar"] * {{
-            color: {text} !important;
-        }}
-
-        .block-container {{
-            max-width: 1420px !important;
-            padding-top: 3.3rem !important;
-            padding-left: 0.95rem !important;
-            padding-right: 0.95rem !important;
-            padding-bottom: 1.5rem !important;
+            color: {cfg["text"]} !important;
         }}
 
         .theme-label {{
             font-size: 13px;
             font-weight: 800;
             margin-bottom: 8px;
-            color: {text} !important;
+            color: {cfg["text"]} !important;
         }}
 
         [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] {{
@@ -363,9 +407,9 @@ def apply_theme(mode):
             width: 100% !important;
             height: 42px !important;
             border-radius: 14px !important;
-            border: 1px solid {border} !important;
-            background: {card} !important;
-            color: {text} !important;
+            border: 1px solid {cfg["border"]} !important;
+            background: {cfg["card"]} !important;
+            color: {cfg["text"]} !important;
             font-weight: 850 !important;
             font-size: 13px !important;
             box-shadow: 0 8px 18px rgba(0,0,0,0.08) !important;
@@ -374,14 +418,14 @@ def apply_theme(mode):
         }}
 
         [data-testid="stSidebar"] .stButton > button:hover {{
-            background: {accent_hover} !important;
+            background: {cfg["accent_hover"]} !important;
             color: white !important;
-            border-color: {accent_hover} !important;
+            border-color: {cfg["accent_hover"]} !important;
             transform: translateY(-1px);
         }}
 
         .sidebar-visual {{
-            background: {sidebar_visual};
+            background: {cfg["sidebar_visual"]};
             border: 1px solid rgba(255,255,255,0.18);
             border-radius: 22px;
             padding: 17px 16px;
@@ -453,11 +497,11 @@ def apply_theme(mode):
         }}
 
         .hero {{
-            background: {hero};
+            background: {cfg["hero"]};
             color: white !important;
-            padding: 24px 31px;
+            padding: 25px 31px;
             border-radius: 24px;
-            margin-bottom: 22px;
+            margin-bottom: 26px;
             box-shadow: 0 18px 42px rgba(31, 41, 51, 0.18);
         }}
 
@@ -466,7 +510,7 @@ def apply_theme(mode):
         }}
 
         .hero-title {{
-            font-size: 34px;
+            font-size: 35px;
             font-weight: 850;
             line-height: 1.12;
             margin-bottom: 8px;
@@ -479,31 +523,15 @@ def apply_theme(mode):
             line-height: 1.6;
         }}
 
-        .top-menu-box {{
-            background: {card};
-            border: 1px solid {border};
-            border-radius: 18px;
-            padding: 14px 16px 2px 16px;
-            margin-bottom: 22px;
-            box-shadow: 0 8px 26px rgba(31, 41, 51, 0.06);
-        }}
-
-        .top-menu-title {{
-            font-size: 13px;
-            font-weight: 850;
-            color: {muted} !important;
-            margin-bottom: 8px;
-        }}
-
         .section-title {{
             font-size: 25px;
             font-weight: 850;
-            color: {text} !important;
+            color: {cfg["text"]} !important;
             margin-bottom: 7px;
         }}
 
         .section-desc {{
-            color: {muted} !important;
+            color: {cfg["muted"]} !important;
             font-size: 14px;
             font-weight: 500;
             margin-bottom: 22px;
@@ -513,182 +541,170 @@ def apply_theme(mode):
         .small-title {{
             font-size: 16.5px;
             font-weight: 800;
-            color: {text} !important;
+            color: {cfg["text"]} !important;
             margin-bottom: 12px;
         }}
 
-        .card {{
-            background: {card};
-            border: 1px solid {border};
+        .info-card {{
+            background: {cfg["card"]};
+            border: 1px solid {cfg["border"]};
             border-radius: 20px;
-            padding: 19px 21px;
+            padding: 19px 22px;
             margin-bottom: 20px;
-            box-shadow: 0 8px 26px rgba(31, 41, 51, 0.06);
+            min-height: auto;
+            box-shadow: 0 8px 26px {cfg["shadow"]};
         }}
 
         .text-muted {{
-            color: {muted} !important;
+            color: {cfg["muted"]} !important;
             font-size: 14px;
             font-weight: 500;
             line-height: 1.7;
         }}
 
         .text-muted li {{
-            color: {muted} !important;
+            color: {cfg["muted"]} !important;
             margin-bottom: 8px;
         }}
 
         .kpi-card {{
-            background: {card};
-            border: 1px solid {border};
-            border-radius: 21px;
-            padding: 18px 19px;
-            min-height: 116px;
-            box-shadow: 0 8px 26px rgba(31, 41, 51, 0.06);
+            background: {cfg["card"]};
+            border: 1px solid {cfg["border"]};
+            border-radius: 20px;
+            padding: 17px 18px;
+            min-height: 104px;
+            box-shadow: 0 8px 24px {cfg["shadow"]};
             display: flex;
             flex-direction: column;
             justify-content: center;
-            gap: 9px;
-            margin-bottom: 20px;
+            align-items: flex-start;
+            gap: 7px;
+            margin-bottom: 22px;
+            box-sizing: border-box;
+            overflow: hidden;
         }}
 
         .kpi-label {{
-            color: {muted} !important;
-            font-size: 14px;
+            color: {cfg["muted"]} !important;
+            font-size: 13px;
             font-weight: 900;
-            line-height: 1.2;
+            line-height: 1.15;
+            letter-spacing: -0.1px;
+            margin: 0;
         }}
 
         .kpi-value {{
-            color: {text} !important;
-            font-size: 23px;
+            color: {cfg["text"]} !important;
+            font-size: 22px;
             font-weight: 900;
-            line-height: 1.12;
-            word-break: break-word;
+            line-height: 1.16;
+            letter-spacing: -0.4px;
+            word-break: normal;
+            overflow-wrap: anywhere;
+            margin: 0;
         }}
 
         .kpi-note {{
-            color: {muted} !important;
-            font-size: 12px;
-            font-weight: 600;
-            line-height: 1.45;
+            color: {cfg["muted"]} !important;
+            font-size: 11.5px;
+            font-weight: 650;
+            line-height: 1.35;
+            margin: 0;
+            opacity: 0.95;
         }}
 
         div[data-baseweb="select"] > div {{
-            background: {card} !important;
-            border: 1px solid {border} !important;
+            background: {cfg["card"]} !important;
+            border: 1px solid {cfg["border"]} !important;
             border-radius: 14px !important;
-            color: {text} !important;
+            color: {cfg["text"]} !important;
             min-height: 42px !important;
             cursor: pointer !important;
             box-shadow: none !important;
         }}
 
-        div[data-baseweb="select"],
-        div[data-baseweb="select"] *,
-        div[data-baseweb="popover"],
-        div[data-baseweb="popover"] *,
-        div[data-baseweb="popover"] [role="option"] {{
-            cursor: pointer !important;
-        }}
-
-        div[data-baseweb="select"] input {{
-            cursor: pointer !important;
-            caret-color: transparent !important;
-        }}
-
         div[data-baseweb="select"] span {{
-            color: {text} !important;
+            color: {cfg["text"]} !important;
             font-weight: 650 !important;
         }}
 
         div[data-baseweb="select"] svg {{
-            color: {accent} !important;
-            fill: {accent} !important;
+            color: {cfg["accent"]} !important;
+            fill: {cfg["accent"]} !important;
             opacity: 1 !important;
         }}
 
-        div[data-baseweb="popover"] {{
-            z-index: 999999 !important;
-        }}
-
-        div[data-baseweb="popover"] [role="listbox"] {{
-            background: {card} !important;
-            border: 1px solid {border} !important;
+        [data-testid="stNumberInput"] {{
             border-radius: 14px !important;
-            padding: 6px !important;
-            overflow: hidden !important;
-            box-shadow: 0 18px 45px rgba(0,0,0,0.28) !important;
         }}
 
-        div[data-baseweb="popover"] [role="option"] {{
-            background: transparent !important;
-            color: {text} !important;
+        [data-testid="stNumberInput"] > div {{
+            border: 1px solid {cfg["border"]} !important;
+            border-radius: 14px !important;
+            overflow: hidden !important;
+            box-shadow: none !important;
+            outline: none !important;
+            background: {cfg["input_bg"]} !important;
+        }}
+
+        [data-testid="stNumberInput"] div[data-baseweb="input"] {{
+            background: {cfg["input_bg"]} !important;
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }}
+
+        [data-testid="stNumberInput"] div[data-baseweb="input"] > div {{
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }}
+
+        [data-testid="stNumberInput"] input {{
+            background: {cfg["input_bg"]} !important;
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            color: {cfg["text"]} !important;
             min-height: 42px !important;
-            padding: 0 !important;
-            margin: 0 0 4px 0 !important;
-            border-radius: 10px !important;
+            font-weight: 650 !important;
+        }}
+
+        [data-testid="stNumberInput"] input:focus {{
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }}
+
+        [data-testid="stNumberInput"] button {{
+            background: {cfg["input_btn"]} !important;
+            color: {cfg["text"]} !important;
+            border: none !important;
+            border-left: 1px solid {cfg["border"]} !important;
+            min-height: 42px !important;
+            height: 42px !important;
+            margin-top: -3px !important;
+            padding-bottom: 3px !important;
             display: flex !important;
             align-items: center !important;
-            overflow: hidden !important;
-            transition: all 0.15s ease-in-out !important;
+            justify-content: center !important;
+            box-shadow: none !important;
+            outline: none !important;
         }}
 
-        div[data-baseweb="popover"] [role="option"] > div {{
-            width: 100% !important;
-            min-height: 42px !important;
-            padding: 10px 14px !important;
-            display: flex !important;
-            align-items: center !important;
-            background: transparent !important;
-            color: {text} !important;
-            border-radius: 10px !important;
-            box-sizing: border-box !important;
-        }}
-
-        div[data-baseweb="popover"] [role="option"] div,
-        div[data-baseweb="popover"] [role="option"] span {{
-            background: transparent !important;
-            color: {text} !important;
-            font-weight: 750 !important;
-            line-height: 1.2 !important;
-        }}
-
-        div[data-baseweb="popover"] [role="option"]:hover,
-        div[data-baseweb="popover"] [role="option"][aria-selected="true"] {{
-            background: {accent_hover} !important;
-            color: white !important;
-        }}
-
-        div[data-baseweb="popover"] [role="option"]:hover > div,
-        div[data-baseweb="popover"] [role="option"][aria-selected="true"] > div {{
-            background: {accent_hover} !important;
-            color: white !important;
-        }}
-
-        div[data-baseweb="popover"] [role="option"]:hover div,
-        div[data-baseweb="popover"] [role="option"]:hover span,
-        div[data-baseweb="popover"] [role="option"][aria-selected="true"] div,
-        div[data-baseweb="popover"] [role="option"][aria-selected="true"] span {{
-            background: transparent !important;
+        [data-testid="stNumberInput"] button:hover {{
+            background: {cfg["input_btn_hover"]} !important;
             color: white !important;
         }}
 
         .stSlider label, .stSelectbox label, .stRadio label, .stNumberInput label {{
-            color: {text} !important;
+            color: {cfg["text"]} !important;
             font-weight: 700 !important;
         }}
 
         [data-testid="stSlider"] span {{
-            color: {text} !important;
-        }}
-
-        [data-testid="stNumberInput"] input {{
-            background: {card} !important;
-            border: 1px solid {border} !important;
-            border-radius: 14px !important;
-            color: {text} !important;
-            min-height: 42px !important;
+            color: {cfg["text"]} !important;
+            font-weight: 700 !important;
         }}
 
         [data-testid="stSidebar"] [role="radiogroup"] label {{
@@ -699,70 +715,106 @@ def apply_theme(mode):
         }}
 
         [data-testid="stSidebar"] [role="radiogroup"] label:hover {{
-            background: {accent_soft} !important;
+            background: {cfg["accent_soft"]} !important;
             transform: translateX(2px);
         }}
 
         .custom-table-wrapper {{
             width: 100%;
             overflow-x: auto;
-            border: 1px solid {table_border};
-            border-radius: 14px;
-            background: {table_bg};
+            border: none !important;
+            border-radius: 18px;
+            background: transparent !important;
             margin-bottom: 24px;
+            box-shadow: none !important;
+            overflow: visible;
         }}
 
         table.custom-table {{
             width: 100%;
-            border-collapse: collapse;
-            background: {table_bg} !important;
-            color: {table_text} !important;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: transparent !important;
+            color: {cfg["text"]} !important;
             font-size: 13px;
+            line-height: 1.2;
+            margin: 0 !important;
+            border: none !important;
+            border-radius: 18px;
+            overflow: hidden;
         }}
 
         table.custom-table thead tr th {{
-            background: {table_header} !important;
-            color: {table_text} !important;
-            font-weight: 800;
-            padding: 11px 13px;
-            border-bottom: 1px solid {table_border};
+            background: {cfg["card2"]} !important;
+            color: {cfg["text"]} !important;
+            font-weight: 850;
+            padding: 11px 14px;
+            height: 42px;
+            border-top: 1px solid {cfg["border"]};
+            border-bottom: 1px solid {cfg["border"]};
+            border-right: 1px solid {cfg["border"]};
             text-align: left;
             white-space: nowrap;
+            vertical-align: middle;
+        }}
+
+        table.custom-table thead tr th:first-child {{
+            border-left: 1px solid {cfg["border"]};
+            border-top-left-radius: 18px;
+        }}
+
+        table.custom-table thead tr th:last-child {{
+            border-top-right-radius: 18px;
         }}
 
         table.custom-table tbody tr td,
         table.custom-table tbody tr th {{
-            background: {table_bg} !important;
-            color: {table_text} !important;
-            padding: 10px 13px;
-            border-bottom: 1px solid {table_border};
-            font-weight: 500;
+            background: {cfg["card"]} !important;
+            color: {cfg["text"]} !important;
+            padding: 11px 14px;
+            height: 42px;
+            border-right: 1px solid {cfg["border"]};
+            border-bottom: 1px solid {cfg["border"]};
+            font-weight: 650;
             white-space: nowrap;
+            vertical-align: middle;
         }}
 
-        table.custom-table tbody tr:nth-child(even) td,
-        table.custom-table tbody tr:nth-child(even) th {{
-            background: {table_stripe} !important;
+        table.custom-table tbody tr td:first-child,
+        table.custom-table tbody tr th:first-child {{
+            border-left: 1px solid {cfg["border"]};
         }}
 
         table.custom-table tbody tr:last-child td,
         table.custom-table tbody tr:last-child th {{
-            border-bottom: none;
+            height: 42px !important;
+            padding-top: 11px !important;
+            padding-bottom: 11px !important;
         }}
 
-        .stPyplot {{
+        table.custom-table tbody tr:last-child td:first-child,
+        table.custom-table tbody tr:last-child th:first-child {{
+            border-bottom-left-radius: 18px;
+        }}
+
+        table.custom-table tbody tr:last-child td:last-child,
+        table.custom-table tbody tr:last-child th:last-child {{
+            border-bottom-right-radius: 18px;
+        }}
+
+        .stPlotlyChart {{
+            background: {cfg["chart_bg"]} !important;
+            border: 1.5px solid {cfg["border"]} !important;
+            border-radius: 20px !important;
+            padding: 4px 4px 4px 4px !important;
             margin-bottom: 22px !important;
+            box-shadow: 0 8px 26px {cfg["shadow"]} !important;
+            overflow: hidden !important;
         }}
 
-        button[kind="secondary"] {{
-            border-radius: 14px !important;
-            border: 1px solid {border} !important;
-        }}
-
-        hr {{
-            border-color: {border};
-            margin-top: 1.2rem !important;
-            margin-bottom: 1.2rem !important;
+        .stPlotlyChart > div {{
+            border-radius: 16px !important;
+            overflow: hidden !important;
         }}
 
         @media screen and (max-width: 900px) {{
@@ -796,19 +848,19 @@ def apply_theme(mode):
                 font-size: 13.5px;
             }}
 
+            .info-card {{
+                min-height: auto;
+            }}
+
             .kpi-card {{
                 min-height: auto;
                 padding: 16px 16px;
                 margin-bottom: 14px;
+                border-radius: 18px;
             }}
 
             .kpi-value {{
                 font-size: 20px;
-            }}
-
-            .card {{
-                padding: 16px 16px;
-                border-radius: 18px;
             }}
 
             .sidebar-visual {{
@@ -818,33 +870,20 @@ def apply_theme(mode):
             [data-testid="stSidebarUserContent"] {{
                 padding-bottom: 1rem !important;
             }}
-
-            table.custom-table {{
-                font-size: 12px;
-            }}
-
-            table.custom-table thead tr th,
-            table.custom-table tbody tr td,
-            table.custom-table tbody tr th {{
-                padding: 9px 10px;
-            }}
         }}
         </style>
         """,
         unsafe_allow_html=True
     )
 
-    return {
-        "plot_bg": plot_bg,
-        "text": text,
-        "muted": muted,
-        "card": card,
-        "border": border
-    }
+    return cfg
+
+
+theme = apply_theme(st.session_state.theme_mode)
 
 
 # ============================================================
-# KOMPONEN UI
+# UI COMPONENTS
 # ============================================================
 
 def kpi_card(label, value, note=None):
@@ -865,9 +904,9 @@ def bullet_card(title, items):
     html = "".join([f"<li>{item}</li>" for item in items])
     st.markdown(
         f"""
-        <div class="card">
+        <div class="info-card">
             <div class="small-title">{title}</div>
-            <ul class="text-muted" style="padding-left: 20px; margin-bottom: 0;">
+            <ul class="text-muted" style="padding-left:20px; margin-bottom:0;">
                 {html}
             </ul>
         </div>
@@ -877,13 +916,7 @@ def bullet_card(title, items):
 
 
 def show_table(data):
-    html = data.to_html(
-        classes="custom-table",
-        border=0,
-        index=False,
-        escape=False
-    )
-
+    html = data.to_html(classes="custom-table", border=0, index=False, escape=False)
     st.markdown(
         f"""
         <div class="custom-table-wrapper">
@@ -894,15 +927,227 @@ def show_table(data):
     )
 
 
-def style_plot(ax, title):
-    ax.set_title(title, fontsize=10, fontweight="bold")
-    ax.tick_params(axis="both", labelsize=8)
-    ax.grid(True, alpha=0.30)
-    return ax
+# ============================================================
+# CHART
+# ============================================================
+
+def make_forecast_chart(ts, forecast, theme):
+    hist = ts.tail(24)
+
+    forecast_start = forecast.index.min()
+    max_pred_value = forecast.max()
+    max_pred_date = forecast.idxmax()
+
+    y_min = min(hist.min(), forecast.min()) * 0.72
+    y_max = max(hist.max(), forecast.max()) * 1.12
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(
+        x=hist.index,
+        y=hist.values,
+        mode="lines+markers",
+        name="Data historis",
+        line=dict(color=theme["chart_hist"], width=3, shape="linear"),
+        marker=dict(
+            size=7,
+            color=theme["chart_hist"],
+            line=dict(color=theme["chart_bg"], width=1.5)
+        ),
+        fill="tozeroy",
+        fillcolor=theme["chart_hist_fill"],
+        hovertemplate="<b>%{x|%b %Y}</b><br>Historis: %{y:,.0f} ton<extra></extra>"
+    ))
+
+    fig.add_trace(go.Scatter(
+        x=forecast.index,
+        y=forecast.values,
+        mode="lines+markers",
+        name="Prediksi",
+        line=dict(color=theme["chart_pred"], width=3, shape="linear"),
+        marker=dict(
+            size=7,
+            color=theme["chart_pred"],
+            line=dict(color=theme["chart_bg"], width=1.5)
+        ),
+        fill="tozeroy",
+        fillcolor=theme["chart_pred_fill"],
+        hovertemplate="<b>%{x|%b %Y}</b><br>Prediksi: %{y:,.0f} ton<extra></extra>"
+    ))
+
+    fig.add_vline(
+        x=forecast_start,
+        line_width=1.6,
+        line_dash="dash",
+        line_color=theme["chart_divider"]
+    )
+
+    fig.add_annotation(
+        x=forecast_start,
+        y=y_max * 0.98,
+        text="<b>Mulai prediksi</b>",
+        showarrow=False,
+        font=dict(size=12, color=theme["chart_font"], family="Arial"),
+        bgcolor=theme["annotation_bg"],
+        bordercolor=theme["annotation_border"],
+        borderwidth=1,
+        borderpad=4
+    )
+
+    fig.add_annotation(
+        x=max_pred_date,
+        y=max_pred_value,
+        text=f"<b>Prediksi tertinggi</b><br>{format_integer(max_pred_value)} ton",
+        showarrow=True,
+        arrowhead=2,
+        arrowsize=1,
+        arrowwidth=1.4,
+        arrowcolor=theme["chart_divider"],
+        ax=55,
+        ay=-40,
+        font=dict(size=12, color=theme["chart_font"], family="Arial"),
+        bgcolor=theme["annotation_bg"],
+        bordercolor=theme["annotation_border"],
+        borderwidth=1,
+        borderpad=4
+    )
+
+    fig.update_layout(
+        title=dict(
+            text="<b>Prediksi Jumlah Sampah Kota Bandung</b>",
+            x=0.5,
+            xanchor="center",
+            font=dict(size=20, color=theme["chart_font"], family="Arial")
+        ),
+        paper_bgcolor=theme["chart_bg"],
+        plot_bgcolor=theme["chart_bg"],
+        margin=dict(l=54, r=8, t=86, b=52),
+        height=470,
+        hovermode="x unified",
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.07,
+            xanchor="right",
+            x=0.99,
+            bgcolor=theme["chart_legend_bg"],
+            bordercolor=theme["chart_legend_border"],
+            borderwidth=1,
+            font=dict(size=12, color=theme["chart_font"], family="Arial")
+        )
+    )
+
+    fig.update_xaxes(
+        title="<b>Periode</b>",
+        showgrid=True,
+        gridcolor=theme["chart_grid"],
+        tickformat="%b %Y",
+        tickfont=dict(size=12, color=theme["chart_axis"], family="Arial"),
+        title_font=dict(size=14, color=theme["chart_axis"], family="Arial"),
+        zeroline=False,
+        automargin=True
+    )
+
+    fig.update_yaxes(
+        title="<b>Jumlah sampah (ton)</b>",
+        showgrid=True,
+        gridcolor=theme["chart_grid"],
+        tickfont=dict(size=12, color=theme["chart_axis"], family="Arial"),
+        title_font=dict(size=14, color=theme["chart_axis"], family="Arial"),
+        zeroline=False,
+        range=[y_min, y_max],
+        automargin=True
+    )
+
+    return fig
+
+
+def make_eval_chart(actual, predicted, theme):
+    y_max = max(actual.max(), predicted.max()) * 1.15
+    y_min = min(actual.min(), predicted.min()) * 0.90
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(
+        x=actual.index,
+        y=actual.values,
+        mode="lines+markers",
+        name="Aktual",
+        line=dict(color=theme["chart_hist"], width=3, shape="linear"),
+        marker=dict(
+            size=7,
+            color=theme["chart_hist"],
+            line=dict(color=theme["chart_bg"], width=1.4)
+        ),
+        hovertemplate="<b>%{x|%b %Y}</b><br>Aktual: %{y:,.0f} ton<extra></extra>"
+    ))
+
+    fig.add_trace(go.Scatter(
+        x=predicted.index,
+        y=predicted.values,
+        mode="lines+markers",
+        name="Prediksi",
+        line=dict(color=theme["chart_pred"], width=3, shape="linear"),
+        marker=dict(
+            size=7,
+            color=theme["chart_pred"],
+            line=dict(color=theme["chart_bg"], width=1.4)
+        ),
+        hovertemplate="<b>%{x|%b %Y}</b><br>Prediksi: %{y:,.0f} ton<extra></extra>"
+    ))
+
+    fig.update_layout(
+        title=dict(
+            text="<b>Aktual vs Prediksi Data Uji</b>",
+            x=0.5,
+            xanchor="center",
+            font=dict(size=20, color=theme["chart_font"], family="Arial")
+        ),
+        paper_bgcolor=theme["chart_bg"],
+        plot_bgcolor=theme["chart_bg"],
+        margin=dict(l=54, r=8, t=86, b=52),
+        height=430,
+        hovermode="x unified",
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.07,
+            xanchor="right",
+            x=0.99,
+            bgcolor=theme["chart_legend_bg"],
+            bordercolor=theme["chart_legend_border"],
+            borderwidth=1,
+            font=dict(size=12, color=theme["chart_font"], family="Arial")
+        )
+    )
+
+    fig.update_xaxes(
+        title="<b>Periode</b>",
+        showgrid=True,
+        gridcolor=theme["chart_grid"],
+        tickformat="%b %Y",
+        tickfont=dict(size=12, color=theme["chart_axis"], family="Arial"),
+        title_font=dict(size=14, color=theme["chart_axis"], family="Arial"),
+        zeroline=False,
+        automargin=True
+    )
+
+    fig.update_yaxes(
+        title="<b>Jumlah sampah (ton)</b>",
+        showgrid=True,
+        gridcolor=theme["chart_grid"],
+        tickfont=dict(size=12, color=theme["chart_axis"], family="Arial"),
+        title_font=dict(size=14, color=theme["chart_axis"], family="Arial"),
+        zeroline=False,
+        range=[y_min, y_max],
+        automargin=True
+    )
+
+    return fig
 
 
 # ============================================================
-# LOAD DATA
+# LOAD ACTUAL DATA
 # ============================================================
 
 df_raw, df, ts = load_data()
@@ -910,22 +1155,11 @@ df_raw, df, ts = load_data()
 provinsi = ", ".join(df_raw["nama_provinsi"].dropna().unique())
 kota = ", ".join(df_raw["bps_nama_kabupaten_kota"].dropna().unique())
 satuan = ", ".join(df_raw["satuan"].dropna().unique())
+periode_data = f"{format_periode(ts.index.min())} - {format_periode(ts.index.max())}"
+
 
 # ============================================================
-# SESSION STATE
-# ============================================================
-
-if "theme_mode" not in st.session_state:
-    st.session_state.theme_mode = "Gelap"
-
-if "active_page" not in st.session_state:
-    st.session_state.active_page = "Simulasi Pengelolaan"
-
-theme = apply_theme(st.session_state.theme_mode)
-plot_bg = theme["plot_bg"]
-
-# ============================================================
-# SIDEBAR
+# SIDEBAR KIRI
 # ============================================================
 
 st.sidebar.markdown('<div class="theme-label">Pilih Tampilan</div>', unsafe_allow_html=True)
@@ -933,22 +1167,26 @@ st.sidebar.markdown('<div class="theme-label">Pilih Tampilan</div>', unsafe_allo
 theme_col1, theme_col2 = st.sidebar.columns(2)
 
 with theme_col1:
-    if st.button("   ☀️   ", use_container_width=True):
-        st.session_state.theme_mode = "Terang"
-        st.rerun()
+    st.button(
+        "   ☀️   ",
+        use_container_width=True,
+        on_click=set_theme,
+        args=("Terang",)
+    )
 
 with theme_col2:
-    if st.button("   🌙   ", use_container_width=True):
-        st.session_state.theme_mode = "Gelap"
-        st.rerun()
+    st.button(
+        "   🌙   ",
+        use_container_width=True,
+        on_click=set_theme,
+        args=("Gelap",)
+    )
 
-sidebar_page = st.sidebar.radio(
+menu = st.sidebar.radio(
     "Menu Utama",
-    PAGES,
-    index=PAGES.index(st.session_state.active_page)
+    MENU_OPTIONS,
+    key="active_menu"
 )
-
-st.session_state.active_page = sidebar_page
 
 st.sidebar.markdown(
     """
@@ -956,7 +1194,7 @@ st.sidebar.markdown(
         <div class="sidebar-emoji">♻️ 🗑️ 🍃</div>
         <div class="sidebar-visual-title">Dashboard Sampah</div>
         <div class="sidebar-visual-subtitle">
-            Prediksi, anggaran, rit pengangkutan, dan kebutuhan armada.
+            Prediksi jumlah sampah, estimasi anggaran, rit pengangkutan, dan kebutuhan armada.
         </div>
         <div class="team-name">
             Kelompok 5 Capstone
@@ -966,8 +1204,9 @@ st.sidebar.markdown(
     unsafe_allow_html=True
 )
 
+
 # ============================================================
-# HERO DAN MENU ATAS
+# HERO
 # ============================================================
 
 st.markdown(
@@ -975,38 +1214,17 @@ st.markdown(
     <div class="hero">
         <div class="hero-title">Simulasi Pengelolaan Sampah Kota Bandung</div>
         <div class="hero-subtitle">
-            Prediksi jumlah sampah, estimasi anggaran, kebutuhan rit, dan armada untuk mendukung perencanaan DLH.
+            Dashboard ini difokuskan untuk membantu staf DLH melakukan simulasi kebutuhan operasional
+            berdasarkan prediksi jumlah sampah bulanan.
         </div>
     </div>
     """,
     unsafe_allow_html=True
 )
 
-st.markdown(
-    """
-    <div class="top-menu-box">
-        <div class="top-menu-title">Menu cepat</div>
-    """,
-    unsafe_allow_html=True
-)
-
-top_page = st.selectbox(
-    "Pilih halaman",
-    PAGES,
-    index=PAGES.index(st.session_state.active_page),
-    label_visibility="collapsed"
-)
-
-st.markdown("</div>", unsafe_allow_html=True)
-
-if top_page != st.session_state.active_page:
-    st.session_state.active_page = top_page
-    st.rerun()
-
-menu = st.session_state.active_page
 
 # ============================================================
-# HALAMAN 1: SIMULASI PENGELOLAAN
+# MENU 1
 # ============================================================
 
 if menu == "Simulasi Pengelolaan":
@@ -1016,9 +1234,9 @@ if menu == "Simulasi Pengelolaan":
         unsafe_allow_html=True
     )
 
-    input_col1, input_col2, input_col3, input_col4 = st.columns(4, gap="large")
+    input1, input2, input3, input4 = st.columns(4, gap="large")
 
-    with input_col1:
+    with input1:
         forecast_steps = st.slider(
             "Simulasi untuk berapa bulan ke depan?",
             min_value=1,
@@ -1027,7 +1245,7 @@ if menu == "Simulasi Pengelolaan":
             step=1
         )
 
-    with input_col2:
+    with input2:
         biaya_per_ton = st.number_input(
             "Biaya penanganan per ton",
             min_value=0,
@@ -1035,7 +1253,7 @@ if menu == "Simulasi Pengelolaan":
             step=50000
         )
 
-    with input_col3:
+    with input3:
         kapasitas_truk = st.number_input(
             "Kapasitas truk per rit (ton)",
             min_value=1.0,
@@ -1043,7 +1261,7 @@ if menu == "Simulasi Pengelolaan":
             step=0.5
         )
 
-    with input_col4:
+    with input4:
         rit_per_truk_per_hari = st.number_input(
             "Rit per truk per hari",
             min_value=1,
@@ -1064,227 +1282,120 @@ if menu == "Simulasi Pengelolaan":
     total_anggaran = simulation_df["Estimasi Anggaran"].sum()
     total_rit = simulation_df["Kebutuhan Rit Bulanan"].sum()
 
-    highest_row = simulation_df.loc[
-        simulation_df["Prediksi Sampah (Ton)"].idxmax()
-    ]
-
-    lowest_row = simulation_df.loc[
-        simulation_df["Prediksi Sampah (Ton)"].idxmin()
-    ]
+    highest_row = simulation_df.loc[simulation_df["Prediksi Sampah (Ton)"].idxmax()]
+    lowest_row = simulation_df.loc[simulation_df["Prediksi Sampah (Ton)"].idxmin()]
 
     start_period = format_periode(simulation_df["Tanggal"].min())
     end_period = format_periode(simulation_df["Tanggal"].max())
 
-    col1, col2, col3, col4 = st.columns(4, gap="large")
+    row1_col1, row1_col2, row1_col3, row1_col4 = st.columns(4, gap="large")
 
-    with col1:
-        kpi_card(
-            "Periode Simulasi",
-            f"{start_period} - {end_period}",
-            f"{forecast_steps} bulan ke depan"
-        )
+    with row1_col1:
+        kpi_card("Periode Simulasi", f"{start_period} - {end_period}", f"{forecast_steps} bulan ke depan")
 
-    with col2:
-        kpi_card(
-            "Total Prediksi Sampah",
-            f"{format_angka(total_sampah)} ton"
-        )
+    with row1_col2:
+        kpi_card("Total Prediksi Sampah", f"{format_angka(total_sampah)} ton")
 
-    with col3:
-        kpi_card(
-            "Total Estimasi Anggaran",
-            format_rupiah(total_anggaran),
-            f"Asumsi {format_rupiah(biaya_per_ton)} per ton"
-        )
+    with row1_col3:
+        kpi_card("Total Estimasi Anggaran", format_rupiah(total_anggaran), f"Asumsi {format_rupiah(biaya_per_ton)} per ton")
 
-    with col4:
-        kpi_card(
-            "Total Kebutuhan Rit",
-            f"{format_integer(total_rit)} rit",
-            f"Kapasitas {kapasitas_truk} ton per rit"
-        )
+    with row1_col4:
+        kpi_card("Total Kebutuhan Rit", f"{format_integer(total_rit)} rit", f"Kapasitas {kapasitas_truk} ton per rit")
 
-    col5, col6, col7, col8 = st.columns(4, gap="large")
+    row2_col1, row2_col2, row2_col3, row2_col4 = st.columns(4, gap="large")
 
-    with col5:
-        kpi_card(
-            "Beban Tertinggi",
-            highest_row["Periode"],
-            f"{format_angka(highest_row['Prediksi Sampah (Ton)'])} ton"
-        )
+    with row2_col1:
+        kpi_card("Beban Tertinggi", highest_row["Periode"], f"{format_angka(highest_row['Prediksi Sampah (Ton)'])} ton")
 
-    with col6:
-        kpi_card(
-            "Beban Terendah",
-            lowest_row["Periode"],
-            f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton"
-        )
+    with row2_col2:
+        kpi_card("Beban Terendah", lowest_row["Periode"], f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton")
 
-    with col7:
-        max_rit_harian = int(simulation_df["Kebutuhan Rit per Hari"].max())
-        kpi_card(
-            "Rit Maksimum per Hari",
-            f"{format_integer(max_rit_harian)} rit/hari"
-        )
+    with row2_col3:
+        kpi_card("Rit Maksimum per Hari", f"{format_integer(int(simulation_df['Kebutuhan Rit per Hari'].max()))} rit/hari")
 
-    with col8:
-        max_armada = int(simulation_df["Estimasi Armada per Hari"].max())
-        kpi_card(
-            "Armada Maksimum per Hari",
-            f"{format_integer(max_armada)} truk",
-            f"Asumsi {rit_per_truk_per_hari} rit/truk/hari"
-        )
+    with row2_col4:
+        kpi_card("Armada Maksimum per Hari", f"{format_integer(int(simulation_df['Estimasi Armada per Hari'].max()))} truk", f"Asumsi {rit_per_truk_per_hari} rit/truk/hari")
 
-    st.markdown('<div class="small-title">Prediksi Jumlah Sampah</div>', unsafe_allow_html=True)
-
-    fig, ax = plt.subplots(figsize=(10.5, 3.6), facecolor=plot_bg)
-
-    ax.plot(
-        ts.tail(24),
-        marker="o",
-        linewidth=1.2,
-        markersize=3,
-        label="Data Historis"
+    fig_forecast = make_forecast_chart(ts, forecast, theme)
+    st.plotly_chart(
+        fig_forecast,
+        use_container_width=True,
+        config={"displayModeBar": False, "responsive": True}
     )
-
-    ax.plot(
-        forecast,
-        marker="o",
-        linewidth=2,
-        markersize=3,
-        label="Prediksi"
-    )
-
-    style_plot(ax, "Prediksi Jumlah Sampah Kota Bandung")
-    ax.set_xlabel("Periode", fontsize=8)
-    ax.set_ylabel("Jumlah Sampah (Ton)", fontsize=8)
-    ax.legend(fontsize=7)
-
-    plt.xticks(rotation=25)
-    plt.tight_layout()
-
-    st.pyplot(fig, use_container_width=True)
 
     st.markdown('<div class="small-title">Tabel Simulasi Kebutuhan Operasional</div>', unsafe_allow_html=True)
-
-    display_table = prepare_display_table(simulation_df)
-    show_table(display_table)
+    show_table(prepare_display_table(simulation_df))
 
     bullet_card(
         "Catatan simulasi",
         [
-            f"Biaya penanganan sampah: <b>{format_rupiah(biaya_per_ton)} per ton</b>.",
-            f"Kapasitas truk: <b>{kapasitas_truk} ton per rit</b>.",
-            f"Rit per truk: <b>{rit_per_truk_per_hari} rit per hari</b>.",
-            "Kebutuhan rit dan armada dibulatkan ke atas agar estimasi tidak kurang dari kebutuhan operasional.",
-            "Hasil prediksi merupakan simulasi berbasis data historis dan tetap perlu disesuaikan dengan kondisi lapangan."
+            f"Biaya penanganan yang digunakan adalah <b>{format_rupiah(biaya_per_ton)} per ton</b>.",
+            f"Kapasitas angkut truk diasumsikan <b>{kapasitas_truk} ton per rit</b>.",
+            f"Setiap truk diasumsikan mampu melakukan <b>{rit_per_truk_per_hari} rit per hari</b>.",
+            "Kebutuhan rit dan armada dibulatkan ke atas agar estimasi tidak kurang dari kebutuhan lapangan.",
+            "Dashboard ini berfungsi sebagai simulasi awal untuk membantu perencanaan operasional."
         ]
     )
 
+
 # ============================================================
-# HALAMAN 2: DATA & EVALUASI
+# MENU 2
 # ============================================================
 
-elif menu == "Data & Evaluasi":
-    st.markdown('<div class="section-title">Data & Evaluasi</div>', unsafe_allow_html=True)
+elif menu == "Ringkasan Data & Model":
+    st.markdown('<div class="section-title">Ringkasan Data & Model</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="section-desc">Ringkasan data dan evaluasi model ditampilkan singkat. Detail teori, EDA, dan proses pemodelan dijelaskan pada laporan.</div>',
+        '<div class="section-desc">Halaman ini menampilkan ringkasan data dan evaluasi model secara singkat. Detail teori, EDA, dan pembentukan model dijelaskan pada laporan.</div>',
         unsafe_allow_html=True
     )
 
     eval_df, comparison_df, test_actual, test_forecast = evaluate_sarima(ts)
 
-    col1, col2, col3, col4 = st.columns(4, gap="large")
-
-    with col1:
-        kpi_card("Wilayah", kota)
-
-    with col2:
-        kpi_card(
-            "Periode Data",
-            f"{format_periode(ts.index.min())} - {format_periode(ts.index.max())}"
-        )
-
-    with col3:
-        kpi_card("Jumlah Data", f"{len(df_raw)} baris")
-
-    with col4:
-        kpi_card("Satuan", satuan)
-
-    left, right = st.columns([1, 1], gap="large")
+    left, right = st.columns(2, gap="large")
 
     with left:
         bullet_card(
-            "Data yang digunakan",
+            "Ringkasan Data",
             [
+                f"Wilayah: <b>{kota}</b>",
                 f"Provinsi: <b>{provinsi}</b>",
-                f"Kota/Kabupaten: <b>{kota}</b>",
-                "Variabel utama: <b>jumlah_sampah</b>.",
-                "Data berbentuk bulanan.",
-                f"Missing value: <b>{int(df_raw.isnull().sum().sum())}</b>.",
-                f"Data duplikat: <b>{int(df_raw.duplicated().sum())}</b>."
+                f"Jumlah data: <b>{len(df_raw)} baris</b>",
+                f"Periode: <b>{periode_data}</b>",
+                f"Satuan: <b>{satuan}</b>",
+                "Variabel utama: <b>jumlah_sampah</b>",
+                "Bentuk data: <b>bulanan</b>",
+                f"Missing value: <b>{int(df_raw.isnull().sum().sum())}</b>",
+                f"Data duplikat: <b>{int(df_raw.duplicated().sum())}</b>"
             ]
         )
 
     with right:
         bullet_card(
-            "Model yang dipakai",
+            "Ringkasan Model",
             [
-                "Model utama pada dashboard: <b>SARIMA(1,2,2)(0,1,1,12)</b>.",
-                "Model digunakan untuk menghasilkan prediksi berbasis pola historis bulanan.",
-                "Prediksi pada aplikasi dibatasi maksimal <b>12 bulan ke depan</b>.",
-                "Detail pemilihan model dan pembahasan teknis dijelaskan di laporan."
+                "Model yang digunakan: <b>SARIMA(1,2,2)(0,1,1,12)</b>.",
+                "Dashboard hanya memakai satu model agar lebih mudah dipahami user.",
+                "Prediksi dibatasi maksimal <b>12 bulan ke depan</b> agar fokus pada perencanaan jangka pendek.",
+                "Model digunakan untuk menghasilkan estimasi jumlah sampah, anggaran, rit, dan kebutuhan armada.",
+                "Detail teori, EDA, parameter model, dan evaluasi lengkap dijelaskan pada laporan."
             ]
         )
 
-    st.markdown('<div class="small-title">Evaluasi Model pada Data Uji</div>', unsafe_allow_html=True)
+    st.markdown('<div class="small-title">Evaluasi Model</div>', unsafe_allow_html=True)
     show_table(prepare_eval_display(eval_df))
 
-    left_plot, right_table = st.columns([1.15, 1], gap="large")
+    st.markdown('<div class="small-title">Aktual vs Prediksi Data Uji</div>', unsafe_allow_html=True)
+    fig_eval = make_eval_chart(test_actual, test_forecast, theme)
+    st.plotly_chart(fig_eval, use_container_width=True, config={"displayModeBar": False, "responsive": True})
 
-    with left_plot:
-        st.markdown('<div class="small-title">Aktual vs Prediksi Data Uji</div>', unsafe_allow_html=True)
-
-        fig, ax = plt.subplots(figsize=(6.2, 3.0), facecolor=plot_bg)
-
-        ax.plot(
-            test_actual,
-            marker="o",
-            linewidth=1.5,
-            markersize=3,
-            label="Aktual"
-        )
-
-        ax.plot(
-            test_forecast,
-            marker="o",
-            linewidth=1.5,
-            markersize=3,
-            label="Prediksi"
-        )
-
-        style_plot(ax, "Perbandingan Aktual dan Prediksi")
-        ax.set_xlabel("Periode", fontsize=8)
-        ax.set_ylabel("Jumlah Sampah (Ton)", fontsize=8)
-        ax.legend(fontsize=7)
-
-        plt.xticks(rotation=25)
-        plt.tight_layout()
-
-        st.pyplot(fig, use_container_width=True)
-
-    with right_table:
-        st.markdown('<div class="small-title">Tabel Aktual vs Prediksi</div>', unsafe_allow_html=True)
-        show_table(prepare_comparison_display(comparison_df))
-
-    st.markdown('<div class="small-title">Contoh Data</div>', unsafe_allow_html=True)
-    show_table(df_raw.head(10))
+    st.markdown('<div class="small-title">Tabel Aktual vs Prediksi</div>', unsafe_allow_html=True)
+    show_table(prepare_comparison_display(comparison_df))
 
     bullet_card(
         "Catatan",
         [
-            "Evaluasi model ditampilkan secara ringkas agar dashboard tetap fokus pada kebutuhan pengguna.",
-            "Penjelasan detail seperti EDA, parameter model, dan alasan pemilihan model dapat diletakkan pada laporan.",
-            "Nilai evaluasi digunakan sebagai gambaran kesalahan prediksi, bukan sebagai satu-satunya dasar keputusan operasional."
+            "Halaman ini hanya memberi gambaran singkat tentang data dan performa model.",
+            "Penjelasan lebih detail mengenai EDA, pemilihan parameter, dan alasan teknis dapat diletakkan di laporan.",
+            "Fokus utama dashboard tetap pada simulasi kebutuhan operasional."
         ]
     )
