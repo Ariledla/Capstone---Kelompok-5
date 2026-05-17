@@ -55,6 +55,11 @@ BULAN_INDO = {
 
 MENU_OPTIONS = ["Simulasi Pengelolaan", "Ringkasan Data & Model"]
 
+# Konstanta simulasi operasional
+# Densitas digunakan untuk mengonversi prediksi ton menjadi volume m³.
+# Kapasitas truk compactor mengacu pada ukuran 6 m³ dan 12 m³; default dipakai 12 m³.
+DENSITAS_SAMPAH_KG_PER_M3 = 227.297
+
 
 # ============================================================
 # FORMATTER
@@ -173,7 +178,7 @@ def evaluate_sarima(ts):
 # OPERASIONAL
 # ============================================================
 
-def build_simulation_table(forecast, biaya_per_ton, kapasitas_truk, rit_per_truk_per_hari):
+def build_simulation_table(forecast, biaya_per_ton, kapasitas_truk_compactor_m3, hari_operasional_angkut_per_minggu):
     output = pd.DataFrame({
         "Tanggal": forecast.index,
         "Periode": [format_periode(date) for date in forecast.index],
@@ -183,16 +188,20 @@ def build_simulation_table(forecast, biaya_per_ton, kapasitas_truk, rit_per_truk
     output["Jumlah Hari"] = output["Tanggal"].dt.days_in_month
     output["Estimasi Anggaran"] = output["Prediksi Sampah (Ton)"] * biaya_per_ton
 
-    output["Kebutuhan Rit Bulanan"] = np.ceil(
-        output["Prediksi Sampah (Ton)"] / kapasitas_truk
+    output["Estimasi Hari Operasional Angkut"] = np.ceil(
+        output["Jumlah Hari"] * (hari_operasional_angkut_per_minggu / 7)
     )
 
-    output["Kebutuhan Rit per Hari"] = np.ceil(
-        output["Kebutuhan Rit Bulanan"] / output["Jumlah Hari"]
+    output["Estimasi Volume Sampah (m³)"] = (
+        output["Prediksi Sampah (Ton)"] * 1000 / DENSITAS_SAMPAH_KG_PER_M3
     )
 
-    output["Estimasi Armada per Hari"] = np.ceil(
-        output["Kebutuhan Rit per Hari"] / rit_per_truk_per_hari
+    output["Estimasi Kebutuhan Muatan Truk"] = np.ceil(
+        output["Estimasi Volume Sampah (m³)"] / kapasitas_truk_compactor_m3
+    )
+
+    output["Muatan Truk per Hari Angkut"] = np.ceil(
+        output["Estimasi Kebutuhan Muatan Truk"] / output["Estimasi Hari Operasional Angkut"]
     )
 
     return output
@@ -203,18 +212,20 @@ def prepare_display_table(output):
 
     display["Prediksi Sampah (Ton)"] = display["Prediksi Sampah (Ton)"].apply(format_angka)
     display["Estimasi Anggaran"] = display["Estimasi Anggaran"].apply(format_rupiah)
-    display["Kebutuhan Rit Bulanan"] = display["Kebutuhan Rit Bulanan"].astype(int).apply(format_integer)
-    display["Kebutuhan Rit per Hari"] = display["Kebutuhan Rit per Hari"].astype(int).apply(format_integer)
-    display["Estimasi Armada per Hari"] = display["Estimasi Armada per Hari"].astype(int).apply(format_integer)
+    display["Estimasi Volume Sampah (m³)"] = display["Estimasi Volume Sampah (m³)"].apply(format_angka)
+    display["Estimasi Hari Operasional Angkut"] = display["Estimasi Hari Operasional Angkut"].astype(int).apply(format_integer)
+    display["Estimasi Kebutuhan Muatan Truk"] = display["Estimasi Kebutuhan Muatan Truk"].astype(int).apply(format_integer)
+    display["Muatan Truk per Hari Angkut"] = display["Muatan Truk per Hari Angkut"].astype(int).apply(format_integer)
 
     display = display[
         [
             "Periode",
             "Prediksi Sampah (Ton)",
             "Estimasi Anggaran",
-            "Kebutuhan Rit Bulanan",
-            "Kebutuhan Rit per Hari",
-            "Estimasi Armada per Hari"
+            "Estimasi Volume Sampah (m³)",
+            "Estimasi Hari Operasional Angkut",
+            "Estimasi Kebutuhan Muatan Truk",
+            "Muatan Truk per Hari Angkut"
         ]
     ]
 
@@ -2096,7 +2107,7 @@ st.sidebar.markdown(
         <div class="sidebar-emoji">♻️ 🗑️ 🍃</div>
         <div class="sidebar-visual-title">Dashboard Sampah</div>
         <div class="sidebar-visual-subtitle">
-            Prediksi jumlah sampah, estimasi anggaran, rit pengangkutan, dan kebutuhan armada.
+            Prediksi jumlah sampah, estimasi anggaran, volume sampah, dan kebutuhan muatan truk compactor.
         </div>
         <div class="team-name">
             Kelompok 5 Capstone
@@ -2132,7 +2143,7 @@ st.markdown(
 if menu == "Simulasi Pengelolaan":
     st.markdown('<div class="section-title">Simulasi Pengelolaan</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="section-desc">Isi asumsi operasional, lalu sistem akan menghitung kebutuhan sampah, anggaran, rit, dan armada.</div>',
+        '<div class="section-desc">Isi operasional, lalu sistem akan menghitung prediksi sampah, anggaran, volume sampah, dan kebutuhan muatan truk compactor.</div>',
         unsafe_allow_html=True
     )
 
@@ -2151,23 +2162,23 @@ if menu == "Simulasi Pengelolaan":
         biaya_per_ton = st.number_input(
             "Biaya penanganan per ton",
             min_value=0,
-            value=300000,
-            step=50000
+            value=308482,
+            step=1000
         )
 
     with input3:
-        kapasitas_truk = st.number_input(
-            "Kapasitas truk per rit (ton)",
-            min_value=1.0,
-            value=5.0,
-            step=0.5
+        kapasitas_truk_compactor_m3 = st.selectbox(
+            "Kapasitas truk compactor (m³)",
+            options=[6, 12],
+            index=1
         )
 
     with input4:
-        rit_per_truk_per_hari = st.number_input(
-            "Rit per truk per hari",
+        hari_operasional_angkut_per_minggu = st.number_input(
+            "Hari operasional angkut per minggu",
             min_value=1,
-            value=2,
+            max_value=7,
+            value=4,
             step=1
         )
 
@@ -2176,13 +2187,14 @@ if menu == "Simulasi Pengelolaan":
     simulation_df = build_simulation_table(
         forecast=forecast,
         biaya_per_ton=biaya_per_ton,
-        kapasitas_truk=kapasitas_truk,
-        rit_per_truk_per_hari=rit_per_truk_per_hari
+        kapasitas_truk_compactor_m3=kapasitas_truk_compactor_m3,
+        hari_operasional_angkut_per_minggu=hari_operasional_angkut_per_minggu
     )
 
     total_sampah = simulation_df["Prediksi Sampah (Ton)"].sum()
     total_anggaran = simulation_df["Estimasi Anggaran"].sum()
-    total_rit = simulation_df["Kebutuhan Rit Bulanan"].sum()
+    total_volume_sampah = simulation_df["Estimasi Volume Sampah (m³)"].sum()
+    total_muatan_truk = simulation_df["Estimasi Kebutuhan Muatan Truk"].sum()
 
     highest_row = simulation_df.loc[simulation_df["Prediksi Sampah (Ton)"].idxmax()]
     lowest_row = simulation_df.loc[simulation_df["Prediksi Sampah (Ton)"].idxmin()]
@@ -2194,11 +2206,12 @@ if menu == "Simulasi Pengelolaan":
         {"label": "Periode", "value": f"{start_period} - {end_period}", "note": f"{forecast_steps} bulan ke depan"},
         {"label": "Total Sampah", "value": f"{format_angka(total_sampah)} ton"},
         {"label": "Total Anggaran", "value": format_rupiah(total_anggaran), "note": f"{format_rupiah(biaya_per_ton)} per ton"},
-        {"label": "Total Rit", "value": f"{format_integer(total_rit)} rit", "note": f"{kapasitas_truk} ton per rit"},
+        {"label": "Total Volume", "value": f"{format_angka(total_volume_sampah)} m³", "note": f"densitas {format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³"},
         {"label": "Beban Tertinggi", "value": highest_row["Periode"], "note": f"{format_angka(highest_row['Prediksi Sampah (Ton)'])} ton"},
         {"label": "Beban Terendah", "value": lowest_row["Periode"], "note": f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton"},
-        {"label": "Rit Maks/Hari", "value": f"{format_integer(int(simulation_df['Kebutuhan Rit per Hari'].max()))} rit/hari"},
-        {"label": "Armada Maks/Hari", "value": f"{format_integer(int(simulation_df['Estimasi Armada per Hari'].max()))} truk", "note": f"{rit_per_truk_per_hari} rit/truk/hari"},
+        {"label": "Total Muatan Truk", "value": f"{format_integer(total_muatan_truk)} muatan", "note": f"kapasitas {kapasitas_truk_compactor_m3} m³"},
+        {"label": "Muatan Maks/Hari Angkut", "value": f"{format_integer(int(simulation_df['Muatan Truk per Hari Angkut'].max()))} muatan/hari"},
+        {"label": "Hari Angkut/Minggu", "value": f"{hari_operasional_angkut_per_minggu} hari/minggu", "note": "parameter jadwal angkut"},
     ])
 
     row1_col1, row1_col2, row1_col3, row1_col4 = st.columns(4, gap="large")
@@ -2210,10 +2223,10 @@ if menu == "Simulasi Pengelolaan":
         kpi_card("Total Prediksi Sampah", f"{format_angka(total_sampah)} ton")
 
     with row1_col3:
-        kpi_card("Total Estimasi Anggaran", format_rupiah(total_anggaran), f"Asumsi {format_rupiah(biaya_per_ton)} per ton")
+        kpi_card("Total Estimasi Anggaran", format_rupiah(total_anggaran), f" {format_rupiah(biaya_per_ton)} per ton")
 
     with row1_col4:
-        kpi_card("Total Kebutuhan Rit", f"{format_integer(total_rit)} rit", f"Kapasitas {kapasitas_truk} ton per rit")
+        kpi_card("Total Estimasi Volume", f"{format_angka(total_volume_sampah)} m³", f"Densitas {format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³")
 
     row2_col1, row2_col2, row2_col3, row2_col4 = st.columns(4, gap="large")
 
@@ -2224,10 +2237,10 @@ if menu == "Simulasi Pengelolaan":
         kpi_card("Beban Terendah", lowest_row["Periode"], f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton")
 
     with row2_col3:
-        kpi_card("Rit Maksimum per Hari", f"{format_integer(int(simulation_df['Kebutuhan Rit per Hari'].max()))} rit/hari")
+        kpi_card("Total Kebutuhan Muatan Truk", f"{format_integer(total_muatan_truk)} muatan", f"Kapasitas {kapasitas_truk_compactor_m3} m³")
 
     with row2_col4:
-        kpi_card("Armada Maksimum per Hari", f"{format_integer(int(simulation_df['Estimasi Armada per Hari'].max()))} truk", f"Asumsi {rit_per_truk_per_hari} rit/truk/hari")
+        kpi_card("Muatan Maksimum per Hari Angkut", f"{format_integer(int(simulation_df['Muatan Truk per Hari Angkut'].max()))} muatan/hari", f"{hari_operasional_angkut_per_minggu} hari angkut/minggu")
 
     fig_forecast = make_forecast_chart(ts, forecast, theme)
     st.plotly_chart(
@@ -2243,9 +2256,10 @@ if menu == "Simulasi Pengelolaan":
         "Catatan simulasi",
         [
             f"Biaya penanganan yang digunakan adalah <b>{format_rupiah(biaya_per_ton)} per ton</b>.",
-            f"Kapasitas angkut truk diasumsikan <b>{kapasitas_truk} ton per rit</b>.",
-            f"Setiap truk diasumsikan mampu melakukan <b>{rit_per_truk_per_hari} rit per hari</b>.",
-            "Kebutuhan rit dan armada dibulatkan ke atas agar estimasi tidak kurang dari kebutuhan lapangan.",
+            f"Kapasitas truk compactor digunakan sebesar <b>{kapasitas_truk_compactor_m3} m³</b> per muatan.",
+            f"Prediksi sampah dalam ton dikonversi menjadi volume menggunakan densitas <b>{format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³</b>.",
+            f"Hari operasional angkut digunakan sebesar <b>{hari_operasional_angkut_per_minggu} hari per minggu</b>.",
+            "Kebutuhan muatan truk dan hari operasional angkut dibulatkan ke atas agar estimasi tidak kurang dari kebutuhan lapangan.",
             "Dashboard ini berfungsi sebagai simulasi awal untuk membantu perencanaan operasional."
         ]
     )
@@ -2289,7 +2303,7 @@ elif menu == "Ringkasan Data & Model":
                 "Model yang digunakan: <b>SARIMA(1,2,2)(0,1,1,12)</b>.",
                 "Dashboard hanya memakai satu model agar lebih mudah dipahami user.",
                 "Prediksi dibatasi maksimal <b>12 bulan ke depan</b> agar fokus pada perencanaan jangka pendek.",
-                "Model digunakan untuk menghasilkan estimasi jumlah sampah, anggaran, rit, dan kebutuhan armada.",
+                "Model digunakan untuk menghasilkan estimasi jumlah sampah, anggaran, volume sampah, dan kebutuhan muatan truk compactor.",
                 "Detail teori, EDA, parameter model, dan evaluasi lengkap dijelaskan pada laporan."
             ]
         )
@@ -2304,11 +2318,4 @@ elif menu == "Ringkasan Data & Model":
     st.markdown('<div class="small-title table-title-mobile-tight">Tabel Aktual vs Prediksi</div>', unsafe_allow_html=True)
     show_table(prepare_comparison_display(comparison_df))
 
-    bullet_card(
-        "Catatan",
-        [
-            "Halaman ini hanya memberi gambaran singkat tentang data dan performa model.",
-            "Penjelasan lebih detail mengenai EDA, pemilihan parameter, dan alasan teknis dapat diletakkan di laporan.",
-            "Fokus utama dashboard tetap pada simulasi kebutuhan operasional."
-        ]
-    )
+    
