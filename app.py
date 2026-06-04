@@ -54,7 +54,7 @@ BULAN_INDO = {
     12: "Desember",
 }
 
-MENU_OPTIONS = ["Simulasia Pengelolaan", "Ringkasan Data & Model"]
+MENU_OPTIONS = ["Simulasi Pengelolaan", "Ringkasan Data & Model"]
 
 # Konstanta simulasi operasional
 # Densitas digunakan untuk mengonversi prediksi ton menjadi volume m³.
