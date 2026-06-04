@@ -2477,8 +2477,8 @@ theme = apply_theme(st.session_state.theme_mode)
 
 
 # ============================================================
-# CLEAN SIDEBAR FINAL — v33
-# Sidebar 226px, inner 204px, semua elemen center dan anti-crop.
+# CLEAN SIDEBAR FINAL — v34
+# Sidebar 226px, isi inner 186px, center, anti-crop.
 # ============================================================
 
 st.markdown(
@@ -2496,18 +2496,14 @@ st.markdown(
         overflow-y: hidden !important;
     }
 
-    [data-testid="stSidebarContent"] {
-        background: transparent !important;
-    }
-
     [data-testid="stSidebarUserContent"] {
         width: 226px !important;
         max-width: 226px !important;
-        padding-left: 11px !important;
-        padding-right: 11px !important;
+        padding-left: 20px !important;
+        padding-right: 20px !important;
         padding-top: 0 !important;
-        padding-bottom: 162px !important;
-        margin-top: -45px !important;
+        padding-bottom: 150px !important;
+        margin-top: -46px !important;
         overflow-x: hidden !important;
         overflow-y: hidden !important;
         box-sizing: border-box !important;
@@ -2520,11 +2516,11 @@ st.markdown(
     }
 
     [data-testid="stSidebar"] .element-container {
-        width: 204px !important;
-        max-width: 204px !important;
+        width: 186px !important;
+        max-width: 186px !important;
         margin-left: auto !important;
         margin-right: auto !important;
-        margin-bottom: 3px !important;
+        margin-bottom: 2px !important;
     }
 
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
@@ -2532,114 +2528,128 @@ st.markdown(
     }
 
     [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] p {
-        margin: 0 0 5px 0 !important;
+        margin: 0 0 4px 0 !important;
     }
 
     /* ---------- TOGGLE BUTTON ---------- */
-    #custom-sidebar-toggle-v33 {
+    #custom-sidebar-toggle-v34 {
         left: 184px !important;
         top: 4px !important;
-        width: 33px !important;
-        height: 30px !important;
+        width: 32px !important;
+        height: 29px !important;
         border-radius: 11px !important;
         z-index: 2147483647 !important;
     }
 
-    body.sidebar-custom-closed #custom-sidebar-toggle-v33 {
+    body.sidebar-custom-closed #custom-sidebar-toggle-v34 {
         left: 2px !important;
     }
 
     /* ---------- PILIH TAMPILAN ---------- */
     [data-testid="stSidebar"] .theme-label {
-        width: 204px !important;
-        max-width: 204px !important;
+        width: 186px !important;
+        max-width: 186px !important;
         margin: 0 auto 6px auto !important;
-        font-size: 12px !important;
+        font-size: 11.6px !important;
         line-height: 1.1 !important;
         font-weight: 850 !important;
         white-space: nowrap !important;
     }
 
     [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] {
-        width: 204px !important;
-        max-width: 204px !important;
+        width: 186px !important;
+        max-width: 186px !important;
+        min-width: 186px !important;
         margin-left: auto !important;
         margin-right: auto !important;
         margin-bottom: 10px !important;
         gap: 6px !important;
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow: hidden !important;
+    }
+
+    [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] [data-testid="column"] {
+        width: 90px !important;
+        min-width: 90px !important;
+        max-width: 90px !important;
+        flex: 0 0 90px !important;
+        padding: 0 !important;
     }
 
     [data-testid="stSidebar"] .stButton > button {
-        height: 30px !important;
-        min-height: 30px !important;
+        width: 90px !important;
+        max-width: 90px !important;
+        height: 29px !important;
+        min-height: 29px !important;
         border-radius: 11px !important;
-        font-size: 11px !important;
+        font-size: 10.5px !important;
         padding: 0 !important;
     }
 
     /* ---------- INPUT DATA HEADER ---------- */
     .data-input-title {
-        width: 204px !important;
-        max-width: 204px !important;
+        width: 186px !important;
+        max-width: 186px !important;
         margin: 9px auto 6px auto !important;
         padding: 6px 7px !important;
-        border-radius: 12px !important;
+        border-radius: 11px !important;
         gap: 6px !important;
     }
 
     .modern-section-icon {
-        width: 20px !important;
-        height: 20px !important;
-        min-width: 20px !important;
+        width: 19px !important;
+        height: 19px !important;
+        min-width: 19px !important;
         border-radius: 7px !important;
     }
 
     .modern-section-icon svg {
-        width: 12px !important;
-        height: 12px !important;
+        width: 11px !important;
+        height: 11px !important;
     }
 
     .data-input-title-text {
-        font-size: 10.4px !important;
-        line-height: 1.08 !important;
+        font-size: 10px !important;
+        line-height: 1.05 !important;
         white-space: nowrap !important;
     }
 
     /* ---------- FILE UPLOADER ---------- */
     [data-testid="stSidebar"] [data-testid="stFileUploader"] {
-        width: 204px !important;
-        max-width: 204px !important;
+        width: 186px !important;
+        max-width: 186px !important;
         margin: 0 auto 4px auto !important;
     }
 
     [data-testid="stSidebar"] [data-testid="stFileUploader"] > label {
-        width: 204px !important;
-        max-width: 204px !important;
+        width: 186px !important;
+        max-width: 186px !important;
         display: block !important;
-        padding-right: 24px !important;
+        padding-right: 22px !important;
         margin: 0 0 4px 0 !important;
     }
 
     [data-testid="stSidebar"] [data-testid="stFileUploader"] label p {
-        font-size: 10.8px !important;
-        line-height: 1.14 !important;
-        max-width: 144px !important;
+        font-size: 9.8px !important;
+        line-height: 1.12 !important;
+        max-width: 136px !important;
         white-space: normal !important;
         letter-spacing: 0 !important;
         margin: 0 !important;
     }
 
     [data-testid="stSidebar"] [data-testid="stFileUploader"] [data-testid="stTooltipIcon"] {
-        transform: scale(0.72) !important;
+        transform: scale(0.66) !important;
         transform-origin: center !important;
     }
 
     [data-testid="stFileUploader"] section {
-        width: 204px !important;
-        max-width: 204px !important;
-        min-height: 78px !important;
+        width: 186px !important;
+        max-width: 186px !important;
+        min-height: 72px !important;
         padding: 6px !important;
-        border-radius: 11px !important;
+        border-radius: 10px !important;
         overflow: hidden !important;
         text-align: center !important;
     }
@@ -2647,13 +2657,13 @@ st.markdown(
     [data-testid="stFileUploader"] section button,
     [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
     [data-testid="stFileUploader"] button[kind="secondary"] {
-        width: 104px !important;
-        min-width: 104px !important;
-        max-width: 104px !important;
-        height: 29px !important;
-        min-height: 29px !important;
+        width: 98px !important;
+        min-width: 98px !important;
+        max-width: 98px !important;
+        height: 28px !important;
+        min-height: 28px !important;
         border-radius: 9px !important;
-        font-size: 10.2px !important;
+        font-size: 9.8px !important;
         padding: 0 7px !important;
         margin-left: auto !important;
         margin-right: auto !important;
@@ -2662,8 +2672,8 @@ st.markdown(
     [data-testid="stSidebar"] [data-testid="stFileUploader"] section small,
     [data-testid="stSidebar"] [data-testid="stFileUploader"] section p,
     [data-testid="stSidebar"] [data-testid="stFileUploader"] section span {
-        font-size: 8.6px !important;
-        line-height: 1.12 !important;
+        font-size: 8.1px !important;
+        line-height: 1.1 !important;
         white-space: nowrap !important;
         text-align: center !important;
     }
@@ -2671,98 +2681,98 @@ st.markdown(
     /* ---------- FORMAT TEXT ---------- */
     [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] strong,
     [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] b {
-        font-size: 9.2px !important;
-        line-height: 1.12 !important;
+        font-size: 8.6px !important;
+        line-height: 1.1 !important;
         white-space: normal !important;
     }
 
     /* ---------- DATA STATUS ---------- */
     .data-status {
-        width: 204px !important;
-        max-width: 204px !important;
-        padding: 6px 7px !important;
+        width: 186px !important;
+        max-width: 186px !important;
+        padding: 5px 6px !important;
         margin: 5px auto 10px auto !important;
-        border-radius: 11px !important;
-        font-size: 9.2px !important;
-        line-height: 1.12 !important;
+        border-radius: 10px !important;
+        font-size: 8.6px !important;
+        line-height: 1.08 !important;
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
     }
 
     .data-status span {
-        font-size: 8.05px !important;
-        line-height: 1.08 !important;
+        font-size: 7.45px !important;
+        line-height: 1.05 !important;
         white-space: nowrap !important;
     }
 
     .modern-status-dot {
-        width: 11px !important;
-        height: 11px !important;
-        min-width: 11px !important;
+        width: 10px !important;
+        height: 10px !important;
+        min-width: 10px !important;
         border-radius: 4px !important;
         margin-right: 4px !important;
         vertical-align: -2px !important;
     }
 
     .modern-status-dot::after {
-        width: 4px !important;
-        height: 4px !important;
+        width: 3.6px !important;
+        height: 3.6px !important;
         left: 3px !important;
         top: 3px !important;
     }
 
-    /* ---------- RADIO MENU: SEJAJAR TENGAH ---------- */
+    /* ---------- RADIO MENU: SEJAJAR DAN CENTER ---------- */
     [data-testid="stSidebar"] .stRadio > label {
-        width: 204px !important;
-        max-width: 204px !important;
+        width: 186px !important;
+        max-width: 186px !important;
         margin-left: auto !important;
         margin-right: auto !important;
     }
 
     [data-testid="stSidebar"] .stRadio > label p {
-        font-size: 11.2px !important;
-        line-height: 1.1 !important;
+        font-size: 10.7px !important;
+        line-height: 1.05 !important;
         margin: 0 0 4px 0 !important;
         white-space: nowrap !important;
     }
 
     [data-testid="stSidebar"] [role="radiogroup"] {
-        width: 204px !important;
-        max-width: 204px !important;
+        width: 186px !important;
+        max-width: 186px !important;
         margin-left: auto !important;
         margin-right: auto !important;
         gap: 0 !important;
     }
 
     [data-testid="stSidebar"] [role="radiogroup"] label {
-        width: 204px !important;
-        max-width: 204px !important;
-        height: 26px !important;
-        min-height: 26px !important;
-        padding: 0 5px !important;
+        width: 186px !important;
+        max-width: 186px !important;
+        height: 24px !important;
+        min-height: 24px !important;
+        padding: 0 4px !important;
         margin: 0 !important;
         border-radius: 9px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: flex-start !important;
-        gap: 6px !important;
+        gap: 5px !important;
     }
 
     [data-testid="stSidebar"] [role="radiogroup"] label > div:first-child {
-        transform: scale(0.63) !important;
+        transform: scale(0.58) !important;
         transform-origin: center !important;
-        margin: 0 -2px 0 -3px !important;
+        margin: 0 -3px 0 -4px !important;
         padding: 0 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        height: 26px !important;
+        height: 24px !important;
     }
 
     [data-testid="stSidebar"] [role="radiogroup"] label > div:last-child,
     [data-testid="stSidebar"] [role="radiogroup"] label [data-testid="stMarkdownContainer"] {
-        height: 26px !important;
+        height: 24px !important;
         display: flex !important;
         align-items: center !important;
         margin: 0 !important;
@@ -2770,7 +2780,7 @@ st.markdown(
     }
 
     [data-testid="stSidebar"] [role="radiogroup"] label p {
-        font-size: 10.2px !important;
+        font-size: 9.55px !important;
         line-height: 1 !important;
         margin: 0 !important;
         padding: 0 !important;
@@ -2780,89 +2790,91 @@ st.markdown(
     /* ---------- BOTTOM DASHBOARD CARD ---------- */
     .sidebar-visual {
         position: fixed !important;
-        left: 11px !important;
+        left: 20px !important;
         bottom: 10px !important;
-        width: 204px !important;
-        max-width: 204px !important;
-        min-height: 130px !important;
-        max-height: 144px !important;
-        border-radius: 14px !important;
-        padding: 7px 8px !important;
+        width: 186px !important;
+        max-width: 186px !important;
+        min-height: 120px !important;
+        max-height: 132px !important;
+        border-radius: 13px !important;
+        padding: 6px 7px !important;
         margin: 0 !important;
         overflow: hidden !important;
         z-index: 20 !important;
     }
 
     .sidebar-visual::before {
-        width: 44px !important;
-        height: 44px !important;
-        right: -14px !important;
-        top: -16px !important;
+        width: 40px !important;
+        height: 40px !important;
+        right: -13px !important;
+        top: -15px !important;
     }
 
     .sidebar-icons {
-        gap: 5px !important;
+        gap: 4px !important;
         margin-bottom: 5px !important;
     }
 
     .sidebar-icons span {
-        width: 21px !important;
-        height: 21px !important;
-        border-radius: 8px !important;
+        width: 19px !important;
+        height: 19px !important;
+        border-radius: 7px !important;
     }
 
     .sidebar-icons svg {
-        width: 11px !important;
-        height: 11px !important;
+        width: 10px !important;
+        height: 10px !important;
     }
 
     .sidebar-visual-title {
-        font-size: 10.8px !important;
+        font-size: 10.1px !important;
         line-height: 1.05 !important;
         margin: 0 !important;
         white-space: nowrap !important;
     }
 
     .sidebar-visual-subtitle {
-        font-size: 7.65px !important;
-        line-height: 1.14 !important;
-        margin-top: 4px !important;
+        font-size: 7.0px !important;
+        line-height: 1.1 !important;
+        margin-top: 3px !important;
     }
 
     .team-name {
-        margin-top: 5px !important;
-        padding: 4px 5px !important;
-        min-height: 20px !important;
-        border-radius: 9px !important;
-        font-size: 7.45px !important;
+        margin-top: 4px !important;
+        padding: 3px 5px !important;
+        min-height: 18px !important;
+        border-radius: 8px !important;
+        font-size: 6.9px !important;
         line-height: 1.05 !important;
         white-space: nowrap !important;
     }
 
     @media screen and (max-height: 760px) {
         [data-testid="stSidebarUserContent"] {
-            padding-bottom: 138px !important;
+            padding-bottom: 126px !important;
         }
 
         .sidebar-visual {
-            min-height: 118px !important;
-            max-height: 130px !important;
+            min-height: 108px !important;
+            max-height: 118px !important;
         }
 
         .sidebar-visual-subtitle {
-            font-size: 7.1px !important;
-            line-height: 1.08 !important;
+            font-size: 6.5px !important;
+            line-height: 1.05 !important;
         }
 
         .team-name {
-            font-size: 7px !important;
-            padding: 3px 5px !important;
+            font-size: 6.4px !important;
+            padding: 3px 4px !important;
         }
     }
     </style>
     """,
     unsafe_allow_html=True
 )
+
+
 
 
 
@@ -2985,7 +2997,7 @@ st.markdown(
     }
 
     /* Tombol custom: ikon panel-web kecil, lebih halus, dan tidak menabrak hero. */
-    #custom-sidebar-toggle-v33 {
+    #custom-sidebar-toggle-v34 {
         position: fixed !important;
         top: 5px !important;
         left: 190px !important;
@@ -3010,7 +3022,7 @@ st.markdown(
         transition: left .22s ease, background .15s ease, border-color .15s ease, transform .15s ease, opacity .15s ease, box-shadow .15s ease !important;
     }
 
-    #custom-sidebar-toggle-v33 svg {
+    #custom-sidebar-toggle-v34 svg {
         width: 21px !important;
         height: 21px !important;
         display: block !important;
@@ -3022,7 +3034,7 @@ st.markdown(
         margin: 0 !important;
     }
 
-    #custom-sidebar-toggle-v33:hover {
+    #custom-sidebar-toggle-v34:hover {
         background: rgba(47,125,82,.92) !important;
         border-color: rgba(139,203,136,.76) !important;
         transform: translateY(-1px) !important;
@@ -3030,17 +3042,17 @@ st.markdown(
         box-shadow: 0 14px 28px rgba(0,0,0,.26) !important;
     }
 
-    body.sidebar-custom-closed #custom-sidebar-toggle-v33 {
+    body.sidebar-custom-closed #custom-sidebar-toggle-v34 {
         left: 2px !important;
         top: 5px !important;
         opacity: 1 !important;
     }
 
-    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v33 {
+    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v34 {
         opacity: .48 !important;
     }
 
-    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v33:hover {
+    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v34:hover {
         opacity: 1 !important;
     }
 
@@ -3051,11 +3063,11 @@ st.markdown(
     }
 
     @media screen and (max-width: 900px) {
-        #custom-sidebar-toggle-v33 {
+        #custom-sidebar-toggle-v34 {
             left: 190px !important;
             top: 5px !important;
         }
-        body.sidebar-custom-closed #custom-sidebar-toggle-v33 {
+        body.sidebar-custom-closed #custom-sidebar-toggle-v34 {
             left: 2px !important;
             top: 5px !important;
         }
@@ -3077,8 +3089,8 @@ def inject_custom_sidebar_toggle():
         <script>
         (function() {
             const doc = window.parent.document;
-            const STORAGE_KEY = "bandung_sidebar_custom_closed_v33";
-            const BTN_ID = "custom-sidebar-toggle-v33";
+            const STORAGE_KEY = "bandung_sidebar_custom_closed_v34";
+            const BTN_ID = "custom-sidebar-toggle-v34";
 
             function isClosed() {
                 return localStorage.getItem(STORAGE_KEY) === "1";
@@ -3103,7 +3115,7 @@ def inject_custom_sidebar_toggle():
             }
 
             function removeOldButtons() {
-                ["custom-sidebar-toggle-v19", "custom-sidebar-toggle-v20", "custom-sidebar-toggle-v21", "custom-sidebar-toggle-v22", "custom-sidebar-toggle-v23", "custom-sidebar-toggle-v30", "custom-sidebar-toggle-v31", "custom-sidebar-toggle-v32", "app-sidebar-toggle-btn",
+                ["custom-sidebar-toggle-v19", "custom-sidebar-toggle-v20", "custom-sidebar-toggle-v21", "custom-sidebar-toggle-v22", "custom-sidebar-toggle-v23", "custom-sidebar-toggle-v30", "custom-sidebar-toggle-v31", "custom-sidebar-toggle-v32", "custom-sidebar-toggle-v33", "app-sidebar-toggle-btn",
                  "custom-mobile-sidebar-button", "custom-sidebar-open-button", "custom-sidebar-close-button"].forEach(function(id) {
                     const old = doc.getElementById(id);
                     if (old) old.remove();
