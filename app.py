@@ -540,8 +540,8 @@ def apply_theme(mode):
         .block-container {{
             max-width: 1420px !important;
             padding-top: 0rem !important;
-            padding-left: 0.95rem !important;
-            padding-right: 0.95rem !important;
+            padding-left: 0.72rem !important;
+            padding-right: 0.72rem !important;
             padding-bottom: 1.5rem !important;
         }}
 
@@ -571,10 +571,10 @@ def apply_theme(mode):
 
         [data-testid="stSidebarUserContent"] {{
             padding-top: 0rem !important;
-            margin-top: -2.25rem !important;
-            padding-left: 1.25rem !important;
-            padding-right: 1.25rem !important;
-            padding-bottom: 18px !important;
+            margin-top: -2.55rem !important;
+            padding-left: 1.05rem !important;
+            padding-right: 1.05rem !important;
+            padding-bottom: 10px !important;
             overflow-y: hidden !important;
         }}
 
@@ -660,30 +660,30 @@ def apply_theme(mode):
 
         .data-status {{
             border: 1px solid {cfg["border"]};
-            border-radius: 14px;
+            border-radius: 13px;
             background: {cfg["card"]};
             color: {cfg["text"]} !important;
-            font-size: 12px;
+            font-size: 11.2px;
             font-weight: 850;
-            line-height: 1.35;
-            padding: 10px 11px;
-            margin: 8px 0 18px 0;
-            box-shadow: 0 8px 18px {cfg["shadow"]};
+            line-height: 1.25;
+            padding: 8px 10px;
+            margin: 6px 0 12px 0;
+            box-shadow: 0 7px 16px {cfg["shadow"]};
         }}
 
         .data-status span {{
             color: {cfg["muted"]} !important;
-            font-size: 10.8px;
+            font-size: 9.8px;
             font-weight: 650;
         }}
 
         .modern-status-dot {{
-            width: 16px;
-            height: 16px;
-            border-radius: 6px;
+            width: 14px;
+            height: 14px;
+            border-radius: 5px;
             display: inline-flex;
-            vertical-align: -3px;
-            margin-right: 7px;
+            vertical-align: -2px;
+            margin-right: 6px;
             border: 1px solid {cfg["border"]};
             background: {cfg["accent_soft"]};
             position: relative;
@@ -691,8 +691,8 @@ def apply_theme(mode):
 
         .modern-status-dot::after {{
             content: "";
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
             border-radius: 50%;
             background: {cfg["accent"]};
             position: absolute;
@@ -706,19 +706,20 @@ def apply_theme(mode):
         }}
 
         [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] {{
-            gap: 0.55rem !important;
+            gap: 0.42rem !important;
         }}
 
         [data-testid="stSidebar"] .stButton > button {{
             width: 100% !important;
-            height: 42px !important;
-            border-radius: 14px !important;
+            height: 34px !important;
+            min-height: 34px !important;
+            border-radius: 12px !important;
             border: 1px solid {cfg["border"]} !important;
             background: {cfg["card"]} !important;
             color: {cfg["text"]} !important;
             font-weight: 850 !important;
-            font-size: 13px !important;
-            box-shadow: 0 8px 18px rgba(0,0,0,0.08) !important;
+            font-size: 12px !important;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.08) !important;
             transition: all 0.16s ease-in-out !important;
             cursor: pointer !important;
         }}
@@ -745,10 +746,10 @@ def apply_theme(mode):
         .sidebar-visual {{
             background: {cfg["sidebar_visual"]};
             border: 1px solid rgba(255,255,255,0.18);
-            border-radius: 20px;
-            padding: 13px 14px;
-            margin: 18px 0 0 0 !important;
-            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.16);
+            border-radius: 18px;
+            padding: 10px 12px;
+            margin: 12px 0 0 0 !important;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
             position: relative !important;
             left: auto !important;
             bottom: auto !important;
@@ -762,10 +763,10 @@ def apply_theme(mode):
         .sidebar-visual::before {{
             content: "";
             position: absolute;
-            width: 78px;
-            height: 78px;
-            right: -22px;
-            top: -24px;
+            width: 62px;
+            height: 62px;
+            right: -18px;
+            top: -20px;
             background: rgba(255, 255, 255, 0.14);
             border-radius: 50%;
         }}
@@ -781,8 +782,8 @@ def apply_theme(mode):
         .sidebar-icons {{
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
+            gap: 7px;
+            margin-bottom: 8px;
             position: relative;
             z-index: 2;
             line-height: 1;
@@ -792,9 +793,9 @@ def apply_theme(mode):
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 34px;
-            height: 34px;
-            border-radius: 12px;
+            width: 30px;
+            height: 30px;
+            border-radius: 11px;
             background: rgba(255,255,255,0.15);
             border: 1px solid rgba(255,255,255,0.22);
             backdrop-filter: blur(8px);
@@ -803,14 +804,14 @@ def apply_theme(mode):
         }}
 
         .sidebar-icons svg {{
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             display: block;
             stroke: currentColor;
         }}
 
         .sidebar-visual-title {{
-            font-size: 16px;
+            font-size: 14.3px;
             font-weight: 850;
             position: relative;
             z-index: 2;
@@ -818,22 +819,22 @@ def apply_theme(mode):
         }}
 
         .sidebar-visual-subtitle {{
-            font-size: 11.2px;
+            font-size: 10.4px;
             color: white !important;
-            margin-top: 4px;
-            line-height: 1.38;
+            margin-top: 3px;
+            line-height: 1.30;
             position: relative;
             z-index: 2;
             font-weight: 500;
         }}
 
         .team-name {{
-            margin-top: 9px;
-            padding: 7px 9px;
-            border-radius: 13px;
+            margin-top: 7px;
+            padding: 6px 8px;
+            border-radius: 12px;
             background: rgba(255, 255, 255, 0.16);
             border: 1px solid rgba(255, 255, 255, 0.24);
-            font-size: 11.2px;
+            font-size: 10.4px;
             font-weight: 760;
             position: relative;
             z-index: 2;
@@ -1109,8 +1110,9 @@ def apply_theme(mode):
         [data-testid="stFileUploader"] section {{
             background: {cfg["card"]} !important;
             border: 1px dashed {cfg["border"]} !important;
-            border-radius: 14px !important;
-            padding: 10px !important;
+            border-radius: 13px !important;
+            padding: 8px !important;
+            min-height: 118px !important;
         }}
 
         [data-testid="stFileUploader"] section:hover {{
@@ -1158,14 +1160,15 @@ def apply_theme(mode):
         [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
         [data-testid="stFileUploader"] button[kind="secondary"] {{
             width: 100% !important;
-            min-height: 50px !important;
-            border-radius: 13px !important;
+            min-height: 38px !important;
+            height: 38px !important;
+            border-radius: 12px !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
             gap: 10px !important;
             font-weight: 850 !important;
-            font-size: 15px !important;
+            font-size: 13.5px !important;
             background: {cfg["input_btn"]} !important;
             color: {cfg["text"]} !important;
             border: 1px solid {cfg["border"]} !important;
@@ -1316,6 +1319,60 @@ def apply_theme(mode):
         [data-testid="stSidebar"] [role="radiogroup"] label:hover {{
             background: {cfg["accent_soft"]} !important;
             transform: translateX(2px);
+        }}
+
+
+        [data-testid="stSidebar"] [data-testid="stFileUploader"] label p {{
+            font-size: 16px !important;
+            line-height: 1.25 !important;
+            margin-bottom: 6px !important;
+            letter-spacing: 0.01em !important;
+        }}
+
+        [data-testid="stSidebar"] [data-testid="stFileUploader"] small,
+        [data-testid="stSidebar"] [data-testid="stFileUploader"] section small {{
+            font-size: 11px !important;
+            line-height: 1.25 !important;
+            margin-top: 2px !important;
+        }}
+
+        [data-testid="stSidebar"] [data-testid="stFileUploader"] {{
+            margin-bottom: 6px !important;
+        }}
+
+        [data-testid="stSidebar"] .stRadio > label p {{
+            font-size: 15px !important;
+            line-height: 1.2 !important;
+            margin-bottom: 4px !important;
+        }}
+
+        [data-testid="stSidebar"] [role="radiogroup"] {{
+            gap: 2px !important;
+        }}
+
+        [data-testid="stSidebar"] [role="radiogroup"] label {{
+            min-height: 34px !important;
+            padding-top: 3px !important;
+            padding-bottom: 3px !important;
+        }}
+
+        [data-testid="stSidebar"] [role="radiogroup"] label p {{
+            font-size: 13.2px !important;
+            line-height: 1.2 !important;
+        }}
+
+        
+        [data-testid="stSidebar"] .theme-label {{
+            font-size: 14px !important;
+            margin-bottom: 5px !important;
+        }}
+
+        [data-testid="stSidebar"] hr {{
+            margin: 8px 0 !important;
+        }}
+
+        [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] p {{
+            margin-bottom: 0.35rem !important;
         }}
 
         .custom-table-wrapper {{
@@ -2420,6 +2477,471 @@ theme = apply_theme(st.session_state.theme_mode)
 
 
 # ============================================================
+# SIDEBAR TARGET STYLE — v36
+# Target: mengikuti referensi gambar sidebar rapi.
+# Sidebar dibuat lebih masuk akal: 304px, inner 252px.
+# ============================================================
+
+st.markdown(
+    """
+    <style>
+    /* ---------- SIDEBAR FRAME ---------- */
+    [data-testid="stSidebar"],
+    [data-testid="stSidebarContent"],
+    section[data-testid="stSidebar"] {
+        width: 304px !important;
+        min-width: 304px !important;
+        max-width: 304px !important;
+        flex: 0 0 304px !important;
+        overflow-x: hidden !important;
+        overflow-y: hidden !important;
+    }
+
+    [data-testid="stSidebarUserContent"] {
+        width: 304px !important;
+        max-width: 304px !important;
+        padding-left: 26px !important;
+        padding-right: 26px !important;
+        padding-top: 0 !important;
+        padding-bottom: 222px !important;
+        margin-top: -36px !important;
+        overflow-x: hidden !important;
+        overflow-y: hidden !important;
+        box-sizing: border-box !important;
+    }
+
+    [data-testid="stSidebar"] *,
+    [data-testid="stSidebar"] *::before,
+    [data-testid="stSidebar"] *::after {
+        box-sizing: border-box !important;
+    }
+
+    [data-testid="stSidebar"] .element-container {
+        width: 252px !important;
+        max-width: 252px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        margin-bottom: 4px !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+        gap: 0 !important;
+    }
+
+    [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] p {
+        margin: 0 0 5px 0 !important;
+    }
+
+    /* ---------- TOGGLE BUTTON ---------- */
+    #custom-sidebar-toggle-v36 {
+        left: 258px !important;
+        top: 5px !important;
+        width: 36px !important;
+        height: 32px !important;
+        border-radius: 12px !important;
+        z-index: 2147483647 !important;
+    }
+
+    body.sidebar-custom-closed #custom-sidebar-toggle-v36 {
+        left: 2px !important;
+    }
+
+    /* ---------- PILIH TAMPILAN ---------- */
+    [data-testid="stSidebar"] .theme-label {
+        width: 252px !important;
+        max-width: 252px !important;
+        margin: 0 auto 9px auto !important;
+        font-size: 14px !important;
+        line-height: 1.15 !important;
+        font-weight: 850 !important;
+        white-space: nowrap !important;
+    }
+
+    [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] {
+        width: 252px !important;
+        max-width: 252px !important;
+        min-width: 252px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        margin-bottom: 22px !important;
+        gap: 10px !important;
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow: hidden !important;
+    }
+
+    [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] [data-testid="column"] {
+        width: 121px !important;
+        min-width: 121px !important;
+        max-width: 121px !important;
+        flex: 0 0 121px !important;
+        padding: 0 !important;
+    }
+
+    [data-testid="stSidebar"] .stButton > button {
+        width: 121px !important;
+        max-width: 121px !important;
+        height: 42px !important;
+        min-height: 42px !important;
+        border-radius: 16px !important;
+        font-size: 14px !important;
+        padding: 0 !important;
+    }
+
+    /* ---------- INPUT DATA HEADER ---------- */
+    .data-input-title {
+        width: 252px !important;
+        max-width: 252px !important;
+        margin: 0 auto 10px auto !important;
+        padding: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        gap: 7px !important;
+    }
+
+    .modern-section-icon {
+        width: 20px !important;
+        height: 20px !important;
+        min-width: 20px !important;
+        border-radius: 7px !important;
+    }
+
+    .modern-section-icon svg {
+        width: 13px !important;
+        height: 13px !important;
+    }
+
+    .data-input-title-text {
+        font-size: 12.6px !important;
+        line-height: 1.12 !important;
+        white-space: nowrap !important;
+    }
+
+    /* ---------- FILE UPLOADER ---------- */
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] {
+        width: 252px !important;
+        max-width: 252px !important;
+        margin: 0 auto 8px auto !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] > label {
+        width: 252px !important;
+        max-width: 252px !important;
+        display: block !important;
+        padding-right: 28px !important;
+        margin: 0 0 8px 0 !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] label p {
+        font-size: 13.4px !important;
+        line-height: 1.20 !important;
+        max-width: 210px !important;
+        white-space: nowrap !important;
+        letter-spacing: 0 !important;
+        margin: 0 !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] [data-testid="stTooltipIcon"] {
+        transform: scale(0.78) !important;
+        transform-origin: center !important;
+    }
+
+    [data-testid="stFileUploader"] section {
+        width: 252px !important;
+        max-width: 252px !important;
+        min-height: 102px !important;
+        padding: 12px !important;
+        border-radius: 15px !important;
+        overflow: hidden !important;
+        text-align: left !important;
+    }
+
+    [data-testid="stFileUploader"] section button,
+    [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
+    [data-testid="stFileUploader"] button[kind="secondary"] {
+        width: 112px !important;
+        min-width: 112px !important;
+        max-width: 112px !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        border-radius: 10px !important;
+        font-size: 13px !important;
+        padding: 0 10px !important;
+        margin-left: 0 !important;
+        margin-right: auto !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section small,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section p,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section span {
+        font-size: 11.1px !important;
+        line-height: 1.20 !important;
+        white-space: nowrap !important;
+        text-align: left !important;
+    }
+
+    /* ---------- FORMAT TEXT ---------- */
+    [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] strong,
+    [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] b {
+        font-size: 11.4px !important;
+        line-height: 1.18 !important;
+        white-space: normal !important;
+    }
+
+    .data-input-note {
+        width: 252px !important;
+        max-width: 252px !important;
+        margin: 8px auto 14px auto !important;
+        font-size: 11.4px !important;
+        line-height: 1.24 !important;
+    }
+
+    /* ---------- DATA STATUS ---------- */
+    .data-status {
+        width: 252px !important;
+        max-width: 252px !important;
+        padding: 9px 11px !important;
+        margin: 0 auto 20px auto !important;
+        border-radius: 14px !important;
+        font-size: 12.2px !important;
+        line-height: 1.22 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .data-status span {
+        font-size: 10.2px !important;
+        line-height: 1.12 !important;
+        white-space: nowrap !important;
+    }
+
+    .modern-status-dot {
+        width: 15px !important;
+        height: 15px !important;
+        min-width: 15px !important;
+        border-radius: 5px !important;
+        margin-right: 7px !important;
+        vertical-align: -3px !important;
+        aspect-ratio: 1 / 1 !important;
+    }
+
+    .modern-status-dot::after {
+        width: 5px !important;
+        height: 5px !important;
+        border-radius: 999px !important;
+        left: 5px !important;
+        top: 5px !important;
+    }
+
+    /* ---------- RADIO MENU ---------- */
+    [data-testid="stSidebar"] .stRadio > label {
+        width: 252px !important;
+        max-width: 252px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    [data-testid="stSidebar"] .stRadio > label p {
+        font-size: 13.5px !important;
+        line-height: 1.15 !important;
+        margin: 0 0 10px 0 !important;
+        white-space: nowrap !important;
+    }
+
+    [data-testid="stSidebar"] [role="radiogroup"] {
+        width: 252px !important;
+        max-width: 252px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        gap: 7px !important;
+    }
+
+    [data-testid="stSidebar"] [role="radiogroup"] label {
+        width: 252px !important;
+        max-width: 252px !important;
+        height: 32px !important;
+        min-height: 32px !important;
+        padding: 0 8px !important;
+        margin: 0 !important;
+        border-radius: 10px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 9px !important;
+    }
+
+    [data-testid="stSidebar"] [role="radiogroup"] label > div:first-child {
+        transform: none !important;
+        width: 16px !important;
+        min-width: 16px !important;
+        max-width: 16px !important;
+        height: 16px !important;
+        min-height: 16px !important;
+        max-height: 16px !important;
+        aspect-ratio: 1 / 1 !important;
+        margin: 0 3px 0 0 !important;
+        padding: 0 !important;
+        border-radius: 999px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        overflow: visible !important;
+    }
+
+    [data-testid="stSidebar"] [role="radiogroup"] label > div:first-child * {
+        width: 16px !important;
+        min-width: 16px !important;
+        max-width: 16px !important;
+        height: 16px !important;
+        min-height: 16px !important;
+        max-height: 16px !important;
+        aspect-ratio: 1 / 1 !important;
+        border-radius: 999px !important;
+    }
+
+    [data-testid="stSidebar"] [role="radiogroup"] label > div:last-child,
+    [data-testid="stSidebar"] [role="radiogroup"] label [data-testid="stMarkdownContainer"] {
+        height: 32px !important;
+        display: flex !important;
+        align-items: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    [data-testid="stSidebar"] [role="radiogroup"] label p {
+        font-size: 13px !important;
+        line-height: 1 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        white-space: nowrap !important;
+    }
+
+    /* ---------- BOTTOM DASHBOARD CARD ---------- */
+    .sidebar-visual {
+        position: fixed !important;
+        left: 16px !important;
+        bottom: 12px !important;
+        width: 272px !important;
+        max-width: 272px !important;
+        min-height: 214px !important;
+        max-height: 228px !important;
+        border-radius: 20px !important;
+        padding: 18px 17px !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+        z-index: 20 !important;
+    }
+
+    .sidebar-visual::before {
+        width: 75px !important;
+        height: 75px !important;
+        right: -22px !important;
+        top: -24px !important;
+    }
+
+    .sidebar-icons {
+        gap: 10px !important;
+        margin-bottom: 16px !important;
+    }
+
+    .sidebar-icons span {
+        width: 43px !important;
+        height: 43px !important;
+        border-radius: 14px !important;
+    }
+
+    .sidebar-icons svg {
+        width: 22px !important;
+        height: 22px !important;
+    }
+
+    .sidebar-visual-title {
+        font-size: 20px !important;
+        line-height: 1.08 !important;
+        margin: 0 !important;
+        white-space: nowrap !important;
+    }
+
+    .sidebar-visual-subtitle {
+        font-size: 13px !important;
+        line-height: 1.36 !important;
+        margin-top: 10px !important;
+        max-width: 230px !important;
+    }
+
+    .team-name {
+        margin-top: 14px !important;
+        padding: 9px 10px !important;
+        min-height: 38px !important;
+        border-radius: 14px !important;
+        font-size: 13px !important;
+        line-height: 1.12 !important;
+        white-space: nowrap !important;
+    }
+
+    @media screen and (max-height: 760px) {
+        [data-testid="stSidebarUserContent"] {
+            padding-bottom: 192px !important;
+        }
+
+        .sidebar-visual {
+            min-height: 186px !important;
+            max-height: 198px !important;
+            padding: 12px 14px !important;
+        }
+
+        .sidebar-icons span {
+            width: 34px !important;
+            height: 34px !important;
+        }
+
+        .sidebar-icons svg {
+            width: 17px !important;
+            height: 17px !important;
+        }
+
+        .sidebar-visual-title {
+            font-size: 16px !important;
+        }
+
+        .sidebar-visual-subtitle {
+            font-size: 10.5px !important;
+            line-height: 1.24 !important;
+            margin-top: 7px !important;
+        }
+
+        .team-name {
+            font-size: 10.5px !important;
+            padding: 6px 8px !important;
+            margin-top: 8px !important;
+            min-height: 30px !important;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ============================================================
 # CUSTOM SIDEBAR TOGGLE — STABLE VERSION
 # Tidak memakai tombol native Streamlit. Tombol custom selalu terlihat:
 # << untuk menutup sidebar, >> untuk membuka kembali.
@@ -2530,7 +3052,7 @@ st.markdown(
     }
 
     /* Tombol custom: ikon panel-web kecil, lebih halus, dan tidak menabrak hero. */
-    #custom-sidebar-toggle-v23 {
+    #custom-sidebar-toggle-v36 {
         position: fixed !important;
         top: 5px !important;
         left: 258px !important;
@@ -2555,7 +3077,7 @@ st.markdown(
         transition: left .22s ease, background .15s ease, border-color .15s ease, transform .15s ease, opacity .15s ease, box-shadow .15s ease !important;
     }
 
-    #custom-sidebar-toggle-v23 svg {
+    #custom-sidebar-toggle-v36 svg {
         width: 21px !important;
         height: 21px !important;
         display: block !important;
@@ -2567,7 +3089,7 @@ st.markdown(
         margin: 0 !important;
     }
 
-    #custom-sidebar-toggle-v23:hover {
+    #custom-sidebar-toggle-v36:hover {
         background: rgba(47,125,82,.92) !important;
         border-color: rgba(139,203,136,.76) !important;
         transform: translateY(-1px) !important;
@@ -2575,17 +3097,17 @@ st.markdown(
         box-shadow: 0 14px 28px rgba(0,0,0,.26) !important;
     }
 
-    body.sidebar-custom-closed #custom-sidebar-toggle-v23 {
+    body.sidebar-custom-closed #custom-sidebar-toggle-v36 {
         left: 2px !important;
         top: 5px !important;
         opacity: 1 !important;
     }
 
-    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v23 {
+    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v36 {
         opacity: .48 !important;
     }
 
-    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v23:hover {
+    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v36:hover {
         opacity: 1 !important;
     }
 
@@ -2596,11 +3118,11 @@ st.markdown(
     }
 
     @media screen and (max-width: 900px) {
-        #custom-sidebar-toggle-v23 {
+        #custom-sidebar-toggle-v36 {
             left: 258px !important;
             top: 5px !important;
         }
-        body.sidebar-custom-closed #custom-sidebar-toggle-v23 {
+        body.sidebar-custom-closed #custom-sidebar-toggle-v36 {
             left: 2px !important;
             top: 5px !important;
         }
@@ -2622,8 +3144,8 @@ def inject_custom_sidebar_toggle():
         <script>
         (function() {
             const doc = window.parent.document;
-            const STORAGE_KEY = "bandung_sidebar_custom_closed_v23";
-            const BTN_ID = "custom-sidebar-toggle-v23";
+            const STORAGE_KEY = "bandung_sidebar_custom_closed_v36";
+            const BTN_ID = "custom-sidebar-toggle-v36";
 
             function isClosed() {
                 return localStorage.getItem(STORAGE_KEY) === "1";
@@ -2648,7 +3170,7 @@ def inject_custom_sidebar_toggle():
             }
 
             function removeOldButtons() {
-                ["custom-sidebar-toggle-v19", "custom-sidebar-toggle-v20", "custom-sidebar-toggle-v21", "custom-sidebar-toggle-v22", "app-sidebar-toggle-btn",
+                ["custom-sidebar-toggle-v19", "custom-sidebar-toggle-v20", "custom-sidebar-toggle-v21", "custom-sidebar-toggle-v22", "custom-sidebar-toggle-v23", "custom-sidebar-toggle-v30", "custom-sidebar-toggle-v31", "custom-sidebar-toggle-v32", "custom-sidebar-toggle-v33", "custom-sidebar-toggle-v34", "custom-sidebar-toggle-v35", "app-sidebar-toggle-btn",
                  "custom-mobile-sidebar-button", "custom-sidebar-open-button", "custom-sidebar-close-button"].forEach(function(id) {
                     const old = doc.getElementById(id);
                     if (old) old.remove();
