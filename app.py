@@ -2497,11 +2497,11 @@ st.markdown(
     }
 
     /* Tombol custom: kecil, modern, tidak nabrak elemen bawah. */
-    #custom-sidebar-toggle-v19 {
+    #custom-sidebar-toggle-v21 {
         position: fixed !important;
         top: 8px !important;
         left: 258px !important;
-        width: 36px !important;
+        width: 38px !important;
         height: 34px !important;
         border-radius: 12px !important;
         border: 1px solid rgba(139,203,136,.36) !important;
@@ -2521,20 +2521,20 @@ st.markdown(
         transition: left .22s ease, background .15s ease, border-color .15s ease, transform .15s ease, opacity .15s ease, box-shadow .15s ease !important;
     }
 
-    #custom-sidebar-toggle-v19 svg {
-        width: 19px !important;
-        height: 19px !important;
+    #custom-sidebar-toggle-v21 svg {
+        width: 18px !important;
+        height: 18px !important;
         display: block !important;
         stroke: currentColor !important;
         fill: none !important;
-        stroke-width: 2.55 !important;
+        stroke-width: 2.35 !important;
         stroke-linecap: round !important;
         stroke-linejoin: round !important;
         margin: 0 !important;
         transform: translateX(0) !important;
     }
 
-    #custom-sidebar-toggle-v19:hover {
+    #custom-sidebar-toggle-v21:hover {
         background: rgba(47,125,82,.94) !important;
         border-color: rgba(139,203,136,.78) !important;
         transform: translateY(-1px) !important;
@@ -2542,17 +2542,17 @@ st.markdown(
         box-shadow: 0 14px 30px rgba(0,0,0,.28) !important;
     }
 
-    body.sidebar-custom-closed #custom-sidebar-toggle-v19 {
+    body.sidebar-custom-closed #custom-sidebar-toggle-v21 {
         left: 16px !important;
         top: 8px !important;
         opacity: 1 !important;
     }
 
-    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v19 {
+    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v21 {
         opacity: .42 !important;
     }
 
-    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v19:hover {
+    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v21:hover {
         opacity: 1 !important;
     }
 
@@ -2563,11 +2563,11 @@ st.markdown(
     }
 
     @media screen and (max-width: 900px) {
-        #custom-sidebar-toggle-v19 {
+        #custom-sidebar-toggle-v21 {
             left: 258px !important;
             top: 8px !important;
         }
-        body.sidebar-custom-closed #custom-sidebar-toggle-v19 {
+        body.sidebar-custom-closed #custom-sidebar-toggle-v21 {
             left: 12px !important;
             top: 8px !important;
         }
@@ -2589,8 +2589,8 @@ def inject_custom_sidebar_toggle():
         <script>
         (function() {
             const doc = window.parent.document;
-            const STORAGE_KEY = "bandung_sidebar_custom_closed_v19";
-            const BTN_ID = "custom-sidebar-toggle-v19";
+            const STORAGE_KEY = "bandung_sidebar_custom_closed_v21";
+            const BTN_ID = "custom-sidebar-toggle-v21";
 
             function isClosed() {
                 return localStorage.getItem(STORAGE_KEY) === "1";
@@ -2614,27 +2614,47 @@ def inject_custom_sidebar_toggle():
                 }
             }
 
+            function removeOldButtons() {
+                ["custom-sidebar-toggle-v19", "custom-sidebar-toggle-v20", "app-sidebar-toggle-btn",
+                 "custom-mobile-sidebar-button", "custom-sidebar-open-button", "custom-sidebar-close-button"].forEach(function(id) {
+                    const old = doc.getElementById(id);
+                    if (old) old.remove();
+                });
+            }
+
             function ensureButton() {
                 let btn = doc.getElementById(BTN_ID);
                 if (!btn) {
                     btn = doc.createElement("button");
                     btn.id = BTN_ID;
                     btn.type = "button";
+                    btn.setAttribute("data-sidebar-toggle-bound", "1");
                     btn.addEventListener("click", function(e) {
                         e.preventDefault();
                         e.stopPropagation();
                         setClosed(!isClosed());
-                    });
+                    }, true);
                     doc.body.appendChild(btn);
                 }
                 return btn;
             }
 
+            removeOldButtons();
             ensureButton();
             setClosed(isClosed());
 
+            // Event delegation cadangan supaya klik tetap jalan walaupun DOM Streamlit rerender.
+            doc.addEventListener("click", function(e) {
+                const btn = e.target.closest && e.target.closest("#" + BTN_ID);
+                if (!btn) return;
+                e.preventDefault();
+                e.stopPropagation();
+                setClosed(!isClosed());
+            }, true);
+
             // Pastikan tombol tidak hilang setelah rerun Streamlit.
             setInterval(function() {
+                removeOldButtons();
                 ensureButton();
                 setClosed(isClosed());
             }, 700);
