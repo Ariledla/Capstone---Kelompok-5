@@ -571,10 +571,10 @@ def apply_theme(mode):
 
         [data-testid="stSidebarUserContent"] {{
             padding-top: 0rem !important;
-            margin-top: -2.25rem !important;
-            padding-left: 1.25rem !important;
-            padding-right: 1.25rem !important;
-            padding-bottom: 18px !important;
+            margin-top: -2.55rem !important;
+            padding-left: 1.05rem !important;
+            padding-right: 1.05rem !important;
+            padding-bottom: 10px !important;
             overflow-y: hidden !important;
         }}
 
@@ -660,30 +660,30 @@ def apply_theme(mode):
 
         .data-status {{
             border: 1px solid {cfg["border"]};
-            border-radius: 14px;
+            border-radius: 13px;
             background: {cfg["card"]};
             color: {cfg["text"]} !important;
-            font-size: 12px;
+            font-size: 11.2px;
             font-weight: 850;
-            line-height: 1.35;
-            padding: 10px 11px;
-            margin: 8px 0 18px 0;
-            box-shadow: 0 8px 18px {cfg["shadow"]};
+            line-height: 1.25;
+            padding: 8px 10px;
+            margin: 6px 0 12px 0;
+            box-shadow: 0 7px 16px {cfg["shadow"]};
         }}
 
         .data-status span {{
             color: {cfg["muted"]} !important;
-            font-size: 10.8px;
+            font-size: 9.8px;
             font-weight: 650;
         }}
 
         .modern-status-dot {{
-            width: 16px;
-            height: 16px;
-            border-radius: 6px;
+            width: 14px;
+            height: 14px;
+            border-radius: 5px;
             display: inline-flex;
-            vertical-align: -3px;
-            margin-right: 7px;
+            vertical-align: -2px;
+            margin-right: 6px;
             border: 1px solid {cfg["border"]};
             background: {cfg["accent_soft"]};
             position: relative;
@@ -691,8 +691,8 @@ def apply_theme(mode):
 
         .modern-status-dot::after {{
             content: "";
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
             border-radius: 50%;
             background: {cfg["accent"]};
             position: absolute;
@@ -706,19 +706,20 @@ def apply_theme(mode):
         }}
 
         [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] {{
-            gap: 0.55rem !important;
+            gap: 0.42rem !important;
         }}
 
         [data-testid="stSidebar"] .stButton > button {{
             width: 100% !important;
-            height: 42px !important;
-            border-radius: 14px !important;
+            height: 34px !important;
+            min-height: 34px !important;
+            border-radius: 12px !important;
             border: 1px solid {cfg["border"]} !important;
             background: {cfg["card"]} !important;
             color: {cfg["text"]} !important;
             font-weight: 850 !important;
-            font-size: 13px !important;
-            box-shadow: 0 8px 18px rgba(0,0,0,0.08) !important;
+            font-size: 12px !important;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.08) !important;
             transition: all 0.16s ease-in-out !important;
             cursor: pointer !important;
         }}
@@ -745,10 +746,10 @@ def apply_theme(mode):
         .sidebar-visual {{
             background: {cfg["sidebar_visual"]};
             border: 1px solid rgba(255,255,255,0.18);
-            border-radius: 20px;
-            padding: 13px 14px;
-            margin: 18px 0 0 0 !important;
-            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.16);
+            border-radius: 18px;
+            padding: 10px 12px;
+            margin: 12px 0 0 0 !important;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
             position: relative !important;
             left: auto !important;
             bottom: auto !important;
@@ -762,10 +763,10 @@ def apply_theme(mode):
         .sidebar-visual::before {{
             content: "";
             position: absolute;
-            width: 78px;
-            height: 78px;
-            right: -22px;
-            top: -24px;
+            width: 62px;
+            height: 62px;
+            right: -18px;
+            top: -20px;
             background: rgba(255, 255, 255, 0.14);
             border-radius: 50%;
         }}
@@ -781,8 +782,8 @@ def apply_theme(mode):
         .sidebar-icons {{
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
+            gap: 7px;
+            margin-bottom: 8px;
             position: relative;
             z-index: 2;
             line-height: 1;
@@ -792,9 +793,9 @@ def apply_theme(mode):
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 34px;
-            height: 34px;
-            border-radius: 12px;
+            width: 30px;
+            height: 30px;
+            border-radius: 11px;
             background: rgba(255,255,255,0.15);
             border: 1px solid rgba(255,255,255,0.22);
             backdrop-filter: blur(8px);
@@ -803,14 +804,14 @@ def apply_theme(mode):
         }}
 
         .sidebar-icons svg {{
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             display: block;
             stroke: currentColor;
         }}
 
         .sidebar-visual-title {{
-            font-size: 16px;
+            font-size: 14.3px;
             font-weight: 850;
             position: relative;
             z-index: 2;
@@ -818,22 +819,22 @@ def apply_theme(mode):
         }}
 
         .sidebar-visual-subtitle {{
-            font-size: 11.2px;
+            font-size: 10.4px;
             color: white !important;
-            margin-top: 4px;
-            line-height: 1.38;
+            margin-top: 3px;
+            line-height: 1.30;
             position: relative;
             z-index: 2;
             font-weight: 500;
         }}
 
         .team-name {{
-            margin-top: 9px;
-            padding: 7px 9px;
-            border-radius: 13px;
+            margin-top: 7px;
+            padding: 6px 8px;
+            border-radius: 12px;
             background: rgba(255, 255, 255, 0.16);
             border: 1px solid rgba(255, 255, 255, 0.24);
-            font-size: 11.2px;
+            font-size: 10.4px;
             font-weight: 760;
             position: relative;
             z-index: 2;
@@ -1109,8 +1110,9 @@ def apply_theme(mode):
         [data-testid="stFileUploader"] section {{
             background: {cfg["card"]} !important;
             border: 1px dashed {cfg["border"]} !important;
-            border-radius: 14px !important;
-            padding: 10px !important;
+            border-radius: 13px !important;
+            padding: 8px !important;
+            min-height: 118px !important;
         }}
 
         [data-testid="stFileUploader"] section:hover {{
@@ -1158,14 +1160,15 @@ def apply_theme(mode):
         [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
         [data-testid="stFileUploader"] button[kind="secondary"] {{
             width: 100% !important;
-            min-height: 50px !important;
-            border-radius: 13px !important;
+            min-height: 38px !important;
+            height: 38px !important;
+            border-radius: 12px !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
             gap: 10px !important;
             font-weight: 850 !important;
-            font-size: 15px !important;
+            font-size: 13.5px !important;
             background: {cfg["input_btn"]} !important;
             color: {cfg["text"]} !important;
             border: 1px solid {cfg["border"]} !important;
@@ -1317,6 +1320,60 @@ def apply_theme(mode):
             background: {cfg["accent_soft"]} !important;
             transform: translateX(2px);
         }}
+
+
+        [data-testid="stSidebar"] [data-testid="stFileUploader"] label p {
+            font-size: 16px !important;
+            line-height: 1.25 !important;
+            margin-bottom: 6px !important;
+            letter-spacing: 0.01em !important;
+        }
+
+        [data-testid="stSidebar"] [data-testid="stFileUploader"] small,
+        [data-testid="stSidebar"] [data-testid="stFileUploader"] section small {
+            font-size: 11px !important;
+            line-height: 1.25 !important;
+            margin-top: 2px !important;
+        }
+
+        [data-testid="stSidebar"] [data-testid="stFileUploader"] {
+            margin-bottom: 6px !important;
+        }
+
+        [data-testid="stSidebar"] .stRadio > label p {
+            font-size: 15px !important;
+            line-height: 1.2 !important;
+            margin-bottom: 4px !important;
+        }
+
+        [data-testid="stSidebar"] [role="radiogroup"] {
+            gap: 2px !important;
+        }
+
+        [data-testid="stSidebar"] [role="radiogroup"] label {
+            min-height: 34px !important;
+            padding-top: 3px !important;
+            padding-bottom: 3px !important;
+        }
+
+        [data-testid="stSidebar"] [role="radiogroup"] label p {
+            font-size: 13.2px !important;
+            line-height: 1.2 !important;
+        }
+
+        
+        [data-testid="stSidebar"] .theme-label {
+            font-size: 14px !important;
+            margin-bottom: 5px !important;
+        }
+
+        [data-testid="stSidebar"] hr {
+            margin: 8px 0 !important;
+        }
+
+        [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] p {
+            margin-bottom: 0.35rem !important;
+        }
 
         .custom-table-wrapper {{
             width: 100%;
