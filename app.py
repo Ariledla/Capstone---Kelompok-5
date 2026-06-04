@@ -2387,28 +2387,27 @@ theme = apply_theme(st.session_state.theme_mode)
 
 
 # ============================================================
-# FIXED SIDEBAR OVERRIDE
-# Sidebar dibuat diam/stabil. Semua eksperimen tombol buka-tutup sidebar
-# dimatikan supaya layout tidak crop, tidak overlap, dan tidak bergeser aneh.
+# CUSTOM SIDEBAR TOGGLE — STABLE VERSION
+# Tidak memakai tombol native Streamlit. Tombol custom selalu terlihat:
+# << untuk menutup sidebar, >> untuk membuka kembali.
 # ============================================================
 
 st.markdown(
     """
     <style>
-    /* Matikan semua tombol collapse/open/close sidebar bawaan maupun sisa custom */
-    #app-sidebar-toggle-btn,
-    #custom-mobile-sidebar-button,
-    #custom-sidebar-open-button,
-    #custom-sidebar-close-button,
+    /* Matikan tombol native Streamlit agar tidak numpuk dengan tombol custom. */
     [data-testid="stSidebarCollapsedControl"],
     [data-testid="collapsedControl"],
-    [data-testid="stSidebarNav"],
+    [data-testid="stSidebarCollapseButton"],
+    [data-testid="stSidebarCollapseButton"] button,
     button[title="Open sidebar"],
     button[aria-label="Open sidebar"],
     button[title="Close sidebar"],
     button[aria-label="Close sidebar"],
-    button[title*="sidebar" i],
-    button[aria-label*="sidebar" i],
+    button[title="Collapse sidebar"],
+    button[aria-label="Collapse sidebar"],
+    button[title="Expand sidebar"],
+    button[aria-label="Expand sidebar"],
     button[data-testid="stBaseButton-headerNoPadding"],
     button[data-testid="baseButton-headerNoPadding"],
     button[kind="headerNoPadding"] {
@@ -2416,49 +2415,152 @@ st.markdown(
         visibility: hidden !important;
         opacity: 0 !important;
         pointer-events: none !important;
-        width: 0 !important;
-        height: 0 !important;
-        min-width: 0 !important;
-        min-height: 0 !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        border: 0 !important;
     }
 
-    /* Pastikan sidebar tetap tampil normal dan tidak tertarik transform dari eksperimen sebelumnya */
+    /* Layout normal saat sidebar terbuka. */
     section[data-testid="stSidebar"],
     [data-testid="stSidebar"] {
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        transform: none !important;
-        position: relative !important;
-        left: auto !important;
-        top: auto !important;
-        z-index: 10 !important;
+        width: 304px !important;
+        min-width: 304px !important;
+        flex: 0 0 304px !important;
+        transform: translateX(0) !important;
+        transition: width .22s ease, min-width .22s ease, flex-basis .22s ease, transform .22s ease, opacity .16s ease !important;
+        overflow: hidden !important;
+        z-index: 999 !important;
     }
 
-    [data-testid="stAppViewContainer"],
+    [data-testid="stSidebarContent"] {
+        width: 304px !important;
+        min-width: 304px !important;
+        transition: opacity .12s ease !important;
+    }
+
     [data-testid="stMain"],
+    [data-testid="stAppViewContainer"],
     section.main,
     .main {
-        transform: none !important;
-        margin-left: 0 !important;
         overflow-x: hidden !important;
+        transition: margin .22s ease, padding .22s ease, width .22s ease !important;
     }
 
     .block-container,
     [data-testid="stMainBlockContainer"] {
-        transform: none !important;
         margin-left: auto !important;
         margin-right: auto !important;
+        transition: max-width .22s ease, padding .22s ease, transform .22s ease !important;
     }
 
-    body.sidebar-is-open,
-    body.sidebar-is-closed,
-    body.sidebar-hover,
-    body.sidebar-button-hover {
+    /* Saat sidebar ditutup: sidebar benar-benar tidak mengambil ruang,
+       sehingga konten utama bergerak ke tengah dan tidak ketutup. */
+    body.sidebar-custom-closed section[data-testid="stSidebar"],
+    body.sidebar-custom-closed [data-testid="stSidebar"] {
+        width: 0 !important;
+        min-width: 0 !important;
+        max-width: 0 !important;
+        flex: 0 0 0 !important;
+        transform: translateX(-330px) !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        border-right: 0 !important;
+    }
+
+    body.sidebar-custom-closed [data-testid="stSidebarContent"],
+    body.sidebar-custom-closed [data-testid="stSidebarUserContent"] {
+        opacity: 0 !important;
+        width: 0 !important;
+        min-width: 0 !important;
+        max-width: 0 !important;
+        overflow: hidden !important;
+        pointer-events: none !important;
+    }
+
+    body.sidebar-custom-closed [data-testid="stMain"],
+    body.sidebar-custom-closed [data-testid="stAppViewContainer"],
+    body.sidebar-custom-closed section.main,
+    body.sidebar-custom-closed .main {
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
         transform: none !important;
+    }
+
+    body.sidebar-custom-closed .block-container,
+    body.sidebar-custom-closed [data-testid="stMainBlockContainer"] {
+        width: min(1500px, calc(100vw - 90px)) !important;
+        max-width: min(1500px, calc(100vw - 90px)) !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        transform: none !important;
+    }
+
+    /* Tombol custom. */
+    #custom-sidebar-toggle-v19 {
+        position: fixed !important;
+        top: 16px !important;
+        left: 246px !important;
+        width: 48px !important;
+        height: 40px !important;
+        border-radius: 14px !important;
+        border: 1px solid rgba(139,203,136,.54) !important;
+        background: rgba(18,30,23,.88) !important;
+        color: #F5F7F2 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 2147483647 !important;
+        box-shadow: 0 12px 28px rgba(0,0,0,.24) !important;
+        cursor: pointer !important;
+        user-select: none !important;
+        font-size: 26px !important;
+        font-weight: 900 !important;
+        letter-spacing: -5px !important;
+        line-height: 1 !important;
+        padding: 0 5px 0 0 !important;
+        transition: left .22s ease, background .15s ease, border-color .15s ease, transform .15s ease, opacity .15s ease !important;
+    }
+
+    #custom-sidebar-toggle-v19:hover {
+        background: rgba(47,125,82,.96) !important;
+        border-color: rgba(139,203,136,.92) !important;
+        transform: translateY(-1px) !important;
+        opacity: 1 !important;
+    }
+
+    body.sidebar-custom-closed #custom-sidebar-toggle-v19 {
+        left: 18px !important;
+        opacity: 1 !important;
+    }
+
+    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v19 {
+        opacity: .38 !important;
+    }
+
+    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v19:hover {
+        opacity: 1 !important;
+    }
+
+    [data-testid="stHeader"] {
+        background: transparent !important;
+        height: 0 !important;
+        min-height: 0 !important;
+    }
+
+    @media screen and (max-width: 900px) {
+        #custom-sidebar-toggle-v19 {
+            left: 250px !important;
+            top: 12px !important;
+        }
+        body.sidebar-custom-closed #custom-sidebar-toggle-v19 {
+            left: 12px !important;
+        }
+        body.sidebar-custom-closed .block-container,
+        body.sidebar-custom-closed [data-testid="stMainBlockContainer"] {
+            width: calc(100vw - 28px) !important;
+            max-width: calc(100vw - 28px) !important;
+        }
     }
     </style>
     """,
@@ -2466,433 +2568,62 @@ st.markdown(
 )
 
 
-def inject_sidebar_state_helper():
+def inject_custom_sidebar_toggle():
     components.html(
         """
         <script>
         (function() {
-          const doc = window.parent.document;
-          const win = window.parent;
+            const doc = window.parent.document;
+            const STORAGE_KEY = "bandung_sidebar_custom_closed_v19";
+            const BTN_ID = "custom-sidebar-toggle-v19";
 
-          const BUTTON_ID = 'app-sidebar-toggle-btn';
-          const STYLE_ID = 'app-sidebar-toggle-style-v6';
-          const OLD_IDS = [
-            'custom-mobile-sidebar-button',
-            'custom-sidebar-open-button',
-            'custom-sidebar-close-button',
-            'custom-sidebar-toggle-style',
-            'app-sidebar-toggle-style-v2',
-            'app-sidebar-toggle-style-v3',
-            'app-sidebar-toggle-style-v4',
-            'app-sidebar-toggle-style-v5'
-          ];
-
-          function cleanupOldButtons() {
-            OLD_IDS.forEach((id) => {
-              const old = doc.getElementById(id);
-              if (old) old.remove();
-            });
-          }
-
-          function injectStyle() {
-            let style = doc.getElementById(STYLE_ID);
-            if (!style) {
-              style = doc.createElement('style');
-              style.id = STYLE_ID;
-              doc.head.appendChild(style);
+            function isClosed() {
+                return localStorage.getItem(STORAGE_KEY) === "1";
             }
-            style.textContent = `
-              /* Native Streamlit sidebar button tetap ada untuk diklik via JS, tapi disembunyikan total secara visual */
-              [data-testid="stSidebarCollapsedControl"],
-              [data-testid="collapsedControl"],
-              [data-testid="stSidebarCollapsedControl"] button,
-              [data-testid="collapsedControl"] button,
-              button[title="Open sidebar"],
-              button[aria-label="Open sidebar"],
-              button[title="Close sidebar"],
-              button[aria-label="Close sidebar"],
-              button[title*="sidebar" i]:not(#${BUTTON_ID}),
-              button[aria-label*="sidebar" i]:not(#${BUTTON_ID}),
-              button[kind="headerNoPadding"],
-              button[data-testid="baseButton-headerNoPadding"],
-              button[data-testid="stBaseButton-headerNoPadding"],
-              button[data-testid*="header" i]:not(#${BUTTON_ID}) {
-                opacity: 0 !important;
-                visibility: hidden !important;
-                color: transparent !important;
-                background: transparent !important;
-                border: 0 !important;
-                box-shadow: none !important;
-                pointer-events: none !important;
-                width: 1px !important;
-                height: 1px !important;
-                min-width: 1px !important;
-                min-height: 1px !important;
-                max-width: 1px !important;
-                max-height: 1px !important;
-                overflow: hidden !important;
-                z-index: -1 !important;
-              }
 
-              [data-testid="stSidebarCollapsedControl"] *,
-              [data-testid="collapsedControl"] *,
-              button[title*="sidebar" i]:not(#${BUTTON_ID}) *,
-              button[aria-label*="sidebar" i]:not(#${BUTTON_ID}) *,
-              button[kind="headerNoPadding"] *,
-              button[data-testid*="header" i]:not(#${BUTTON_ID}) * {
-                opacity: 0 !important;
-                visibility: hidden !important;
-              }
-
-              #${BUTTON_ID} {
-                position: fixed !important;
-                top: 18px !important;
-                left: 22px !important;
-                width: 58px !important;
-                height: 46px !important;
-                min-width: 58px !important;
-                min-height: 46px !important;
-                border-radius: 16px !important;
-                border: 1px solid rgba(139,203,136,.54) !important;
-                background: rgba(18,30,23,.88) !important;
-                color: #F5F7F2 !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                z-index: 2147483647 !important;
-                box-shadow: 0 12px 28px rgba(0,0,0,.24) !important;
-                cursor: pointer !important;
-                transition: opacity .15s ease, background .15s ease, border-color .15s ease, transform .15s ease, left .18s ease, width .18s ease, height .18s ease !important;
-                outline: none !important;
-                overflow: hidden !important;
-              }
-
-              #${BUTTON_ID}:hover {
-                background: rgba(47,125,82,.96) !important;
-                border-color: rgba(139,203,136,.90) !important;
-                transform: translateY(-1px) !important;
-              }
-
-              #${BUTTON_ID} svg {
-                width: 25px !important;
-                height: 25px !important;
-                display: block !important;
-                stroke: currentColor !important;
-                fill: none !important;
-                margin: 0 auto !important;
-                transform: translateX(0px) !important;
-              }
-
-              body.sidebar-is-open #${BUTTON_ID} {
-                top: 22px !important;
-                left: 248px !important;
-                width: 46px !important;
-                height: 40px !important;
-                min-width: 46px !important;
-                min-height: 40px !important;
-                border-radius: 14px !important;
-                opacity: .18 !important;
-                background: rgba(18,30,23,.44) !important;
-                border-color: rgba(139,203,136,.34) !important;
-              }
-
-              body.sidebar-is-open.sidebar-hover #${BUTTON_ID},
-              body.sidebar-is-open #${BUTTON_ID}:hover {
-                opacity: 1 !important;
-                background: rgba(47,125,82,.94) !important;
-                border-color: rgba(139,203,136,.86) !important;
-              }
-
-              body.sidebar-is-closed #${BUTTON_ID} {
-                opacity: 1 !important;
-                top: 18px !important;
-                left: 22px !important;
-                width: 58px !important;
-                height: 46px !important;
-              }
-
-              body.sidebar-is-closed [data-testid="stAppViewContainer"],
-              body.sidebar-is-closed [data-testid="stMain"],
-              body.sidebar-is-closed section.main,
-              body.sidebar-is-closed .main {
-                margin-left: 0 !important;
-                padding-left: 0 !important;
-                width: 100vw !important;
-                max-width: 100vw !important;
-                left: 0 !important;
-                right: 0 !important;
-                transform: none !important;
-              }
-
-              body.sidebar-is-closed .block-container,
-              body.sidebar-is-closed [data-testid="stMainBlockContainer"] {
-                width: min(1500px, calc(100vw - 160px)) !important;
-                max-width: min(1500px, calc(100vw - 160px)) !important;
-                margin-left: auto !important;
-                margin-right: auto !important;
-                padding-left: 0 !important;
-                padding-right: 0 !important;
-                position: relative !important;
-                will-change: transform !important;
-              }
-
-              @media screen and (max-width: 900px) {
-                #${BUTTON_ID} {
-                  top: 11px !important;
-                  left: 11px !important;
-                  width: 48px !important;
-                  height: 42px !important;
-                  border-radius: 14px !important;
+            function setClosed(closed) {
+                localStorage.setItem(STORAGE_KEY, closed ? "1" : "0");
+                doc.body.classList.toggle("sidebar-custom-closed", closed);
+                const btn = doc.getElementById(BTN_ID);
+                if (btn) {
+                    btn.textContent = closed ? "››" : "‹‹";
+                    btn.title = closed ? "Buka sidebar" : "Tutup sidebar";
+                    btn.setAttribute("aria-label", closed ? "Buka sidebar" : "Tutup sidebar");
                 }
-                body.sidebar-is-open #${BUTTON_ID} {
-                  top: 13px !important;
-                  left: 232px !important;
-                  width: 40px !important;
-                  height: 36px !important;
-                  opacity: .84 !important;
+            }
+
+            function ensureButton() {
+                let btn = doc.getElementById(BTN_ID);
+                if (!btn) {
+                    btn = doc.createElement("button");
+                    btn.id = BTN_ID;
+                    btn.type = "button";
+                    btn.addEventListener("click", function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setClosed(!isClosed());
+                    });
+                    doc.body.appendChild(btn);
                 }
-                body.sidebar-is-closed .block-container,
-                body.sidebar-is-closed [data-testid="stMainBlockContainer"] {
-                  width: calc(100vw - 22px) !important;
-                  max-width: calc(100vw - 22px) !important;
-                  padding-left: 0 !important;
-                  padding-right: 0 !important;
-                }
-              }
-            `;
-          }
-
-          function svgChevron(direction) {
-            const isLeft = direction === 'left';
-            /* viewBox 32 biar dua chevron benar-benar tengah di kotak */
-            const d1 = isLeft ? 'M15.5 8 9 16l6.5 8' : 'M16.5 8 23 16l-6.5 8';
-            const d2 = isLeft ? 'M23 8 16.5 16 23 24' : 'M9 8l6.5 8L9 24';
-            return `
-              <svg viewBox="0 0 32 32" aria-hidden="true">
-                <path d="${d1}" stroke-width="3.25" stroke-linecap="round" stroke-linejoin="round"></path>
-                <path d="${d2}" stroke-width="3.25" stroke-linecap="round" stroke-linejoin="round"></path>
-              </svg>
-            `;
-          }
-
-          function getSidebar() {
-            return doc.querySelector('section[data-testid="stSidebar"], [data-testid="stSidebar"]');
-          }
-
-          function sidebarIsOpen() {
-            const sidebar = getSidebar();
-            if (!sidebar) return false;
-
-            const rect = sidebar.getBoundingClientRect();
-            const style = win.getComputedStyle(sidebar);
-            const hiddenByStyle = style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0';
-            const hasRealText = /Pilih Tampilan|Input Data|Menu Utama|Dashboard Sampah|Upload data/i.test(sidebar.innerText || '');
-            const inViewport = rect.width > 140 && rect.right > 160 && rect.left < 90;
-
-            return !hiddenByStyle && inViewport && hasRealText;
-          }
-
-          function nativeButtonByLabel(words) {
-            const candidates = Array.from(doc.querySelectorAll('button, [role="button"], [data-testid="stSidebarCollapsedControl"], [data-testid="collapsedControl"]'))
-              .filter((el) => el.id !== BUTTON_ID);
-
-            for (const el of candidates) {
-              const raw = [
-                el.getAttribute('aria-label'),
-                el.getAttribute('title'),
-                el.getAttribute('data-testid'),
-                el.textContent
-              ].filter(Boolean).join(' ').toLowerCase();
-
-              if (words.some((w) => raw.includes(w))) return el;
-            }
-            return null;
-          }
-
-          function findNativeOpenButton() {
-            return doc.querySelector('[data-testid="stSidebarCollapsedControl"] button') ||
-                   doc.querySelector('[data-testid="stSidebarCollapsedControl"]') ||
-                   doc.querySelector('[data-testid="collapsedControl"] button') ||
-                   doc.querySelector('[data-testid="collapsedControl"]') ||
-                   doc.querySelector('button[aria-label="Open sidebar"]') ||
-                   doc.querySelector('button[title="Open sidebar"]') ||
-                   nativeButtonByLabel(['open sidebar', 'expand sidebar', 'show sidebar', 'sidebarcollapsedcontrol', 'headernopadding']);
-          }
-
-          function findNativeCloseButton() {
-            return doc.querySelector('button[aria-label="Close sidebar"]') ||
-                   doc.querySelector('button[title="Close sidebar"]') ||
-                   nativeButtonByLabel(['close sidebar', 'collapse sidebar', 'hide sidebar']);
-          }
-
-          function fireClick(el) {
-            if (!el) return false;
-            try {
-              el.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, cancelable: true, view: win }));
-              el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, view: win }));
-              el.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, view: win }));
-              el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: win }));
-              return true;
-            } catch(e) {
-              try { el.click(); return true; } catch(err) { return false; }
-            }
-          }
-
-          function clickNativeToggle(open) {
-            const target = open ? findNativeCloseButton() : findNativeOpenButton();
-            if (target && fireClick(target)) {
-              setTimeout(syncState, 120);
-              setTimeout(syncState, 420);
-              setTimeout(syncState, 900);
-              return;
+                return btn;
             }
 
-            const all = Array.from(doc.querySelectorAll('button, [role="button"], [data-testid="stSidebarCollapsedControl"], [data-testid="collapsedControl"]'))
-              .filter((el) => el.id !== BUTTON_ID);
-            const fallback = all.find((el) => {
-              const raw = [el.getAttribute('aria-label'), el.getAttribute('title'), el.getAttribute('data-testid')]
-                .filter(Boolean).join(' ').toLowerCase();
-              return raw.includes('sidebar') || raw.includes('headernopadding') || raw.includes('collapsedcontrol');
-            });
-            if (fallback) {
-              fireClick(fallback);
-              setTimeout(syncState, 120);
-              setTimeout(syncState, 420);
-              setTimeout(syncState, 900);
-            }
-          }
+            ensureButton();
+            setClosed(isClosed());
 
-          function getMainContainer() {
-            return doc.querySelector('[data-testid="stMain"], section.main, .main');
-          }
-
-          function getBlockContainer() {
-            return doc.querySelector('.block-container, [data-testid="stMainBlockContainer"]');
-          }
-
-          function centerClosedContent(block) {
-            if (!block) return;
-            block.style.setProperty('transform', 'translateX(0px)', 'important');
-            block.style.setProperty('position', 'relative', 'important');
-
-            win.requestAnimationFrame(function() {
-              const rect = block.getBoundingClientRect();
-              const desiredLeft = Math.max(28, (win.innerWidth - rect.width) / 2);
-              const delta = Math.round(desiredLeft - rect.left);
-              block.style.setProperty('transform', `translateX(${delta}px)`, 'important');
-            });
-          }
-
-          function applyContentLayout(open) {
-            const main = getMainContainer();
-            const block = getBlockContainer();
-
-            if (!main || !block) return;
-
-            if (open) {
-              main.style.removeProperty('margin-left');
-              main.style.removeProperty('padding-left');
-              main.style.removeProperty('width');
-              main.style.removeProperty('max-width');
-              main.style.removeProperty('left');
-              main.style.removeProperty('right');
-              main.style.removeProperty('transform');
-
-              block.style.removeProperty('width');
-              block.style.removeProperty('max-width');
-              block.style.removeProperty('margin-left');
-              block.style.removeProperty('margin-right');
-              block.style.removeProperty('padding-left');
-              block.style.removeProperty('padding-right');
-              block.style.removeProperty('transform');
-              block.style.removeProperty('position');
-            } else {
-              main.style.setProperty('margin-left', '0px', 'important');
-              main.style.setProperty('padding-left', '0px', 'important');
-              main.style.setProperty('left', '0px', 'important');
-              main.style.setProperty('right', '0px', 'important');
-              main.style.setProperty('transform', 'none', 'important');
-              main.style.setProperty('width', '100vw', 'important');
-              main.style.setProperty('max-width', '100vw', 'important');
-
-              block.style.setProperty('width', 'min(1500px, calc(100vw - 160px))', 'important');
-              block.style.setProperty('max-width', 'min(1500px, calc(100vw - 160px))', 'important');
-              block.style.setProperty('margin-left', 'auto', 'important');
-              block.style.setProperty('margin-right', 'auto', 'important');
-              block.style.setProperty('padding-left', '0px', 'important');
-              block.style.setProperty('padding-right', '0px', 'important');
-              centerClosedContent(block);
-              setTimeout(function() { centerClosedContent(block); }, 160);
-              setTimeout(function() { centerClosedContent(block); }, 520);
-            }
-          }
-
-          function ensureButton() {
-            let btn = doc.getElementById(BUTTON_ID);
-            if (!btn) {
-              btn = doc.createElement('button');
-              btn.id = BUTTON_ID;
-              btn.type = 'button';
-              btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                clickNativeToggle(sidebarIsOpen());
-              });
-              btn.addEventListener('mouseenter', function() {
-                doc.body.classList.add('sidebar-button-hover');
-              });
-              btn.addEventListener('mouseleave', function() {
-                doc.body.classList.remove('sidebar-button-hover');
-              });
-              doc.body.appendChild(btn);
-            }
-            return btn;
-          }
-
-          let sidebarHoverBound = false;
-          function bindSidebarHover() {
-            const sidebar = getSidebar();
-            if (!sidebar || sidebarHoverBound) return;
-            sidebarHoverBound = true;
-            sidebar.addEventListener('mouseenter', function() {
-              doc.body.classList.add('sidebar-hover');
-            });
-            sidebar.addEventListener('mouseleave', function() {
-              doc.body.classList.remove('sidebar-hover');
-            });
-          }
-
-          function syncState() {
-            cleanupOldButtons();
-            injectStyle();
-            bindSidebarHover();
-
-            const open = sidebarIsOpen();
-            doc.body.classList.toggle('sidebar-is-open', open);
-            doc.body.classList.toggle('sidebar-is-closed', !open);
-
-            const btn = ensureButton();
-            btn.setAttribute('aria-label', open ? 'Tutup sidebar' : 'Buka sidebar');
-            btn.title = open ? 'Tutup sidebar' : 'Buka sidebar';
-            btn.innerHTML = svgChevron(open ? 'left' : 'right');
-            applyContentLayout(open);
-          }
-
-          syncState();
-          win.addEventListener('resize', syncState);
-          win.addEventListener('click', function() { setTimeout(syncState, 120); }, true);
-          setInterval(syncState, 500);
+            // Pastikan tombol tidak hilang setelah rerun Streamlit.
+            setInterval(function() {
+                ensureButton();
+                setClosed(isClosed());
+            }, 700);
         })();
         </script>
         """,
         height=0,
     )
 
-# Sidebar fixed: helper toggle dimatikan agar layout stabil.
-# inject_sidebar_state_helper()
 
+inject_custom_sidebar_toggle()
 
 
 # UI COMPONENTS
