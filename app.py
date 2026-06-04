@@ -1,6 +1,7 @@
 import warnings
 warnings.filterwarnings("ignore")
 
+import io
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -93,12 +94,57 @@ def evaluate_model(actual, forecast):
 # LOAD DATA
 # ============================================================
 
-@st.cache_data
-def load_data():
-    df_raw = pd.read_excel(FILE_NAME)
+def safe_unique_text(df_raw, column_name, default="Tidak tersedia"):
+    if column_name not in df_raw.columns:
+        return default
+
+    values = df_raw[column_name].dropna().astype(str).str.strip()
+    values = values[values != ""]
+
+    if values.empty:
+        return default
+
+    return ", ".join(values.unique())
+
+
+def normalize_uploaded_columns(df_raw):
+    df_raw = df_raw.copy()
+    column_lookup = {str(col).strip().lower(): col for col in df_raw.columns}
+
+    required_columns = ["tahun", "bulan", "jumlah_sampah"]
+    missing_columns = [col for col in required_columns if col not in column_lookup]
+
+    if missing_columns:
+        raise ValueError(
+            "Kolom wajib belum lengkap. Pastikan file memiliki kolom: tahun, bulan, dan jumlah_sampah."
+        )
+
+    rename_map = {column_lookup[col]: col for col in required_columns}
+    df_raw = df_raw.rename(columns=rename_map)
+
+    return df_raw
+
+
+def preprocess_data(df_raw):
+    df_raw = normalize_uploaded_columns(df_raw)
 
     df = df_raw.copy()
-    df["bulan_num"] = df["bulan"].astype(str).str.upper().map(BULAN_MAP)
+
+    bulan_numeric = pd.to_numeric(df["bulan"], errors="coerce")
+    bulan_text = df["bulan"].astype(str).str.strip().str.upper()
+    df["bulan_num"] = bulan_text.map(BULAN_MAP)
+    df.loc[bulan_numeric.between(1, 12), "bulan_num"] = bulan_numeric[bulan_numeric.between(1, 12)]
+
+    df["tahun"] = pd.to_numeric(df["tahun"], errors="coerce")
+    df["jumlah_sampah"] = pd.to_numeric(df["jumlah_sampah"], errors="coerce")
+
+    df = df.dropna(subset=["tahun", "bulan_num", "jumlah_sampah"])
+
+    if df.empty:
+        raise ValueError("Data tidak dapat diproses karena nilai tahun, bulan, atau jumlah_sampah tidak valid.")
+
+    df["tahun"] = df["tahun"].astype(int)
+    df["bulan_num"] = df["bulan_num"].astype(int)
 
     df["tanggal"] = pd.to_datetime({
         "year": df["tahun"],
@@ -107,19 +153,114 @@ def load_data():
     })
 
     df = df.sort_values("tanggal")
+    df = df.drop_duplicates(subset=["tanggal"], keep="last")
     df = df.set_index("tanggal")
 
     ts = df["jumlah_sampah"].asfreq("MS")
+
+    if ts.isna().sum() > 0:
+        ts = ts.interpolate(method="time").bfill().ffill()
+
+    if len(ts.dropna()) < 24:
+        raise ValueError("Minimal dibutuhkan 24 bulan data historis agar model SARIMA dapat dilatih dengan lebih stabil.")
 
     return df_raw, df, ts
 
 
 @st.cache_data
+def load_data(uploaded_bytes=None, uploaded_name=None):
+    if uploaded_bytes is not None and uploaded_name is not None:
+        file_buffer = io.BytesIO(uploaded_bytes)
+
+        if uploaded_name.lower().endswith(".csv"):
+            df_raw = pd.read_csv(file_buffer)
+        else:
+            df_raw = pd.read_excel(file_buffer)
+
+        source_data_name = f"Upload user: {uploaded_name}"
+        source_data_type = "upload"
+    else:
+        df_raw = pd.read_excel(FILE_NAME)
+        source_data_name = "Data bawaan aplikasi"
+        source_data_type = "default"
+
+    df_raw, df, ts = preprocess_data(df_raw)
+
+    return df_raw, df, ts, source_data_name, source_data_type
+
+
+SARIMA_CANDIDATES = [
+    ((1, 2, 2), (0, 1, 1, 12)),
+    ((1, 1, 1), (0, 1, 1, 12)),
+    ((0, 1, 1), (0, 1, 1, 12)),
+    ((1, 1, 2), (0, 1, 1, 12)),
+    ((2, 1, 1), (0, 1, 1, 12)),
+    ((2, 1, 2), (0, 1, 1, 12)),
+    ((1, 1, 1), (1, 1, 1, 12)),
+    ((2, 1, 2), (1, 1, 1, 12)),
+]
+
+
+def sarima_label(order, seasonal_order):
+    return f"SARIMA{order}{seasonal_order}"
+
+
+@st.cache_data(show_spinner=False)
+def select_best_sarima(ts):
+    results = []
+    best_order = None
+    best_seasonal_order = None
+    best_aic = np.inf
+
+    for order, seasonal_order in SARIMA_CANDIDATES:
+        try:
+            model = SARIMAX(
+                ts,
+                order=order,
+                seasonal_order=seasonal_order,
+                enforce_stationarity=False,
+                enforce_invertibility=False
+            )
+            fit = model.fit(disp=False)
+            aic = fit.aic
+
+            results.append({
+                "Model": sarima_label(order, seasonal_order),
+                "AIC": aic,
+                "Status": "Berhasil"
+            })
+
+            if np.isfinite(aic) and aic < best_aic:
+                best_aic = aic
+                best_order = order
+                best_seasonal_order = seasonal_order
+
+        except Exception:
+            results.append({
+                "Model": sarima_label(order, seasonal_order),
+                "AIC": np.nan,
+                "Status": "Gagal"
+            })
+
+    selection_df = pd.DataFrame(results)
+
+    if best_order is None or best_seasonal_order is None:
+        best_order = (1, 2, 2)
+        best_seasonal_order = (0, 1, 1, 12)
+
+    model_name = sarima_label(best_order, best_seasonal_order)
+
+    return best_order, best_seasonal_order, model_name, selection_df
+
+
+@st.cache_data
 def make_sarima_forecast(ts, forecast_steps):
+    best_order, best_seasonal_order, model_name, selection_df = select_best_sarima(ts)
+
     model = SARIMAX(
         ts,
-        order=(1, 2, 2),
-        seasonal_order=(0, 1, 1, 12),
+        order=best_order,
+        seasonal_order=best_seasonal_order,
         enforce_stationarity=False,
         enforce_invertibility=False
     )
@@ -135,7 +276,7 @@ def make_sarima_forecast(ts, forecast_steps):
     forecast = fit.forecast(steps=forecast_steps)
     forecast = pd.Series(forecast.values, index=future_index)
 
-    return forecast
+    return forecast, model_name, selection_df
 
 
 @st.cache_data
@@ -143,10 +284,12 @@ def evaluate_sarima(ts):
     train = ts.iloc[:-12]
     test = ts.iloc[-12:]
 
+    best_order, best_seasonal_order, model_name, selection_df = select_best_sarima(train)
+
     model = SARIMAX(
         train,
-        order=(1, 2, 2),
-        seasonal_order=(0, 1, 1, 12),
+        order=best_order,
+        seasonal_order=best_seasonal_order,
         enforce_stationarity=False,
         enforce_invertibility=False
     )
@@ -158,7 +301,7 @@ def evaluate_sarima(ts):
     mae, rmse, mape, r2 = evaluate_model(test, forecast)
 
     eval_df = pd.DataFrame({
-        "Model": ["SARIMA(1,2,2)(0,1,1,12)"],
+        "Model": [model_name],
         "MAE": [mae],
         "RMSE": [rmse],
         "MAPE (%)": [mape],
@@ -171,7 +314,7 @@ def evaluate_sarima(ts):
         "Prediksi": forecast.values
     })
 
-    return eval_df, comparison_df, test, forecast
+    return eval_df, comparison_df, test, forecast, model_name, selection_df
 
 
 # ============================================================
@@ -424,6 +567,47 @@ def apply_theme(mode):
             color: {cfg["text"]} !important;
         }}
 
+        .data-input-title {{
+            font-size: 13px;
+            font-weight: 900;
+            margin-top: 18px;
+            margin-bottom: 8px;
+            color: {cfg["text"]} !important;
+        }}
+
+        .data-input-note {{
+            color: {cfg["muted"]} !important;
+            font-size: 11.5px;
+            font-weight: 600;
+            line-height: 1.45;
+            margin-top: -4px;
+            margin-bottom: 8px;
+        }}
+
+        .data-status {{
+            border: 1px solid {cfg["border"]};
+            border-radius: 14px;
+            background: {cfg["card"]};
+            color: {cfg["text"]} !important;
+            font-size: 12px;
+            font-weight: 850;
+            line-height: 1.35;
+            padding: 10px 11px;
+            margin: 8px 0 18px 0;
+            box-shadow: 0 8px 18px {cfg["shadow"]};
+        }}
+
+        .data-status span {{
+            color: {cfg["muted"]} !important;
+            font-size: 10.8px;
+            font-weight: 650;
+        }}
+
+        .data-status.success {{
+            border-color: {cfg["accent"]};
+            background: {cfg["accent_soft"]};
+        }}
+
         [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] {{
             gap: 0.55rem !important;
         }}
@@ -648,6 +832,21 @@ def apply_theme(mode):
             line-height: 1.35;
             margin: 0;
             opacity: 0.95;
+        }}
+
+        [data-testid="stFileUploader"] section {{
+            background: {cfg["card"]} !important;
+            border: 1px dashed {cfg["border"]} !important;
+            border-radius: 14px !important;
+            padding: 10px !important;
+        }}
+
+        [data-testid="stFileUploader"] section:hover {{
+            border-color: {cfg["accent"]} !important;
+        }}
+
+        [data-testid="stFileUploader"] small {{
+            color: {cfg["muted"]} !important;
         }}
 
         div[data-baseweb="select"] > div {{
@@ -1374,6 +1573,24 @@ def apply_theme(mode):
                 line-height: 1.15 !important;
             }}
 
+            .data-input-title {{
+                margin-top: 12px !important;
+                margin-bottom: 6px !important;
+                font-size: 12.5px !important;
+            }}
+
+            .data-input-note {{
+                font-size: 10.5px !important;
+                line-height: 1.35 !important;
+                margin-bottom: 6px !important;
+            }}
+
+            .data-status {{
+                font-size: 11px !important;
+                padding: 8px 9px !important;
+                margin-bottom: 12px !important;
+            }}
+
             /* Mobile: segmented button ☀️ / 🌙 dibuat simetris */
             [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) {{
                 width: 188px !important;
@@ -2069,18 +2286,6 @@ def make_eval_chart(actual, predicted, theme):
 
 
 # ============================================================
-# LOAD ACTUAL DATA
-# ============================================================
-
-df_raw, df, ts = load_data()
-
-provinsi = ", ".join(df_raw["nama_provinsi"].dropna().unique())
-kota = ", ".join(df_raw["bps_nama_kabupaten_kota"].dropna().unique())
-satuan = ", ".join(df_raw["satuan"].dropna().unique())
-periode_data = f"{format_periode(ts.index.min())} - {format_periode(ts.index.max())}"
-
-
-# ============================================================
 # SIDEBAR KIRI
 # ============================================================
 
@@ -2102,6 +2307,45 @@ with theme_col2:
         use_container_width=True,
         on_click=set_theme,
         args=("Gelap",)
+    )
+
+st.sidebar.markdown('<div class="data-input-title">📂 Input Data</div>', unsafe_allow_html=True)
+uploaded_file = st.sidebar.file_uploader(
+    "Upload data sampah terbaru",
+    type=["xlsx", "xls", "csv"],
+    help="Format minimal: kolom tahun, bulan, dan jumlah_sampah."
+)
+st.sidebar.markdown(
+    '<div class="data-input-note">Format wajib: <b>tahun</b>, <b>bulan</b>, <b>jumlah_sampah</b>. Jika data diunggah, model otomatis dilatih ulang dan prediksi bisa dibuat sampai 24 bulan ke depan.</div>',
+    unsafe_allow_html=True
+)
+
+try:
+    uploaded_bytes = uploaded_file.getvalue() if uploaded_file is not None else None
+    uploaded_name = uploaded_file.name if uploaded_file is not None else None
+    df_raw, df, ts, source_data_name, source_data_type = load_data(uploaded_bytes, uploaded_name)
+except Exception as error:
+    if uploaded_file is not None:
+        st.sidebar.error(f"File upload tidak valid: {error}")
+        df_raw, df, ts, source_data_name, source_data_type = load_data()
+    else:
+        st.error(f"Data tidak dapat dimuat: {error}")
+        st.stop()
+
+provinsi = safe_unique_text(df_raw, "nama_provinsi")
+kota = safe_unique_text(df_raw, "bps_nama_kabupaten_kota")
+satuan = safe_unique_text(df_raw, "satuan", default="Ton")
+periode_data = f"{format_periode(ts.index.min())} - {format_periode(ts.index.max())}"
+
+if source_data_type == "upload":
+    st.sidebar.markdown(
+        f'<div class="data-status success">✅ Data upload aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
+        unsafe_allow_html=True
+    )
+else:
+    st.sidebar.markdown(
+        f'<div class="data-status info">ℹ️ Data bawaan aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
+        unsafe_allow_html=True
     )
 
 menu = st.sidebar.radio(
@@ -2162,7 +2406,7 @@ if menu == "Simulasi Pengelolaan":
         forecast_steps = st.slider(
             "🗓️ Simulasi untuk berapa bulan ke depan?",
             min_value=1,
-            max_value=12,
+            max_value=24,
             value=12,
             step=1
         )
@@ -2191,7 +2435,7 @@ if menu == "Simulasi Pengelolaan":
             step=1
         )
 
-    forecast = make_sarima_forecast(ts, forecast_steps)
+    forecast, forecast_model_label, model_selection_df = make_sarima_forecast(ts, forecast_steps)
 
     simulation_df = build_simulation_table(
         forecast=forecast,
@@ -2264,6 +2508,7 @@ if menu == "Simulasi Pengelolaan":
     bullet_card(
         "📝 Catatan simulasi",
         [
+            f"Model prediksi yang aktif adalah <b>{forecast_model_label}</b> dan dipilih otomatis berdasarkan data terbaru.",
             f"Biaya penanganan yang digunakan adalah <b>{format_rupiah(biaya_per_ton)} per ton</b>.",
             f"Kapasitas truk compactor digunakan sebesar <b>{kapasitas_truk_compactor_m3} m³</b> per muatan.",
             f"Prediksi sampah dalam ton dikonversi menjadi volume menggunakan densitas <b>{format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³</b>.",
@@ -2285,7 +2530,7 @@ elif menu == "Ringkasan Data & Model":
         unsafe_allow_html=True
     )
 
-    eval_df, comparison_df, test_actual, test_forecast = evaluate_sarima(ts)
+    eval_df, comparison_df, test_actual, test_forecast, eval_model_label, eval_model_selection_df = evaluate_sarima(ts)
 
     left, right = st.columns(2, gap="large")
 
@@ -2293,6 +2538,7 @@ elif menu == "Ringkasan Data & Model":
         bullet_card(
             "Ringkasan Data",
             [
+                f"Sumber data: <b>{source_data_name}</b>",
                 f"Wilayah: <b>{kota}</b>",
                 f"Provinsi: <b>{provinsi}</b>",
                 f"Jumlah data: <b>{len(df_raw)} baris</b>",
@@ -2309,9 +2555,10 @@ elif menu == "Ringkasan Data & Model":
         bullet_card(
             "Ringkasan Model",
             [
-                "Model yang digunakan: <b>SARIMA(1,2,2)(0,1,1,12)</b>.",
-                "Dashboard hanya memakai satu model agar lebih mudah dipahami user.",
-                "Prediksi dibatasi maksimal <b>12 bulan ke depan</b> agar fokus pada perencanaan jangka pendek.",
+                f"Model evaluasi terbaik yang dipilih otomatis: <b>{eval_model_label}</b>.",
+                "Sistem mencoba beberapa kandidat SARIMA, lalu memilih parameter terbaik berdasarkan nilai <b>AIC</b> terkecil.",
+                "Jika user mengunggah data terbaru, preprocessing dan pelatihan model dilakukan ulang secara otomatis berdasarkan data tersebut.",
+                "Prediksi dapat dibuat sampai <b>24 bulan ke depan</b> untuk mendukung simulasi hingga dua tahun mendatang.",
                 "Model digunakan untuk menghasilkan estimasi jumlah sampah, anggaran, volume sampah, dan kebutuhan muatan truk compactor.",
                 "Detail teori, EDA, parameter model, dan evaluasi lengkap dijelaskan pada laporan."
             ]
