@@ -4052,17 +4052,13 @@ st.sidebar.markdown('''
             <path d="M9.8 13.8 12 16l2.2-2.2"/>
         </svg>
     </span>
-    <span class="data-input-title-text">Input Data</span>
+
 </div>
 ''', unsafe_allow_html=True)
 uploaded_file = st.sidebar.file_uploader(
     "Upload data sampah terbaru",
     type=["xlsx", "xls", "csv"],
     help="Format minimal: kolom tahun, bulan, dan jumlah_sampah."
-)
-st.sidebar.markdown(
-    '<div class="data-input-note">Format wajib: <b>tahun</b>, <b>bulan</b>, <b>jumlah_sampah</b>.</div>',
-    unsafe_allow_html=True
 )
 
 try:
