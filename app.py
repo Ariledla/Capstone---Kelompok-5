@@ -540,8 +540,8 @@ def apply_theme(mode):
         .block-container {{
             max-width: 1420px !important;
             padding-top: 0rem !important;
-            padding-left: 0.95rem !important;
-            padding-right: 0.95rem !important;
+            padding-left: 0.82rem !important;
+            padding-right: 0.82rem !important;
             padding-bottom: 1.5rem !important;
         }}
 
@@ -556,12 +556,12 @@ def apply_theme(mode):
         [data-testid="stSidebar"] {{
             background: {cfg["sidebar_bg"]} !important;
             border-right: 1px solid {cfg["border"]};
-            width: 304px !important;
-            min-width: 304px !important;
+            width: 264px !important;
+            min-width: 264px !important;
         }}
 
         [data-testid="stSidebarContent"] {{
-            width: 304px !important;
+            width: 264px !important;
             padding-top: 0rem !important;
         }}
 
@@ -2486,8 +2486,8 @@ st.markdown(
     <style>
     /* Sidebar lebih ramping dan tidak terasa penuh. */
     [data-testid="stSidebarUserContent"] {
-        padding-left: 0.95rem !important;
-        padding-right: 0.95rem !important;
+        padding-left: 0.82rem !important;
+        padding-right: 0.82rem !important;
         padding-bottom: 6px !important;
         margin-top: -2.85rem !important;
         overflow-y: hidden !important;
@@ -2594,7 +2594,7 @@ st.markdown(
     }
 
     .data-status span {
-        font-size: 9.4px !important;
+        font-size: 9.0px !important;
     }
 
     .modern-status-dot {
@@ -2672,13 +2672,13 @@ st.markdown(
     }
 
     .sidebar-visual-title {
-        font-size: 12.8px !important;
+        font-size: 12.2px !important;
         line-height: 1.12 !important;
         margin-top: 0 !important;
     }
 
     .sidebar-visual-subtitle {
-        font-size: 9.1px !important;
+        font-size: 8.9px !important;
         line-height: 1.24 !important;
         margin-top: 3px !important;
     }
@@ -2687,7 +2687,7 @@ st.markdown(
         margin-top: 6px !important;
         padding: 5px 7px !important;
         border-radius: 10px !important;
-        font-size: 9.4px !important;
+        font-size: 9.0px !important;
         line-height: 1.25 !important;
         min-height: 24px !important;
     }
@@ -2748,9 +2748,9 @@ st.markdown(
     /* Layout normal saat sidebar terbuka. */
     section[data-testid="stSidebar"],
     [data-testid="stSidebar"] {
-        width: 304px !important;
-        min-width: 304px !important;
-        flex: 0 0 304px !important;
+        width: 264px !important;
+        min-width: 264px !important;
+        flex: 0 0 264px !important;
         transform: translateX(0) !important;
         transition: width .22s ease, min-width .22s ease, flex-basis .22s ease, transform .22s ease, opacity .16s ease !important;
         overflow: hidden !important;
@@ -2758,8 +2758,8 @@ st.markdown(
     }
 
     [data-testid="stSidebarContent"] {
-        width: 304px !important;
-        min-width: 304px !important;
+        width: 264px !important;
+        min-width: 264px !important;
         transition: opacity .12s ease !important;
     }
 
@@ -2828,7 +2828,7 @@ st.markdown(
     #custom-sidebar-toggle-v23 {
         position: fixed !important;
         top: 5px !important;
-        left: 258px !important;
+        left: 218px !important;
         width: 36px !important;
         height: 32px !important;
         border-radius: 11px !important;
@@ -2892,7 +2892,7 @@ st.markdown(
 
     @media screen and (max-width: 900px) {
         #custom-sidebar-toggle-v23 {
-            left: 258px !important;
+            left: 218px !important;
             top: 5px !important;
         }
         body.sidebar-custom-closed #custom-sidebar-toggle-v23 {
