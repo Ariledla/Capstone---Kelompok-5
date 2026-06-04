@@ -2477,6 +2477,244 @@ theme = apply_theme(st.session_state.theme_mode)
 
 
 # ============================================================
+# SIDEBAR COMPACT OVERRIDE — v28
+# Fokus: ukuran sidebar lebih ramping seperti referensi, tanpa ubah isi.
+# ============================================================
+
+st.markdown(
+    """
+    <style>
+    /* Sidebar lebih ramping dan tidak terasa penuh. */
+    [data-testid="stSidebarUserContent"] {
+        padding-left: 0.95rem !important;
+        padding-right: 0.95rem !important;
+        padding-bottom: 6px !important;
+        margin-top: -2.85rem !important;
+        overflow-y: hidden !important;
+    }
+
+    [data-testid="stSidebar"],
+    [data-testid="stSidebarContent"],
+    [data-testid="stSidebarUserContent"] {
+        overflow-y: hidden !important;
+        scrollbar-width: none !important;
+    }
+
+    [data-testid="stSidebar"]::-webkit-scrollbar,
+    [data-testid="stSidebarContent"]::-webkit-scrollbar,
+    [data-testid="stSidebarUserContent"]::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    /* Judul dan tombol mode dibuat lebih kecil. */
+    [data-testid="stSidebar"] .theme-label {
+        font-size: 13.2px !important;
+        line-height: 1.12 !important;
+        margin-bottom: 5px !important;
+    }
+
+    [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] {
+        gap: 0.40rem !important;
+        margin-bottom: 8px !important;
+    }
+
+    [data-testid="stSidebar"] .stButton > button {
+        height: 31px !important;
+        min-height: 31px !important;
+        border-radius: 12px !important;
+        font-size: 11.5px !important;
+        padding: 0 !important;
+    }
+
+    /* Upload block dibuat seperti referensi: tidak terlalu tinggi dan tombol tidak full besar. */
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] {
+        margin-top: 2px !important;
+        margin-bottom: 5px !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] label p {
+        font-size: 14.6px !important;
+        line-height: 1.18 !important;
+        margin-bottom: 5px !important;
+        letter-spacing: 0.01em !important;
+    }
+
+    [data-testid="stFileUploader"] section {
+        min-height: 92px !important;
+        padding: 7px !important;
+        border-radius: 13px !important;
+    }
+
+    [data-testid="stFileUploader"] section button,
+    [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
+    [data-testid="stFileUploader"] button[kind="secondary"] {
+        width: 126px !important;
+        min-width: 126px !important;
+        max-width: 126px !important;
+        height: 34px !important;
+        min-height: 34px !important;
+        border-radius: 10px !important;
+        font-size: 12.3px !important;
+        gap: 7px !important;
+        padding: 0 10px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] small,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section small {
+        font-size: 10.4px !important;
+        line-height: 1.20 !important;
+        margin-top: 2px !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section p,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section span {
+        font-size: 10.8px !important;
+        line-height: 1.20 !important;
+    }
+
+    /* Teks format dan status data lebih kecil. */
+    [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] p {
+        margin-bottom: 0.30rem !important;
+    }
+
+    [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] strong,
+    [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] b {
+        font-size: 11.2px !important;
+        line-height: 1.25 !important;
+    }
+
+    .data-status {
+        font-size: 10.6px !important;
+        line-height: 1.22 !important;
+        padding: 7px 9px !important;
+        margin: 5px 0 9px 0 !important;
+        border-radius: 12px !important;
+    }
+
+    .data-status span {
+        font-size: 9.4px !important;
+    }
+
+    .modern-status-dot {
+        width: 13px !important;
+        height: 13px !important;
+        min-width: 13px !important;
+        margin-right: 5px !important;
+        vertical-align: -2px !important;
+    }
+
+    .modern-status-dot::after {
+        width: 5px !important;
+        height: 5px !important;
+        left: 3.5px !important;
+        top: 3.5px !important;
+    }
+
+    /* Menu utama dipadatkan. */
+    [data-testid="stSidebar"] .stRadio > label p {
+        font-size: 13.8px !important;
+        line-height: 1.15 !important;
+        margin-bottom: 4px !important;
+    }
+
+    [data-testid="stSidebar"] [role="radiogroup"] {
+        gap: 1px !important;
+    }
+
+    [data-testid="stSidebar"] [role="radiogroup"] label {
+        min-height: 28px !important;
+        padding: 2px 7px !important;
+        border-radius: 10px !important;
+    }
+
+    [data-testid="stSidebar"] [role="radiogroup"] label p {
+        font-size: 11.8px !important;
+        line-height: 1.15 !important;
+    }
+
+    [data-testid="stSidebar"] [role="radiogroup"] label > div:first-child {
+        transform: scale(0.72) !important;
+        transform-origin: center !important;
+        margin-right: 2px !important;
+    }
+
+    /* Card dashboard sampah dibuat lebih pendek dan ramping. */
+    .sidebar-visual {
+        border-radius: 16px !important;
+        padding: 8px 10px !important;
+        margin: 8px 0 0 0 !important;
+        box-shadow: 0 7px 18px rgba(15, 23, 42, 0.14) !important;
+    }
+
+    .sidebar-visual::before {
+        width: 52px !important;
+        height: 52px !important;
+        right: -16px !important;
+        top: -18px !important;
+    }
+
+    .sidebar-icons {
+        gap: 6px !important;
+        margin-bottom: 6px !important;
+    }
+
+    .sidebar-icons span {
+        width: 25px !important;
+        height: 25px !important;
+        border-radius: 9px !important;
+    }
+
+    .sidebar-icons svg {
+        width: 13.5px !important;
+        height: 13.5px !important;
+    }
+
+    .sidebar-visual-title {
+        font-size: 12.8px !important;
+        line-height: 1.12 !important;
+        margin-top: 0 !important;
+    }
+
+    .sidebar-visual-subtitle {
+        font-size: 9.1px !important;
+        line-height: 1.24 !important;
+        margin-top: 3px !important;
+    }
+
+    .team-name {
+        margin-top: 6px !important;
+        padding: 5px 7px !important;
+        border-radius: 10px !important;
+        font-size: 9.4px !important;
+        line-height: 1.25 !important;
+        min-height: 24px !important;
+    }
+
+    /* Kurangi jarak kosong antar blok Streamlit di sidebar. */
+    [data-testid="stSidebar"] .element-container {
+        margin-bottom: 0.22rem !important;
+    }
+
+    [data-testid="stSidebar"] hr {
+        margin: 6px 0 !important;
+    }
+
+    /* Tombol sidebar tetap di atas dan tidak mengganggu isi. */
+    #custom-sidebar-toggle-v23 {
+        top: 4px !important;
+        width: 34px !important;
+        height: 30px !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+
+# ============================================================
 # CUSTOM SIDEBAR TOGGLE — STABLE VERSION
 # Tidak memakai tombol native Streamlit. Tombol custom selalu terlihat:
 # << untuk menutup sidebar, >> untuk membuka kembali.
