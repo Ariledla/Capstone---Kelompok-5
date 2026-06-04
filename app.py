@@ -2975,7 +2975,7 @@ def render_eda_section(ts, theme):
         ]
 
     st.plotly_chart(fig_eda, use_container_width=True, config={"displayModeBar": False, "responsive": True})
-    bullet_card(f"Insight EDA - {eda_choice}", insight_items)
+    bullet_card(f"{eda_choice}", insight_items)
 
 
 # ============================================================
