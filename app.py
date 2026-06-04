@@ -539,10 +539,18 @@ def apply_theme(mode):
 
         .block-container {{
             max-width: 1420px !important;
-            padding-top: 1.15rem !important;
+            padding-top: 0.25rem !important;
             padding-left: 0.95rem !important;
             padding-right: 0.95rem !important;
             padding-bottom: 1.5rem !important;
+        }}
+
+        [data-testid="stMainBlockContainer"] {{
+            padding-top: 0.25rem !important;
+        }}
+
+        main .block-container {{
+            padding-top: 0.25rem !important;
         }}
 
         [data-testid="stSidebar"] {{
@@ -825,9 +833,10 @@ def apply_theme(mode):
         .hero {{
             background: {cfg["hero"]};
             color: white !important;
-            padding: 25px 31px;
+            padding: 24px 31px;
             border-radius: 24px;
-            margin-bottom: 26px;
+            margin-top: 0 !important;
+            margin-bottom: 24px;
             box-shadow: 0 18px 42px rgba(31, 41, 51, 0.18);
         }}
 
@@ -1395,6 +1404,12 @@ def apply_theme(mode):
             display: none;
         }}
 
+
+        div[data-testid="stExpander"] [role="radiogroup"] label:hover::before,
+        div[data-testid="stExpander"] [role="radiogroup"] > div:hover label::before,
+        div[data-testid="stExpander"] [role="radiogroup"] > div:hover div + div::before {{
+            border-color: #FF4B4B !important;
+        }}
         @media screen and (max-width: 900px) {{
             .block-container {{
                 padding-top: 0.7rem !important;
@@ -3970,6 +3985,15 @@ def render_eda_section(ts, theme):
             background: radial-gradient(circle, {theme["accent"]} 0 42%, rgba(255,255,255,0.96) 43% 64%, transparent 65% 100%);
             box-shadow: 0 0 0 3px rgba(139, 203, 136, 0.12);
         }}
+
+        /* Saat mouse menyentuh baris opsi mana pun, bulatan kiri berubah merah. */
+        div[data-testid="stExpander"] [role="radiogroup"] > div:hover label::before,
+        div[data-testid="stExpander"] [role="radiogroup"] label:hover::before {{
+            border-color: #FF4B4B !important;
+            background: radial-gradient(circle, #FF4B4B 0 55%, #FF4B4B 56% 100%) !important;
+            box-shadow: 0 0 0 5px rgba(255, 75, 75, 0.16) !important;
+            transform: scale(1.08) !important;
+        }}
         div[data-testid="stExpander"] [role="radiogroup"] p {{
             color: {theme["text"]} !important;
             font-weight: 760 !important;
@@ -4111,6 +4135,10 @@ uploaded_file = st.sidebar.file_uploader(
     "Upload data sampah terbaru",
     type=["xlsx", "xls", "csv"],
     help="Format minimal: kolom tahun, bulan, dan jumlah_sampah."
+)
+st.sidebar.markdown(
+    '<div class="data-input-note">Format wajib: <b>tahun</b>, <b>bulan</b>, <b>jumlah_sampah</b>.</div>',
+    unsafe_allow_html=True
 )
 
 try:
