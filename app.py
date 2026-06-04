@@ -556,12 +556,12 @@ def apply_theme(mode):
         [data-testid="stSidebar"] {{
             background: {cfg["sidebar_bg"]} !important;
             border-right: 1px solid {cfg["border"]};
-            width: 236px !important;
-            min-width: 236px !important;
+            width: 226px !important;
+            min-width: 226px !important;
         }}
 
         [data-testid="stSidebarContent"] {{
-            width: 236px !important;
+            width: 226px !important;
             padding-top: 0rem !important;
         }}
 
@@ -2487,10 +2487,10 @@ st.markdown(
     [data-testid="stSidebar"],
     [data-testid="stSidebarContent"],
     section[data-testid="stSidebar"] {
-        width: 236px !important;
-        min-width: 236px !important;
-        max-width: 236px !important;
-        flex: 0 0 236px !important;
+        width: 226px !important;
+        min-width: 226px !important;
+        max-width: 226px !important;
+        flex: 0 0 226px !important;
         overflow-y: hidden !important;
     }
 
@@ -2949,9 +2949,9 @@ st.markdown(
     /* Layout normal saat sidebar terbuka. */
     section[data-testid="stSidebar"],
     [data-testid="stSidebar"] {
-        width: 236px !important;
-        min-width: 236px !important;
-        flex: 0 0 236px !important;
+        width: 226px !important;
+        min-width: 226px !important;
+        flex: 0 0 226px !important;
         transform: translateX(0) !important;
         transition: width .22s ease, min-width .22s ease, flex-basis .22s ease, transform .22s ease, opacity .16s ease !important;
         overflow: hidden !important;
@@ -2959,8 +2959,8 @@ st.markdown(
     }
 
     [data-testid="stSidebarContent"] {
-        width: 236px !important;
-        min-width: 236px !important;
+        width: 226px !important;
+        min-width: 226px !important;
         transition: opacity .12s ease !important;
     }
 
