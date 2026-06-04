@@ -2154,12 +2154,16 @@ def inject_sidebar_state_helper():
           const win = window.parent;
 
           const BUTTON_ID = 'app-sidebar-toggle-btn';
-          const STYLE_ID = 'app-sidebar-toggle-style-v5';
+          const STYLE_ID = 'app-sidebar-toggle-style-v6';
           const OLD_IDS = [
             'custom-mobile-sidebar-button',
             'custom-sidebar-open-button',
             'custom-sidebar-close-button',
-            'custom-sidebar-toggle-style'
+            'custom-sidebar-toggle-style',
+            'app-sidebar-toggle-style-v2',
+            'app-sidebar-toggle-style-v3',
+            'app-sidebar-toggle-style-v4',
+            'app-sidebar-toggle-style-v5'
           ];
 
           function cleanupOldButtons() {
@@ -2177,7 +2181,7 @@ def inject_sidebar_state_helper():
               doc.head.appendChild(style);
             }
             style.textContent = `
-              /* Hilangkan semua ikon hamburger/native Streamlit supaya tidak dobel */
+              /* Native Streamlit sidebar button tetap ada untuk diklik via JS, tapi disembunyikan total secara visual */
               [data-testid="stSidebarCollapsedControl"],
               [data-testid="collapsedControl"],
               [data-testid="stSidebarCollapsedControl"] button,
@@ -2191,7 +2195,7 @@ def inject_sidebar_state_helper():
               button[kind="headerNoPadding"],
               button[data-testid="baseButton-headerNoPadding"],
               button[data-testid="stBaseButton-headerNoPadding"],
-              button[data-testid*="header" i] {
+              button[data-testid*="header" i]:not(#${BUTTON_ID}) {
                 opacity: 0 !important;
                 visibility: hidden !important;
                 color: transparent !important;
@@ -2214,7 +2218,7 @@ def inject_sidebar_state_helper():
               button[title*="sidebar" i]:not(#${BUTTON_ID}) *,
               button[aria-label*="sidebar" i]:not(#${BUTTON_ID}) *,
               button[kind="headerNoPadding"] *,
-              button[data-testid*="header" i] * {
+              button[data-testid*="header" i]:not(#${BUTTON_ID}) * {
                 opacity: 0 !important;
                 visibility: hidden !important;
               }
@@ -2223,11 +2227,11 @@ def inject_sidebar_state_helper():
                 position: fixed !important;
                 top: 18px !important;
                 left: 22px !important;
-                width: 54px !important;
-                height: 42px !important;
-                min-width: 54px !important;
-                min-height: 42px !important;
-                border-radius: 15px !important;
+                width: 58px !important;
+                height: 46px !important;
+                min-width: 58px !important;
+                min-height: 46px !important;
+                border-radius: 16px !important;
                 border: 1px solid rgba(139,203,136,.54) !important;
                 background: rgba(18,30,23,.88) !important;
                 color: #F5F7F2 !important;
@@ -2239,8 +2243,9 @@ def inject_sidebar_state_helper():
                 z-index: 2147483647 !important;
                 box-shadow: 0 12px 28px rgba(0,0,0,.24) !important;
                 cursor: pointer !important;
-                transition: opacity .15s ease, background .15s ease, border-color .15s ease, transform .15s ease, left .18s ease, width .18s ease !important;
+                transition: opacity .15s ease, background .15s ease, border-color .15s ease, transform .15s ease, left .18s ease, width .18s ease, height .18s ease !important;
                 outline: none !important;
+                overflow: hidden !important;
               }
 
               #${BUTTON_ID}:hover {
@@ -2250,21 +2255,23 @@ def inject_sidebar_state_helper():
               }
 
               #${BUTTON_ID} svg {
-                width: 22px !important;
-                height: 22px !important;
+                width: 25px !important;
+                height: 25px !important;
                 display: block !important;
                 stroke: currentColor !important;
                 fill: none !important;
+                margin: 0 auto !important;
+                transform: translateX(0px) !important;
               }
 
               body.sidebar-is-open #${BUTTON_ID} {
                 top: 22px !important;
                 left: 248px !important;
-                width: 42px !important;
-                height: 38px !important;
-                min-width: 42px !important;
-                min-height: 38px !important;
-                border-radius: 13px !important;
+                width: 46px !important;
+                height: 40px !important;
+                min-width: 46px !important;
+                min-height: 40px !important;
+                border-radius: 14px !important;
                 opacity: .18 !important;
                 background: rgba(18,30,23,.44) !important;
                 border-color: rgba(139,203,136,.34) !important;
@@ -2281,8 +2288,8 @@ def inject_sidebar_state_helper():
                 opacity: 1 !important;
                 top: 18px !important;
                 left: 22px !important;
-                width: 54px !important;
-                height: 42px !important;
+                width: 58px !important;
+                height: 46px !important;
               }
 
               body.sidebar-is-closed [data-testid="stAppViewContainer"],
@@ -2294,6 +2301,7 @@ def inject_sidebar_state_helper():
                 width: 100vw !important;
                 max-width: 100vw !important;
                 left: 0 !important;
+                right: 0 !important;
                 transform: none !important;
               }
 
@@ -2305,6 +2313,8 @@ def inject_sidebar_state_helper():
                 margin-right: auto !important;
                 padding-left: 0 !important;
                 padding-right: 0 !important;
+                position: relative !important;
+                will-change: transform !important;
               }
 
               @media screen and (max-width: 900px) {
@@ -2335,25 +2345,19 @@ def inject_sidebar_state_helper():
 
           function svgChevron(direction) {
             const isLeft = direction === 'left';
-            const d1 = isLeft ? 'M14.5 5.5 8 12l6.5 6.5' : 'M9.5 5.5 16 12l-6.5 6.5';
-            const d2 = isLeft ? 'M20.5 5.5 14 12l6.5 6.5' : 'M3.5 5.5 10 12l-6.5 6.5';
+            /* viewBox 32 biar dua chevron benar-benar tengah di kotak */
+            const d1 = isLeft ? 'M15.5 8 9 16l6.5 8' : 'M16.5 8 23 16l-6.5 8';
+            const d2 = isLeft ? 'M23 8 16.5 16 23 24' : 'M9 8l6.5 8L9 24';
             return `
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="${d1}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"></path>
-                <path d="${d2}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"></path>
+              <svg viewBox="0 0 32 32" aria-hidden="true">
+                <path d="${d1}" stroke-width="3.25" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="${d2}" stroke-width="3.25" stroke-linecap="round" stroke-linejoin="round"></path>
               </svg>
             `;
           }
 
           function getSidebar() {
             return doc.querySelector('section[data-testid="stSidebar"], [data-testid="stSidebar"]');
-          }
-
-          function elementLooksVisible(el) {
-            if (!el) return false;
-            const rect = el.getBoundingClientRect();
-            const style = win.getComputedStyle(el);
-            return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
           }
 
           function sidebarIsOpen() {
@@ -2370,7 +2374,7 @@ def inject_sidebar_state_helper():
           }
 
           function nativeButtonByLabel(words) {
-            const candidates = Array.from(doc.querySelectorAll('button, [role="button"]'))
+            const candidates = Array.from(doc.querySelectorAll('button, [role="button"], [data-testid="stSidebarCollapsedControl"], [data-testid="collapsedControl"]'))
               .filter((el) => el.id !== BUTTON_ID);
 
             for (const el of candidates) {
@@ -2388,7 +2392,9 @@ def inject_sidebar_state_helper():
 
           function findNativeOpenButton() {
             return doc.querySelector('[data-testid="stSidebarCollapsedControl"] button') ||
+                   doc.querySelector('[data-testid="stSidebarCollapsedControl"]') ||
                    doc.querySelector('[data-testid="collapsedControl"] button') ||
+                   doc.querySelector('[data-testid="collapsedControl"]') ||
                    doc.querySelector('button[aria-label="Open sidebar"]') ||
                    doc.querySelector('button[title="Open sidebar"]') ||
                    nativeButtonByLabel(['open sidebar', 'expand sidebar', 'show sidebar', 'sidebarcollapsedcontrol', 'headernopadding']);
@@ -2400,29 +2406,40 @@ def inject_sidebar_state_helper():
                    nativeButtonByLabel(['close sidebar', 'collapse sidebar', 'hide sidebar']);
           }
 
+          function fireClick(el) {
+            if (!el) return false;
+            try {
+              el.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, cancelable: true, view: win }));
+              el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, view: win }));
+              el.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, view: win }));
+              el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: win }));
+              return true;
+            } catch(e) {
+              try { el.click(); return true; } catch(err) { return false; }
+            }
+          }
+
           function clickNativeToggle(open) {
             const target = open ? findNativeCloseButton() : findNativeOpenButton();
-            if (target) {
-              try {
-                target.click();
-                setTimeout(syncState, 120);
-                setTimeout(syncState, 420);
-                return;
-              } catch (e) {}
+            if (target && fireClick(target)) {
+              setTimeout(syncState, 120);
+              setTimeout(syncState, 420);
+              setTimeout(syncState, 900);
+              return;
             }
 
-            /* fallback: cari tombol native Streamlit terdekat yang bukan tombol custom */
-            const all = Array.from(doc.querySelectorAll('button, [role="button"]'))
+            const all = Array.from(doc.querySelectorAll('button, [role="button"], [data-testid="stSidebarCollapsedControl"], [data-testid="collapsedControl"]'))
               .filter((el) => el.id !== BUTTON_ID);
             const fallback = all.find((el) => {
               const raw = [el.getAttribute('aria-label'), el.getAttribute('title'), el.getAttribute('data-testid')]
                 .filter(Boolean).join(' ').toLowerCase();
-              return raw.includes('sidebar') || raw.includes('headernopadding');
+              return raw.includes('sidebar') || raw.includes('headernopadding') || raw.includes('collapsedcontrol');
             });
             if (fallback) {
-              fallback.click();
+              fireClick(fallback);
               setTimeout(syncState, 120);
               setTimeout(syncState, 420);
+              setTimeout(syncState, 900);
             }
           }
 
@@ -2432,6 +2449,19 @@ def inject_sidebar_state_helper():
 
           function getBlockContainer() {
             return doc.querySelector('.block-container, [data-testid="stMainBlockContainer"]');
+          }
+
+          function centerClosedContent(block) {
+            if (!block) return;
+            block.style.setProperty('transform', 'translateX(0px)', 'important');
+            block.style.setProperty('position', 'relative', 'important');
+
+            win.requestAnimationFrame(function() {
+              const rect = block.getBoundingClientRect();
+              const desiredLeft = Math.max(28, (win.innerWidth - rect.width) / 2);
+              const delta = Math.round(desiredLeft - rect.left);
+              block.style.setProperty('transform', `translateX(${delta}px)`, 'important');
+            });
           }
 
           function applyContentLayout(open) {
@@ -2446,6 +2476,7 @@ def inject_sidebar_state_helper():
               main.style.removeProperty('width');
               main.style.removeProperty('max-width');
               main.style.removeProperty('left');
+              main.style.removeProperty('right');
               main.style.removeProperty('transform');
 
               block.style.removeProperty('width');
@@ -2454,10 +2485,13 @@ def inject_sidebar_state_helper():
               block.style.removeProperty('margin-right');
               block.style.removeProperty('padding-left');
               block.style.removeProperty('padding-right');
+              block.style.removeProperty('transform');
+              block.style.removeProperty('position');
             } else {
               main.style.setProperty('margin-left', '0px', 'important');
               main.style.setProperty('padding-left', '0px', 'important');
               main.style.setProperty('left', '0px', 'important');
+              main.style.setProperty('right', '0px', 'important');
               main.style.setProperty('transform', 'none', 'important');
               main.style.setProperty('width', '100vw', 'important');
               main.style.setProperty('max-width', '100vw', 'important');
@@ -2468,6 +2502,9 @@ def inject_sidebar_state_helper():
               block.style.setProperty('margin-right', 'auto', 'important');
               block.style.setProperty('padding-left', '0px', 'important');
               block.style.setProperty('padding-right', '0px', 'important');
+              centerClosedContent(block);
+              setTimeout(function() { centerClosedContent(block); }, 160);
+              setTimeout(function() { centerClosedContent(block); }, 520);
             }
           }
 
@@ -2532,7 +2569,7 @@ def inject_sidebar_state_helper():
         height=0,
     )
 
-inject_sidebar_state_helper()
+# inject_sidebar_state_helper()  # disabled: custom in-page sidebar is used instead
 
 
 
@@ -3027,7 +3064,6 @@ def make_eval_chart(actual, predicted, theme):
 # ============================================================
 
 EDA_OPTIONS = [
-    "Tutup / sembunyikan visualisasi EDA",
     "Time Series Plot",
     "Moving Average 12 Bulan",
     "Boxplot per Tahun",
@@ -3457,11 +3493,35 @@ def render_eda_section(ts, theme):
             margin-top: 6px;
         }}
         .eda-select-gap {{
-            height: 34px;
+            height: 30px;
         }}
-        div[data-baseweb="select"] {{
-            margin-top: 12px !important;
-            margin-bottom: 26px !important;
+        .eda-select-label {{
+            font-size: 14px;
+            font-weight: 850;
+            color: {theme["text"]} !important;
+            margin: 0 0 9px 2px;
+        }}
+        .eda-options-title {{
+            font-size: 12.6px;
+            font-weight: 800;
+            color: {theme["muted"]} !important;
+            margin: -12px 0 8px 2px;
+        }}
+        div[data-testid="stButton"] > button {{
+            border-radius: 15px !important;
+            border: 1px solid {theme["border"]} !important;
+            background: {theme["card"]} !important;
+            color: {theme["text"]} !important;
+            min-height: 46px !important;
+            font-weight: 800 !important;
+            transition: all .15s ease-in-out !important;
+            box-shadow: 0 7px 18px {theme["shadow"]} !important;
+        }}
+        div[data-testid="stButton"] > button:hover {{
+            background: {theme["accent_hover"]} !important;
+            color: white !important;
+            border-color: {theme["accent"]} !important;
+            transform: translateY(-1px);
         }}
         div[data-baseweb="popover"] ul,
         div[role="listbox"] {{
@@ -3514,19 +3574,38 @@ def render_eda_section(ts, theme):
 
     st.markdown('<div class="eda-select-gap"></div>', unsafe_allow_html=True)
 
-    eda_choice = st.selectbox(
-        "Pilih tampilan EDA",
-        EDA_OPTIONS,
-        index=0,
-        key="eda_choice"
-    )
+    if "eda_choice" not in st.session_state or st.session_state.eda_choice not in EDA_OPTIONS:
+        st.session_state.eda_choice = EDA_OPTIONS[0]
 
-    if eda_choice == "Tutup / sembunyikan visualisasi EDA":
-        st.markdown(
-            '<div class="eda-closed-note">Visualisasi EDA sedang ditutup. Pilih salah satu grafik di dropdown untuk menampilkan analisis.</div>',
-            unsafe_allow_html=True
-        )
-        return
+    if "eda_dropdown_open" not in st.session_state:
+        st.session_state.eda_dropdown_open = False
+
+    st.markdown('<div class="eda-select-label">Pilih tampilan EDA</div>', unsafe_allow_html=True)
+    arrow_icon = "⌃" if st.session_state.eda_dropdown_open else "⌄"
+    spacer = "\u00A0" * 38
+    if st.button(
+        f"{st.session_state.eda_choice}{spacer}{arrow_icon}",
+        key="eda_dropdown_toggle",
+        use_container_width=True
+    ):
+        st.session_state.eda_dropdown_open = not st.session_state.eda_dropdown_open
+        st.rerun()
+
+    if st.session_state.eda_dropdown_open:
+        st.markdown('<div class="eda-options-title">Pilih salah satu visualisasi</div>', unsafe_allow_html=True)
+        for idx, option in enumerate(EDA_OPTIONS):
+            selected_mark = "✓ " if option == st.session_state.eda_choice else ""
+            if st.button(
+                f"{selected_mark}{option}",
+                key=f"eda_option_{idx}",
+                use_container_width=True
+            ):
+                st.session_state.eda_choice = option
+                st.session_state.eda_dropdown_open = False
+                st.rerun()
+
+    eda_choice = st.session_state.eda_choice
+
 
     if eda_choice == "Time Series Plot":
         fig_eda = make_eda_timeseries(ts, theme)
@@ -3589,48 +3668,350 @@ def render_eda_section(ts, theme):
     bullet_card(f"Insight EDA - {eda_choice}", insight_items)
 
 
+
 # ============================================================
-# SIDEBAR KIRI
+# CUSTOM LAYOUT SIDEBAR + MAIN CONTENT
 # ============================================================
 
-st.sidebar.markdown('<div class="theme-label">Pilih Tampilan</div>', unsafe_allow_html=True)
+if "sidebar_open" not in st.session_state:
+    st.session_state.sidebar_open = True
 
-theme_col1, theme_col2 = st.sidebar.columns(2)
+if "uploaded_data_bytes" not in st.session_state:
+    st.session_state.uploaded_data_bytes = None
 
-with theme_col1:
-    st.button(
-        "☀️",
-        use_container_width=True,
-        on_click=set_theme,
-        args=("Terang",)
-    )
+if "uploaded_data_name" not in st.session_state:
+    st.session_state.uploaded_data_name = None
 
-with theme_col2:
-    st.button(
-        "🌙",
-        use_container_width=True,
-        on_click=set_theme,
-        args=("Gelap",)
-    )
 
-st.sidebar.markdown('<div class="data-input-title">📂 Input Data</div>', unsafe_allow_html=True)
-uploaded_file = st.sidebar.file_uploader(
-    "Upload data sampah terbaru",
-    type=["xlsx", "xls", "csv"],
-    help="Format minimal: kolom tahun, bulan, dan jumlah_sampah."
-)
-st.sidebar.markdown(
-    '<div class="data-input-note">Format wajib: <b>tahun</b>, <b>bulan</b>, <b>jumlah_sampah</b>.</div>',
+def toggle_sidebar():
+    st.session_state.sidebar_open = not st.session_state.sidebar_open
+
+
+st.markdown(
+    f"""
+    <style>
+    /* Matikan sidebar native Streamlit agar tidak bentrok dengan layout custom */
+    [data-testid="stSidebar"],
+    [data-testid="stSidebarCollapsedControl"],
+    [data-testid="collapsedControl"],
+    button[title="Open sidebar"],
+    button[aria-label="Open sidebar"],
+    button[title="Close sidebar"],
+    button[aria-label="Close sidebar"] {{
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }}
+
+    .block-container {{
+        max-width: 1640px !important;
+        padding-top: 1.15rem !important;
+        padding-left: 1.25rem !important;
+        padding-right: 1.25rem !important;
+    }}
+
+    .custom-sidebar-panel {{
+        min-height: calc(100vh - 34px);
+        background: {theme["sidebar_bg"]};
+        border: 1px solid {theme["border"]};
+        border-radius: 24px;
+        padding: 22px 20px 24px 20px;
+        box-shadow: 0 18px 45px rgba(0,0,0,.18);
+        position: sticky;
+        top: 18px;
+        overflow: hidden;
+    }}
+
+    .custom-sidebar-panel::before {{
+        content: "";
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        right: -70px;
+        bottom: 260px;
+        border-radius: 999px;
+        background: rgba(139,203,136,.10);
+        pointer-events: none;
+    }}
+
+    .custom-sidebar-title {{
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: .2px;
+        color: {theme["muted"]} !important;
+        text-transform: uppercase;
+        padding-top: 11px;
+    }}
+
+    .custom-sidebar-divider {{
+        height: 1px;
+        background: {theme["border"]};
+        margin: 18px 0;
+        opacity: .9;
+    }}
+
+    .custom-sidebar-label {{
+        font-size: 13px;
+        font-weight: 900;
+        color: {theme["text"]} !important;
+        margin: 14px 0 9px 0;
+    }}
+
+    .custom-sidebar-note {{
+        color: {theme["muted"]} !important;
+        font-size: 11.5px;
+        font-weight: 650;
+        line-height: 1.45;
+        margin: -4px 0 8px 0;
+    }}
+
+    .custom-data-status {{
+        border: 1px solid {theme["border"]};
+        border-radius: 16px;
+        background: {theme["card"]};
+        color: {theme["text"]} !important;
+        font-size: 12px;
+        font-weight: 850;
+        line-height: 1.38;
+        padding: 11px 12px;
+        margin: 10px 0 18px 0;
+        box-shadow: 0 8px 18px {theme["shadow"]};
+    }}
+
+    .custom-data-status.success {{
+        border-color: {theme["accent"]};
+        background: {theme["accent_soft"]};
+    }}
+
+    .custom-data-status span {{
+        color: {theme["muted"]} !important;
+        font-size: 10.8px;
+        font-weight: 650;
+    }}
+
+    .custom-sidebar-visual {{
+        background: {theme["sidebar_visual"]};
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 22px;
+        padding: 17px 16px;
+        margin-top: 22px;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
+        position: relative;
+        overflow: hidden;
+    }}
+
+    .custom-sidebar-visual::before {{
+        content: "";
+        position: absolute;
+        width: 95px;
+        height: 95px;
+        right: -25px;
+        top: -28px;
+        background: rgba(255,255,255,.14);
+        border-radius: 50%;
+    }}
+
+    .custom-sidebar-emoji {{
+        font-size: 35px;
+        line-height: 1;
+        color: white !important;
+        position: relative;
+        z-index: 2;
+    }}
+
+    .custom-sidebar-visual-title {{
+        color: white !important;
+        font-size: 18px;
+        font-weight: 900;
+        margin-top: 12px;
+        position: relative;
+        z-index: 2;
+    }}
+
+    .custom-sidebar-visual-subtitle {{
+        color: white !important;
+        font-size: 12.3px;
+        line-height: 1.5;
+        margin-top: 7px;
+        position: relative;
+        z-index: 2;
+    }}
+
+    .custom-team-name {{
+        margin-top: 12px;
+        padding: 9px 10px;
+        border-radius: 16px;
+        background: rgba(255,255,255,.16);
+        border: 1px solid rgba(255,255,255,.24);
+        font-size: 12.5px;
+        font-weight: 850;
+        color: white !important;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+    }}
+
+    .custom-sidebar-rail {{
+        min-height: calc(100vh - 34px);
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding-top: 16px;
+        background: linear-gradient(180deg, rgba(31,77,54,.20), rgba(10,17,13,0));
+        border-right: 1px solid {theme["border"]};
+    }}
+
+    .custom-main-shell {{
+        width: 100%;
+        max-width: 1480px;
+        margin-left: auto;
+        margin-right: auto;
+    }}
+
+    div[data-testid="stButton"] > button {{
+        border-radius: 16px !important;
+        border: 1px solid {theme["border"]} !important;
+        background: {theme["card"]} !important;
+        color: {theme["text"]} !important;
+        min-height: 44px !important;
+        font-weight: 850 !important;
+        box-shadow: 0 8px 20px {theme["shadow"]} !important;
+        transition: all .15s ease-in-out !important;
+    }}
+
+    div[data-testid="stButton"] > button:hover {{
+        background: {theme["accent_hover"]} !important;
+        color: white !important;
+        border-color: {theme["accent"]} !important;
+        transform: translateY(-1px);
+    }}
+
+    div[role="radiogroup"] label {{
+        border-radius: 14px !important;
+        padding: 7px 9px !important;
+        transition: all .15s ease-in-out !important;
+    }}
+
+    div[role="radiogroup"] label:hover {{
+        background: {theme["accent_soft"]} !important;
+    }}
+
+    [data-testid="stFileUploader"] section {{
+        background: {theme["card"]} !important;
+        border: 1px dashed {theme["border"]} !important;
+        border-radius: 16px !important;
+        padding: 10px !important;
+    }}
+
+    @media screen and (max-width: 900px) {{
+        .block-container {{
+            padding-left: .7rem !important;
+            padding-right: .7rem !important;
+            padding-top: .65rem !important;
+        }}
+        .custom-sidebar-panel {{
+            position: relative;
+            top: 0;
+            min-height: auto;
+            margin-bottom: 14px;
+        }}
+        .custom-sidebar-rail {{
+            min-height: auto;
+            border-right: none;
+            justify-content: flex-start;
+            padding-top: 0;
+            margin-bottom: 10px;
+        }}
+        .custom-main-shell {{
+            max-width: 100%;
+        }}
+    }}
+    </style>
+    """,
     unsafe_allow_html=True
 )
 
+# Layout dibuat sendiri, bukan st.sidebar, supaya collapse/open stabil dan tidak membuat konten ke-crop.
+if st.session_state.sidebar_open:
+    side_col, main_col = st.columns([0.265, 0.735], gap="large")
+else:
+    side_col, main_col = st.columns([0.055, 0.945], gap="large")
+
+with side_col:
+    if st.session_state.sidebar_open:
+        st.markdown('<div class="custom-sidebar-panel">', unsafe_allow_html=True)
+        header_left, header_right = st.columns([0.72, 0.28])
+        with header_left:
+            st.markdown('<div class="custom-sidebar-title">Control Panel</div>', unsafe_allow_html=True)
+        with header_right:
+            st.button("≪", key="sidebar_close_button", on_click=toggle_sidebar, use_container_width=True)
+
+        st.markdown('<div class="custom-sidebar-label">Pilih Tampilan</div>', unsafe_allow_html=True)
+        theme_col1, theme_col2 = st.columns(2)
+        with theme_col1:
+            st.button("☀️", key="theme_light_button", use_container_width=True, on_click=set_theme, args=("Terang",))
+        with theme_col2:
+            st.button("🌙", key="theme_dark_button", use_container_width=True, on_click=set_theme, args=("Gelap",))
+
+        st.markdown('<div class="custom-sidebar-divider"></div>', unsafe_allow_html=True)
+        st.markdown('<div class="custom-sidebar-label">📂 Input Data</div>', unsafe_allow_html=True)
+        uploaded_file = st.file_uploader(
+            "Upload data sampah terbaru",
+            type=["xlsx", "xls", "csv"],
+            help="Format minimal: kolom tahun, bulan, dan jumlah_sampah.",
+            key="custom_uploaded_file"
+        )
+        st.markdown(
+            '<div class="custom-sidebar-note">Format wajib: <b>tahun</b>, <b>bulan</b>, <b>jumlah_sampah</b>.</div>',
+            unsafe_allow_html=True
+        )
+        status_slot = st.empty()
+
+        st.markdown('<div class="custom-sidebar-divider"></div>', unsafe_allow_html=True)
+        menu = st.radio(
+            "Menu Utama",
+            MENU_OPTIONS,
+            key="active_menu"
+        )
+
+        st.markdown(
+            """
+            <div class="custom-sidebar-visual">
+                <div class="custom-sidebar-emoji">◇</div>
+                <div class="custom-sidebar-visual-title">Dashboard Sampah</div>
+                <div class="custom-sidebar-visual-subtitle">
+                    Prediksi jumlah sampah, estimasi anggaran, volume sampah, dan kebutuhan muatan truk compactor.
+                </div>
+                <div class="custom-team-name">Kelompok 5 Capstone</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        st.markdown('</div>', unsafe_allow_html=True)
+    else:
+        st.markdown('<div class="custom-sidebar-rail">', unsafe_allow_html=True)
+        st.button("≫", key="sidebar_open_button", on_click=toggle_sidebar, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        uploaded_file = None
+        status_slot = None
+        menu = st.session_state.active_menu
+
+# Simpan upload terakhir agar data tetap aktif walaupun sidebar ditutup.
+if uploaded_file is not None:
+    st.session_state.uploaded_data_bytes = uploaded_file.getvalue()
+    st.session_state.uploaded_data_name = uploaded_file.name
+
 try:
-    uploaded_bytes = uploaded_file.getvalue() if uploaded_file is not None else None
-    uploaded_name = uploaded_file.name if uploaded_file is not None else None
+    uploaded_bytes = st.session_state.uploaded_data_bytes
+    uploaded_name = st.session_state.uploaded_data_name
     df_raw, df, ts, source_data_name, source_data_type = load_data(uploaded_bytes, uploaded_name)
 except Exception as error:
-    if uploaded_file is not None:
-        st.sidebar.error(f"File upload tidak valid: {error}")
+    if st.session_state.uploaded_data_bytes is not None:
+        if status_slot is not None:
+            status_slot.error(f"File upload tidak valid: {error}")
+        st.session_state.uploaded_data_bytes = None
+        st.session_state.uploaded_data_name = None
         df_raw, df, ts, source_data_name, source_data_type = load_data()
     else:
         st.error(f"Data tidak dapat dimuat: {error}")
@@ -3641,243 +4022,224 @@ kota = safe_unique_text(df_raw, "bps_nama_kabupaten_kota")
 satuan = safe_unique_text(df_raw, "satuan", default="Ton")
 periode_data = f"{format_periode(ts.index.min())} - {format_periode(ts.index.max())}"
 
-if source_data_type == "upload":
-    st.sidebar.markdown(
-        f'<div class="data-status success">✅ Data upload aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
-        unsafe_allow_html=True
-    )
-else:
-    st.sidebar.markdown(
-        f'<div class="data-status info">ℹ️ Data bawaan aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
-        unsafe_allow_html=True
-    )
+if status_slot is not None:
+    if source_data_type == "upload":
+        status_slot.markdown(
+            f'<div class="custom-data-status success">✅ Data upload aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
+            unsafe_allow_html=True
+        )
+    else:
+        status_slot.markdown(
+            f'<div class="custom-data-status">ℹ️ Data bawaan aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
+            unsafe_allow_html=True
+        )
 
-menu = st.sidebar.radio(
-    "Menu Utama",
-    MENU_OPTIONS,
-    key="active_menu"
-)
+with main_col:
+    st.markdown('<div class="custom-main-shell">', unsafe_allow_html=True)
+    # ============================================================
+    # HERO
+    # ============================================================
 
-st.sidebar.markdown(
-    """
-    <div class="sidebar-visual">
-        <div class="sidebar-emoji">◇</div>
-        <div class="sidebar-visual-title">Dashboard Sampah</div>
-        <div class="sidebar-visual-subtitle">
-            Prediksi jumlah sampah, estimasi anggaran, volume sampah, dan kebutuhan muatan truk compactor.
-        </div>
-        <div class="team-name">
-            Kelompok 5 Capstone
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-
-# ============================================================
-# HERO
-# ============================================================
-
-st.markdown(
-    """
-    <div class="hero">
-        <div class="hero-title">Simulasi Pengelolaan Sampah Kota Bandung</div>
-        <div class="hero-subtitle">
-            Dashboard ini difokuskan untuk membantu staf DLH melakukan simulasi kebutuhan operasional
-            berdasarkan prediksi jumlah sampah bulanan.
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-
-# ============================================================
-# MENU 1
-# ============================================================
-
-if menu == "Simulasi Pengelolaan":
-    st.markdown('<div class="section-title">Simulasi Pengelolaan</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="section-desc">Isi operasional, lalu sistem akan menghitung prediksi sampah, anggaran, volume sampah, dan kebutuhan muatan truk compactor.</div>',
+        """
+        <div class="hero">
+            <div class="hero-title">Simulasi Pengelolaan Sampah Kota Bandung</div>
+            <div class="hero-subtitle">
+                Dashboard ini difokuskan untuk membantu staf DLH melakukan simulasi kebutuhan operasional
+                berdasarkan prediksi jumlah sampah bulanan.
+            </div>
+        </div>
+        """,
         unsafe_allow_html=True
     )
 
-    input1, input2, input3, input4 = st.columns(4, gap="large")
 
-    with input1:
-        forecast_steps = st.slider(
-            "Simulasi untuk berapa bulan ke depan?",
-            min_value=1,
-            max_value=24,
-            value=12,
-            step=1
+    # ============================================================
+    # MENU 1
+    # ============================================================
+
+    if menu == "Simulasi Pengelolaan":
+        st.markdown('<div class="section-title">Simulasi Pengelolaan</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="section-desc">Isi operasional, lalu sistem akan menghitung prediksi sampah, anggaran, volume sampah, dan kebutuhan muatan truk compactor.</div>',
+            unsafe_allow_html=True
         )
 
-    with input2:
-        biaya_per_ton = st.number_input(
-            "Biaya penanganan per ton",
-            min_value=0,
-            value=308482,
-            step=1000
+        input1, input2, input3, input4 = st.columns(4, gap="large")
+
+        with input1:
+            forecast_steps = st.slider(
+                "Simulasi untuk berapa bulan ke depan?",
+                min_value=1,
+                max_value=24,
+                value=12,
+                step=1
+            )
+
+        with input2:
+            biaya_per_ton = st.number_input(
+                "Biaya penanganan per ton",
+                min_value=0,
+                value=308482,
+                step=1000
+            )
+
+        with input3:
+            kapasitas_truk_compactor_m3 = st.selectbox(
+                "Kapasitas truk compactor (m³)",
+                options=[6, 12],
+                index=1
+            )
+
+        with input4:
+            hari_operasional_angkut_per_minggu = st.number_input(
+                "Hari operasional angkut per minggu",
+                min_value=1,
+                max_value=7,
+                value=4,
+                step=1
+            )
+
+        forecast, forecast_model_label, model_selection_df = make_sarima_forecast(ts, forecast_steps)
+
+        simulation_df = build_simulation_table(
+            forecast=forecast,
+            biaya_per_ton=biaya_per_ton,
+            kapasitas_truk_compactor_m3=kapasitas_truk_compactor_m3,
+            hari_operasional_angkut_per_minggu=hari_operasional_angkut_per_minggu
         )
 
-    with input3:
-        kapasitas_truk_compactor_m3 = st.selectbox(
-            "Kapasitas truk compactor (m³)",
-            options=[6, 12],
-            index=1
+        total_sampah = simulation_df["Prediksi Sampah (Ton)"].sum()
+        total_anggaran = simulation_df["Estimasi Anggaran"].sum()
+        total_volume_sampah = simulation_df["Estimasi Volume Sampah (m³)"].sum()
+        total_muatan_truk = simulation_df["Estimasi Kebutuhan Muatan Truk"].sum()
+
+        highest_row = simulation_df.loc[simulation_df["Prediksi Sampah (Ton)"].idxmax()]
+        lowest_row = simulation_df.loc[simulation_df["Prediksi Sampah (Ton)"].idxmin()]
+
+        start_period = format_periode(simulation_df["Tanggal"].min())
+        end_period = format_periode(simulation_df["Tanggal"].max())
+
+        mobile_kpi_summary([
+            {"label": "🗓️ Periode", "value": f"{start_period} - {end_period}", "note": f"{forecast_steps} bulan ke depan"},
+            {"label": "♻️ Total Sampah", "value": f"{format_angka(total_sampah)} ton"},
+            {"label": "💰 Total Anggaran", "value": format_rupiah(total_anggaran), "note": f"{format_rupiah(biaya_per_ton)} per ton"},
+            {"label": "📦 Total Volume", "value": f"{format_angka(total_volume_sampah)} m³", "note": f"densitas {format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³"},
+            {"label": "📈 Beban Tertinggi", "value": highest_row["Periode"], "note": f"{format_angka(highest_row['Prediksi Sampah (Ton)'])} ton"},
+            {"label": "📉 Beban Terendah", "value": lowest_row["Periode"], "note": f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton"},
+            {"label": "🚛 Total Muatan Truk", "value": f"{format_integer(total_muatan_truk)} muatan", "note": f"kapasitas {kapasitas_truk_compactor_m3} m³"},
+            {"label": "🚚 Muatan Maks/Hari Angkut", "value": f"{format_integer(int(simulation_df['Muatan Truk per Hari Angkut'].max()))} muatan/hari"},
+            {"label": "📆 Hari Angkut/Minggu", "value": f"{hari_operasional_angkut_per_minggu} hari/minggu", "note": "parameter jadwal angkut"},
+        ])
+
+        row1_col1, row1_col2, row1_col3, row1_col4 = st.columns(4, gap="large")
+
+        with row1_col1:
+            kpi_card("🗓️ Periode Simulasi", f"{start_period} - {end_period}", f"{forecast_steps} bulan ke depan")
+
+        with row1_col2:
+            kpi_card("♻️ Total Prediksi Sampah", f"{format_angka(total_sampah)} ton")
+
+        with row1_col3:
+            kpi_card("💰 Total Estimasi Anggaran", format_rupiah(total_anggaran), f" {format_rupiah(biaya_per_ton)} per ton")
+
+        with row1_col4:
+            kpi_card("📦 Total Estimasi Volume", f"{format_angka(total_volume_sampah)} m³", f"Densitas {format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³")
+
+        row2_col1, row2_col2, row2_col3, row2_col4 = st.columns(4, gap="large")
+
+        with row2_col1:
+            kpi_card("📈 Beban Tertinggi", highest_row["Periode"], f"{format_angka(highest_row['Prediksi Sampah (Ton)'])} ton")
+
+        with row2_col2:
+            kpi_card("📉 Beban Terendah", lowest_row["Periode"], f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton")
+
+        with row2_col3:
+            kpi_card("🚛 Total Kebutuhan Muatan Truk", f"{format_integer(total_muatan_truk)} muatan", f"Kapasitas {kapasitas_truk_compactor_m3} m³")
+
+        with row2_col4:
+            kpi_card("🚚 Muatan Maksimum per Hari Angkut", f"{format_integer(int(simulation_df['Muatan Truk per Hari Angkut'].max()))} muatan/hari", f"{hari_operasional_angkut_per_minggu} hari angkut/minggu")
+
+        fig_forecast = make_forecast_chart(ts, forecast, theme)
+        st.plotly_chart(
+            fig_forecast,
+            use_container_width=True,
+            config={"displayModeBar": False, "responsive": True}
         )
 
-    with input4:
-        hari_operasional_angkut_per_minggu = st.number_input(
-            "Hari operasional angkut per minggu",
-            min_value=1,
-            max_value=7,
-            value=4,
-            step=1
-        )
+        st.markdown('<div class="small-title table-title-mobile-tight">Tabel Simulasi Kebutuhan Operasional</div>', unsafe_allow_html=True)
+        show_table(prepare_display_table(simulation_df))
 
-    forecast, forecast_model_label, model_selection_df = make_sarima_forecast(ts, forecast_steps)
-
-    simulation_df = build_simulation_table(
-        forecast=forecast,
-        biaya_per_ton=biaya_per_ton,
-        kapasitas_truk_compactor_m3=kapasitas_truk_compactor_m3,
-        hari_operasional_angkut_per_minggu=hari_operasional_angkut_per_minggu
-    )
-
-    total_sampah = simulation_df["Prediksi Sampah (Ton)"].sum()
-    total_anggaran = simulation_df["Estimasi Anggaran"].sum()
-    total_volume_sampah = simulation_df["Estimasi Volume Sampah (m³)"].sum()
-    total_muatan_truk = simulation_df["Estimasi Kebutuhan Muatan Truk"].sum()
-
-    highest_row = simulation_df.loc[simulation_df["Prediksi Sampah (Ton)"].idxmax()]
-    lowest_row = simulation_df.loc[simulation_df["Prediksi Sampah (Ton)"].idxmin()]
-
-    start_period = format_periode(simulation_df["Tanggal"].min())
-    end_period = format_periode(simulation_df["Tanggal"].max())
-
-    mobile_kpi_summary([
-        {"label": "🗓️ Periode", "value": f"{start_period} - {end_period}", "note": f"{forecast_steps} bulan ke depan"},
-        {"label": "♻️ Total Sampah", "value": f"{format_angka(total_sampah)} ton"},
-        {"label": "💰 Total Anggaran", "value": format_rupiah(total_anggaran), "note": f"{format_rupiah(biaya_per_ton)} per ton"},
-        {"label": "📦 Total Volume", "value": f"{format_angka(total_volume_sampah)} m³", "note": f"densitas {format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³"},
-        {"label": "📈 Beban Tertinggi", "value": highest_row["Periode"], "note": f"{format_angka(highest_row['Prediksi Sampah (Ton)'])} ton"},
-        {"label": "📉 Beban Terendah", "value": lowest_row["Periode"], "note": f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton"},
-        {"label": "🚛 Total Muatan Truk", "value": f"{format_integer(total_muatan_truk)} muatan", "note": f"kapasitas {kapasitas_truk_compactor_m3} m³"},
-        {"label": "🚚 Muatan Maks/Hari Angkut", "value": f"{format_integer(int(simulation_df['Muatan Truk per Hari Angkut'].max()))} muatan/hari"},
-        {"label": "📆 Hari Angkut/Minggu", "value": f"{hari_operasional_angkut_per_minggu} hari/minggu", "note": "parameter jadwal angkut"},
-    ])
-
-    row1_col1, row1_col2, row1_col3, row1_col4 = st.columns(4, gap="large")
-
-    with row1_col1:
-        kpi_card("🗓️ Periode Simulasi", f"{start_period} - {end_period}", f"{forecast_steps} bulan ke depan")
-
-    with row1_col2:
-        kpi_card("♻️ Total Prediksi Sampah", f"{format_angka(total_sampah)} ton")
-
-    with row1_col3:
-        kpi_card("💰 Total Estimasi Anggaran", format_rupiah(total_anggaran), f" {format_rupiah(biaya_per_ton)} per ton")
-
-    with row1_col4:
-        kpi_card("📦 Total Estimasi Volume", f"{format_angka(total_volume_sampah)} m³", f"Densitas {format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³")
-
-    row2_col1, row2_col2, row2_col3, row2_col4 = st.columns(4, gap="large")
-
-    with row2_col1:
-        kpi_card("📈 Beban Tertinggi", highest_row["Periode"], f"{format_angka(highest_row['Prediksi Sampah (Ton)'])} ton")
-
-    with row2_col2:
-        kpi_card("📉 Beban Terendah", lowest_row["Periode"], f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton")
-
-    with row2_col3:
-        kpi_card("🚛 Total Kebutuhan Muatan Truk", f"{format_integer(total_muatan_truk)} muatan", f"Kapasitas {kapasitas_truk_compactor_m3} m³")
-
-    with row2_col4:
-        kpi_card("🚚 Muatan Maksimum per Hari Angkut", f"{format_integer(int(simulation_df['Muatan Truk per Hari Angkut'].max()))} muatan/hari", f"{hari_operasional_angkut_per_minggu} hari angkut/minggu")
-
-    fig_forecast = make_forecast_chart(ts, forecast, theme)
-    st.plotly_chart(
-        fig_forecast,
-        use_container_width=True,
-        config={"displayModeBar": False, "responsive": True}
-    )
-
-    st.markdown('<div class="small-title table-title-mobile-tight">Tabel Simulasi Kebutuhan Operasional</div>', unsafe_allow_html=True)
-    show_table(prepare_display_table(simulation_df))
-
-    bullet_card(
-        "Catatan simulasi",
-        [
-            f"Model prediksi yang aktif adalah <b>{forecast_model_label}</b> dan dipilih otomatis berdasarkan data terbaru.",
-            f"Biaya penanganan yang digunakan adalah <b>{format_rupiah(biaya_per_ton)} per ton</b>.",
-            f"Kapasitas truk compactor digunakan sebesar <b>{kapasitas_truk_compactor_m3} m³</b> per muatan.",
-            f"Prediksi sampah dalam ton dikonversi menjadi volume menggunakan densitas <b>{format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³</b>.",
-            f"Hari operasional angkut digunakan sebesar <b>{hari_operasional_angkut_per_minggu} hari per minggu</b>.",
-            "Kebutuhan muatan truk dan hari operasional angkut dibulatkan ke atas agar estimasi tidak kurang dari kebutuhan lapangan.",
-            "Dashboard ini berfungsi sebagai simulasi awal untuk membantu perencanaan operasional."
-        ]
-    )
-
-
-# ============================================================
-# MENU 2
-# ============================================================
-
-elif menu == "Ringkasan Data & Model":
-    st.markdown('<div class="section-title">Ringkasan Data & Model</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="section-desc">Halaman ini menampilkan ringkasan data, EDA interaktif, dan evaluasi model secara singkat. Pilih visualisasi EDA yang ingin dilihat agar dashboard tetap fokus dan tidak terlalu penuh.</div>',
-        unsafe_allow_html=True
-    )
-
-    eval_df, comparison_df, test_actual, test_forecast, eval_model_label, eval_model_selection_df = evaluate_sarima(ts)
-
-    left, right = st.columns(2, gap="large")
-
-    with left:
         bullet_card(
-            "Ringkasan Data",
+            "Catatan simulasi",
             [
-                f"Sumber data: <b>{source_data_name}</b>",
-                f"Wilayah: <b>{kota}</b>",
-                f"Provinsi: <b>{provinsi}</b>",
-                f"Jumlah data: <b>{len(df_raw)} baris</b>",
-                f"Periode: <b>{periode_data}</b>",
-                f"Satuan: <b>{satuan}</b>",
-                "Variabel utama: <b>jumlah_sampah</b>",
-                "Bentuk data: <b>bulanan</b>",
-                f"Missing value: <b>{int(df_raw.isnull().sum().sum())}</b>",
-                f"Data duplikat: <b>{int(df_raw.duplicated().sum())}</b>"
+                f"Model prediksi yang aktif adalah <b>{forecast_model_label}</b> dan dipilih otomatis berdasarkan data terbaru.",
+                f"Biaya penanganan yang digunakan adalah <b>{format_rupiah(biaya_per_ton)} per ton</b>.",
+                f"Kapasitas truk compactor digunakan sebesar <b>{kapasitas_truk_compactor_m3} m³</b> per muatan.",
+                f"Prediksi sampah dalam ton dikonversi menjadi volume menggunakan densitas <b>{format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³</b>.",
+                f"Hari operasional angkut digunakan sebesar <b>{hari_operasional_angkut_per_minggu} hari per minggu</b>.",
+                "Kebutuhan muatan truk dan hari operasional angkut dibulatkan ke atas agar estimasi tidak kurang dari kebutuhan lapangan.",
+                "Dashboard ini berfungsi sebagai simulasi awal untuk membantu perencanaan operasional."
             ]
         )
 
-    with right:
-        bullet_card(
-            "Ringkasan Model",
-            [
-                f"Model evaluasi terbaik yang dipilih otomatis: <b>{eval_model_label}</b>.",
-                "Sistem mencoba beberapa kandidat SARIMA, lalu memilih parameter terbaik berdasarkan nilai <b>AIC</b> terkecil.",
-                "Jika user mengunggah data terbaru, preprocessing dan pelatihan model dilakukan ulang secara otomatis berdasarkan data tersebut.",
-                "Prediksi dapat dibuat sampai <b>24 bulan ke depan</b> untuk mendukung simulasi hingga dua tahun mendatang.",
-                "Model digunakan untuk menghasilkan estimasi jumlah sampah, anggaran, volume sampah, dan kebutuhan muatan truk compactor.",
-                "Detail teori, EDA, parameter model, dan evaluasi lengkap dijelaskan pada laporan."
-            ]
+
+    # ============================================================
+    # MENU 2
+    # ============================================================
+
+    elif menu == "Ringkasan Data & Model":
+        st.markdown('<div class="section-title">Ringkasan Data & Model</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="section-desc">Halaman ini menampilkan ringkasan data, EDA interaktif, dan evaluasi model secara singkat. Pilih visualisasi EDA yang ingin dilihat agar dashboard tetap fokus dan tidak terlalu penuh.</div>',
+            unsafe_allow_html=True
         )
 
-    render_eda_section(ts, theme)
+        eval_df, comparison_df, test_actual, test_forecast, eval_model_label, eval_model_selection_df = evaluate_sarima(ts)
 
-    st.markdown('<div class="small-title">Evaluasi Model</div>', unsafe_allow_html=True)
-    show_table(prepare_eval_display(eval_df))
+        left, right = st.columns(2, gap="large")
 
-    st.markdown('<div class="small-title">Aktual vs Prediksi Data Uji</div>', unsafe_allow_html=True)
-    fig_eval = make_eval_chart(test_actual, test_forecast, theme)
-    st.plotly_chart(fig_eval, use_container_width=True, config={"displayModeBar": False, "responsive": True})
+        with left:
+            bullet_card(
+                "Ringkasan Data",
+                [
+                    f"Sumber data: <b>{source_data_name}</b>",
+                    f"Wilayah: <b>{kota}</b>",
+                    f"Provinsi: <b>{provinsi}</b>",
+                    f"Jumlah data: <b>{len(df_raw)} baris</b>",
+                    f"Periode: <b>{periode_data}</b>",
+                    f"Satuan: <b>{satuan}</b>",
+                    "Variabel utama: <b>jumlah_sampah</b>",
+                    "Bentuk data: <b>bulanan</b>",
+                    f"Missing value: <b>{int(df_raw.isnull().sum().sum())}</b>",
+                    f"Data duplikat: <b>{int(df_raw.duplicated().sum())}</b>"
+                ]
+            )
 
-    st.markdown('<div class="small-title table-title-mobile-tight">Tabel Aktual vs Prediksi</div>', unsafe_allow_html=True)
-    show_table(prepare_comparison_display(comparison_df))
+        with right:
+            bullet_card(
+                "Ringkasan Model",
+                [
+                    f"Model evaluasi terbaik yang dipilih otomatis: <b>{eval_model_label}</b>.",
+                    "Sistem mencoba beberapa kandidat SARIMA, lalu memilih parameter terbaik berdasarkan nilai <b>AIC</b> terkecil.",
+                    "Jika user mengunggah data terbaru, preprocessing dan pelatihan model dilakukan ulang secara otomatis berdasarkan data tersebut.",
+                    "Prediksi dapat dibuat sampai <b>24 bulan ke depan</b> untuk mendukung simulasi hingga dua tahun mendatang.",
+                    "Model digunakan untuk menghasilkan estimasi jumlah sampah, anggaran, volume sampah, dan kebutuhan muatan truk compactor.",
+                    "Detail teori, EDA, parameter model, dan evaluasi lengkap dijelaskan pada laporan."
+                ]
+            )
+
+        render_eda_section(ts, theme)
+
+        st.markdown('<div class="small-title">Evaluasi Model</div>', unsafe_allow_html=True)
+        show_table(prepare_eval_display(eval_df))
+
+        st.markdown('<div class="small-title">Aktual vs Prediksi Data Uji</div>', unsafe_allow_html=True)
+        fig_eval = make_eval_chart(test_actual, test_forecast, theme)
+        st.plotly_chart(fig_eval, use_container_width=True, config={"displayModeBar": False, "responsive": True})
+
+        st.markdown('<div class="small-title table-title-mobile-tight">Tabel Aktual vs Prediksi</div>', unsafe_allow_html=True)
+        show_table(prepare_comparison_display(comparison_df))
 
     
+    st.markdown('</div>', unsafe_allow_html=True)
