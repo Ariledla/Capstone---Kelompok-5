@@ -2891,8 +2891,7 @@ def render_eda_section(ts, theme):
         <div class="eda-control-panel">
             <div class="eda-title">Eksplorasi Data Interaktif</div>
             <div class="eda-desc">
-                Pilih satu jenis EDA agar dashboard tetap ringan, fokus, dan tidak menampilkan semua grafik sekaligus.
-                Visualisasi dibuat dengan Plotly agar tampil modern, interaktif, dan menyatu dengan tema dashboard.
+                
             </div>
         </div>
         """,
