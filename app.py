@@ -2477,14 +2477,14 @@ theme = apply_theme(st.session_state.theme_mode)
 
 
 # ============================================================
-# FINAL SIDEBAR ALIGN + CENTER OVERRIDE — v32
-# Fokus: elemen sidebar 226px tetap rapi, tidak crop, isi ditengah.
+# CLEAN SIDEBAR FINAL — v33
+# Sidebar 226px, inner 204px, semua elemen center dan anti-crop.
 # ============================================================
 
 st.markdown(
     """
     <style>
-    /* Sidebar tetap 226px, isi dibuat lebih ramping dan center. */
+    /* ---------- SIDEBAR FRAME ---------- */
     [data-testid="stSidebar"],
     [data-testid="stSidebarContent"],
     section[data-testid="stSidebar"] {
@@ -2496,64 +2496,92 @@ st.markdown(
         overflow-y: hidden !important;
     }
 
+    [data-testid="stSidebarContent"] {
+        background: transparent !important;
+    }
+
     [data-testid="stSidebarUserContent"] {
         width: 226px !important;
         max-width: 226px !important;
-        padding-left: 0.54rem !important;
-        padding-right: 0.54rem !important;
-        padding-bottom: 160px !important;
-        margin-top: -2.96rem !important;
-        box-sizing: border-box !important;
+        padding-left: 11px !important;
+        padding-right: 11px !important;
+        padding-top: 0 !important;
+        padding-bottom: 162px !important;
+        margin-top: -45px !important;
         overflow-x: hidden !important;
         overflow-y: hidden !important;
+        box-sizing: border-box !important;
     }
 
-    [data-testid="stSidebar"] * {
+    [data-testid="stSidebar"] *,
+    [data-testid="stSidebar"] *::before,
+    [data-testid="stSidebar"] *::after {
         box-sizing: border-box !important;
     }
 
     [data-testid="stSidebar"] .element-container {
-        margin-bottom: 0.14rem !important;
+        width: 204px !important;
+        max-width: 204px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        margin-bottom: 3px !important;
     }
 
-    /* Tombol sidebar sesuai lebar 226px. */
-    #custom-sidebar-toggle-v32 {
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+        gap: 0 !important;
+    }
+
+    [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] p {
+        margin: 0 0 5px 0 !important;
+    }
+
+    /* ---------- TOGGLE BUTTON ---------- */
+    #custom-sidebar-toggle-v33 {
         left: 184px !important;
         top: 4px !important;
         width: 33px !important;
         height: 30px !important;
         border-radius: 11px !important;
+        z-index: 2147483647 !important;
     }
 
-    body.sidebar-custom-closed #custom-sidebar-toggle-v32 {
+    body.sidebar-custom-closed #custom-sidebar-toggle-v33 {
         left: 2px !important;
     }
 
-    /* Pilih tampilan: tetap proporsional di lebar 226px. */
+    /* ---------- PILIH TAMPILAN ---------- */
     [data-testid="stSidebar"] .theme-label {
+        width: 204px !important;
+        max-width: 204px !important;
+        margin: 0 auto 6px auto !important;
         font-size: 12px !important;
-        line-height: 1.12 !important;
-        margin-bottom: 5px !important;
+        line-height: 1.1 !important;
+        font-weight: 850 !important;
+        white-space: nowrap !important;
     }
 
     [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] {
-        gap: 0.34rem !important;
-        margin-bottom: 7px !important;
+        width: 204px !important;
+        max-width: 204px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        margin-bottom: 10px !important;
+        gap: 6px !important;
     }
 
     [data-testid="stSidebar"] .stButton > button {
-        height: 29px !important;
-        min-height: 29px !important;
-        border-radius: 10px !important;
-        font-size: 10.5px !important;
+        height: 30px !important;
+        min-height: 30px !important;
+        border-radius: 11px !important;
+        font-size: 11px !important;
         padding: 0 !important;
     }
 
-    /* Input Data title. */
+    /* ---------- INPUT DATA HEADER ---------- */
     .data-input-title {
-        width: 100% !important;
-        margin-top: 10px !important;
-        margin-bottom: 5px !important;
+        width: 204px !important;
+        max-width: 204px !important;
+        margin: 9px auto 6px auto !important;
         padding: 6px 7px !important;
         border-radius: 12px !important;
         gap: 6px !important;
@@ -2572,32 +2600,33 @@ st.markdown(
     }
 
     .data-input-title-text {
-        font-size: 10.3px !important;
-        line-height: 1.1 !important;
+        font-size: 10.4px !important;
+        line-height: 1.08 !important;
         white-space: nowrap !important;
     }
 
-    /* Upload label: tidak nabrak help icon dan tetap center/rapi. */
+    /* ---------- FILE UPLOADER ---------- */
     [data-testid="stSidebar"] [data-testid="stFileUploader"] {
-        width: 100% !important;
-        margin-top: 0 !important;
-        margin-bottom: 4px !important;
+        width: 204px !important;
+        max-width: 204px !important;
+        margin: 0 auto 4px auto !important;
     }
 
     [data-testid="stSidebar"] [data-testid="stFileUploader"] > label {
+        width: 204px !important;
+        max-width: 204px !important;
         display: block !important;
-        width: 100% !important;
         padding-right: 24px !important;
-        margin-bottom: 4px !important;
+        margin: 0 0 4px 0 !important;
     }
 
     [data-testid="stSidebar"] [data-testid="stFileUploader"] label p {
         font-size: 10.8px !important;
-        line-height: 1.15 !important;
-        margin: 0 0 4px 0 !important;
-        letter-spacing: 0 !important;
+        line-height: 1.14 !important;
+        max-width: 144px !important;
         white-space: normal !important;
-        max-width: 142px !important;
+        letter-spacing: 0 !important;
+        margin: 0 !important;
     }
 
     [data-testid="stSidebar"] [data-testid="stFileUploader"] [data-testid="stTooltipIcon"] {
@@ -2605,9 +2634,9 @@ st.markdown(
         transform-origin: center !important;
     }
 
-    /* Area upload dibuat lebih kurus dan posisi di tengah. */
     [data-testid="stFileUploader"] section {
-        width: 100% !important;
+        width: 204px !important;
+        max-width: 204px !important;
         min-height: 78px !important;
         padding: 6px !important;
         border-radius: 11px !important;
@@ -2618,55 +2647,51 @@ st.markdown(
     [data-testid="stFileUploader"] section button,
     [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
     [data-testid="stFileUploader"] button[kind="secondary"] {
-        width: 102px !important;
-        min-width: 102px !important;
-        max-width: 102px !important;
+        width: 104px !important;
+        min-width: 104px !important;
+        max-width: 104px !important;
         height: 29px !important;
         min-height: 29px !important;
         border-radius: 9px !important;
         font-size: 10.2px !important;
-        gap: 5px !important;
         padding: 0 7px !important;
-        margin: 0 auto !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
     }
 
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] small,
     [data-testid="stSidebar"] [data-testid="stFileUploader"] section small,
     [data-testid="stSidebar"] [data-testid="stFileUploader"] section p,
     [data-testid="stSidebar"] [data-testid="stFileUploader"] section span {
         font-size: 8.6px !important;
-        line-height: 1.14 !important;
+        line-height: 1.12 !important;
         white-space: nowrap !important;
         text-align: center !important;
     }
 
-    /* Format wajib dibuat lebih ringkas agar tidak kepotong kanan. */
-    [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] p {
-        margin-bottom: 0.20rem !important;
-    }
-
+    /* ---------- FORMAT TEXT ---------- */
     [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] strong,
     [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] b {
-        font-size: 9px !important;
+        font-size: 9.2px !important;
         line-height: 1.12 !important;
         white-space: normal !important;
     }
 
-    /* Data bawaan aktif lebih kecil dan tidak crop. */
+    /* ---------- DATA STATUS ---------- */
     .data-status {
-        width: 100% !important;
-        font-size: 9.0px !important;
+        width: 204px !important;
+        max-width: 204px !important;
+        padding: 6px 7px !important;
+        margin: 5px auto 10px auto !important;
+        border-radius: 11px !important;
+        font-size: 9.2px !important;
         line-height: 1.12 !important;
-        padding: 6px 6px !important;
-        margin: 4px 0 7px 0 !important;
-        border-radius: 10px !important;
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
     }
 
     .data-status span {
-        font-size: 7.85px !important;
+        font-size: 8.05px !important;
         line-height: 1.08 !important;
         white-space: nowrap !important;
     }
@@ -2687,55 +2712,72 @@ st.markdown(
         top: 3px !important;
     }
 
-    /* Radio Menu Utama: bulat dan tulisan benar-benar sejajar tengah. */
+    /* ---------- RADIO MENU: SEJAJAR TENGAH ---------- */
+    [data-testid="stSidebar"] .stRadio > label {
+        width: 204px !important;
+        max-width: 204px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
     [data-testid="stSidebar"] .stRadio > label p {
         font-size: 11.2px !important;
         line-height: 1.1 !important;
-        margin-bottom: 4px !important;
+        margin: 0 0 4px 0 !important;
         white-space: nowrap !important;
     }
 
     [data-testid="stSidebar"] [role="radiogroup"] {
-        gap: 0px !important;
+        width: 204px !important;
+        max-width: 204px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        gap: 0 !important;
     }
 
     [data-testid="stSidebar"] [role="radiogroup"] label {
-        min-height: 24px !important;
-        height: 24px !important;
-        padding: 0 4px !important;
+        width: 204px !important;
+        max-width: 204px !important;
+        height: 26px !important;
+        min-height: 26px !important;
+        padding: 0 5px !important;
+        margin: 0 !important;
         border-radius: 9px !important;
         display: flex !important;
         align-items: center !important;
-        gap: 5px !important;
+        justify-content: flex-start !important;
+        gap: 6px !important;
     }
 
     [data-testid="stSidebar"] [role="radiogroup"] label > div:first-child {
-        transform: scale(0.60) !important;
+        transform: scale(0.63) !important;
         transform-origin: center !important;
-        margin: 0 0 0 -3px !important;
+        margin: 0 -2px 0 -3px !important;
+        padding: 0 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
+        height: 26px !important;
     }
 
     [data-testid="stSidebar"] [role="radiogroup"] label > div:last-child,
     [data-testid="stSidebar"] [role="radiogroup"] label [data-testid="stMarkdownContainer"] {
+        height: 26px !important;
         display: flex !important;
         align-items: center !important;
-        height: 24px !important;
         margin: 0 !important;
         padding: 0 !important;
     }
 
     [data-testid="stSidebar"] [role="radiogroup"] label p {
-        font-size: 10.1px !important;
+        font-size: 10.2px !important;
         line-height: 1 !important;
         margin: 0 !important;
         padding: 0 !important;
         white-space: nowrap !important;
     }
 
-    /* Card dashboard sampah: tetap di bawah, lebih kecil, dan ditengah sidebar. */
+    /* ---------- BOTTOM DASHBOARD CARD ---------- */
     .sidebar-visual {
         position: fixed !important;
         left: 11px !important;
@@ -2824,765 +2866,11 @@ st.markdown(
 
 
 
-# ============================================================
-# FINAL SIDEBAR 226PX ANTI-NABRAK OVERRIDE — v31
-# ============================================================
 
-st.markdown(
-    """
-    <style>
-    /* Sidebar final: lebar tetap 226px, isi dikompakkan agar tidak nabrak. */
-    [data-testid="stSidebar"],
-    [data-testid="stSidebarContent"],
-    section[data-testid="stSidebar"] {
-        width: 226px !important;
-        min-width: 226px !important;
-        max-width: 226px !important;
-        flex: 0 0 226px !important;
-        overflow-y: hidden !important;
-        overflow-x: hidden !important;
-    }
 
-    [data-testid="stSidebarUserContent"] {
-        width: 226px !important;
-        max-width: 226px !important;
-        box-sizing: border-box !important;
-        padding-left: 0.68rem !important;
-        padding-right: 0.68rem !important;
-        padding-bottom: 166px !important;
-        margin-top: -2.92rem !important;
-        overflow-y: hidden !important;
-        overflow-x: hidden !important;
-    }
 
-    [data-testid="stSidebar"] * {
-        box-sizing: border-box !important;
-    }
 
-    [data-testid="stSidebar"] .element-container {
-        margin-bottom: 0.18rem !important;
-    }
 
-    /* Tombol buka/tutup sidebar disesuaikan dengan lebar 226px. */
-    #custom-sidebar-toggle-v32 {
-        left: 184px !important;
-        top: 4px !important;
-        width: 33px !important;
-        height: 30px !important;
-        border-radius: 11px !important;
-        z-index: 2147483647 !important;
-    }
-
-    body.sidebar-custom-closed #custom-sidebar-toggle-v32 {
-        left: 2px !important;
-    }
-
-    /* Pilih tampilan lebih rapi. */
-    [data-testid="stSidebar"] .theme-label {
-        font-size: 12.4px !important;
-        line-height: 1.12 !important;
-        margin-bottom: 5px !important;
-    }
-
-    [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] {
-        gap: 0.36rem !important;
-        margin-bottom: 7px !important;
-    }
-
-    [data-testid="stSidebar"] .stButton > button {
-        height: 30px !important;
-        min-height: 30px !important;
-        border-radius: 11px !important;
-        font-size: 11px !important;
-        padding: 0 !important;
-    }
-
-    /* Header Input Data kecil tapi tetap kebaca. */
-    .data-input-title {
-        margin-top: 10px !important;
-        margin-bottom: 6px !important;
-        padding: 7px 8px !important;
-        border-radius: 12px !important;
-        gap: 7px !important;
-    }
-
-    .modern-section-icon {
-        width: 21px !important;
-        height: 21px !important;
-        min-width: 21px !important;
-        border-radius: 7px !important;
-    }
-
-    .modern-section-icon svg {
-        width: 13px !important;
-        height: 13px !important;
-    }
-
-    .data-input-title-text {
-        font-size: 10.8px !important;
-        line-height: 1.1 !important;
-        white-space: nowrap !important;
-    }
-
-    /* Label upload: jangan tabrakan dengan ikon help. */
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] {
-        margin-top: 0 !important;
-        margin-bottom: 4px !important;
-    }
-
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] > label {
-        padding-right: 28px !important;
-        display: block !important;
-    }
-
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] label p {
-        font-size: 11.2px !important;
-        line-height: 1.16 !important;
-        margin-bottom: 4px !important;
-        letter-spacing: 0 !important;
-        white-space: normal !important;
-        max-width: 155px !important;
-    }
-
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] [data-testid="stTooltipIcon"] {
-        transform: scale(0.78) !important;
-        transform-origin: center !important;
-    }
-
-    /* Area upload dibuat ramping dan isi tidak melebar. */
-    [data-testid="stFileUploader"] section {
-        min-height: 82px !important;
-        padding: 7px !important;
-        border-radius: 12px !important;
-        overflow: hidden !important;
-    }
-
-    [data-testid="stFileUploader"] section button,
-    [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
-    [data-testid="stFileUploader"] button[kind="secondary"] {
-        width: 110px !important;
-        min-width: 110px !important;
-        max-width: 110px !important;
-        height: 30px !important;
-        min-height: 30px !important;
-        border-radius: 9px !important;
-        font-size: 10.8px !important;
-        gap: 6px !important;
-        padding: 0 8px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-    }
-
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] small,
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] section small,
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] section p,
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] section span {
-        font-size: 9.1px !important;
-        line-height: 1.16 !important;
-        white-space: nowrap !important;
-    }
-
-    /* Format wajib dibuat satu baris dan tidak makan tinggi. */
-    [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] p {
-        margin-bottom: 0.22rem !important;
-    }
-
-    [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] strong,
-    [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] b {
-        font-size: 9.6px !important;
-        line-height: 1.15 !important;
-        white-space: nowrap !important;
-    }
-
-    /* Data bawaan aktif dibuat sesuai width 226px. */
-    .data-status {
-        font-size: 9.6px !important;
-        line-height: 1.15 !important;
-        padding: 6px 7px !important;
-        margin: 5px 0 8px 0 !important;
-        border-radius: 11px !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-    }
-
-    .data-status span {
-        font-size: 8.35px !important;
-        line-height: 1.10 !important;
-        white-space: nowrap !important;
-    }
-
-    .modern-status-dot {
-        width: 12px !important;
-        height: 12px !important;
-        min-width: 12px !important;
-        border-radius: 4px !important;
-        margin-right: 5px !important;
-        vertical-align: -2px !important;
-    }
-
-    .modern-status-dot::after {
-        width: 4px !important;
-        height: 4px !important;
-        left: 3.5px !important;
-        top: 3.5px !important;
-    }
-
-    /* Menu Utama: compact dan tidak tabrakan. */
-    [data-testid="stSidebar"] .stRadio > label p {
-        font-size: 11.8px !important;
-        line-height: 1.12 !important;
-        margin-bottom: 3px !important;
-        white-space: nowrap !important;
-    }
-
-    [data-testid="stSidebar"] [role="radiogroup"] {
-        gap: 0px !important;
-    }
-
-    [data-testid="stSidebar"] [role="radiogroup"] label {
-        min-height: 25px !important;
-        padding: 1px 4px !important;
-        border-radius: 9px !important;
-    }
-
-    [data-testid="stSidebar"] [role="radiogroup"] label p {
-        font-size: 10.65px !important;
-        line-height: 1.08 !important;
-        white-space: nowrap !important;
-    }
-
-    [data-testid="stSidebar"] [role="radiogroup"] label > div:first-child {
-        transform: scale(0.64) !important;
-        transform-origin: center !important;
-        margin-right: -1px !important;
-    }
-
-    /* Card dashboard sampah selalu di bawah dan tidak crop. */
-    .sidebar-visual {
-        position: fixed !important;
-        left: 9px !important;
-        bottom: 11px !important;
-        width: 208px !important;
-        max-width: 208px !important;
-        min-height: 138px !important;
-        max-height: 152px !important;
-        border-radius: 15px !important;
-        padding: 7px 9px !important;
-        margin: 0 !important;
-        overflow: hidden !important;
-        z-index: 20 !important;
-    }
-
-    .sidebar-visual::before {
-        width: 48px !important;
-        height: 48px !important;
-        right: -15px !important;
-        top: -17px !important;
-    }
-
-    .sidebar-icons {
-        gap: 5px !important;
-        margin-bottom: 5px !important;
-    }
-
-    .sidebar-icons span {
-        width: 23px !important;
-        height: 23px !important;
-        border-radius: 8px !important;
-    }
-
-    .sidebar-icons svg {
-        width: 12px !important;
-        height: 12px !important;
-    }
-
-    .sidebar-visual-title {
-        font-size: 11.5px !important;
-        line-height: 1.08 !important;
-        margin: 0 !important;
-        white-space: nowrap !important;
-    }
-
-    .sidebar-visual-subtitle {
-        font-size: 8.15px !important;
-        line-height: 1.18 !important;
-        margin-top: 4px !important;
-    }
-
-    .team-name {
-        margin-top: 5px !important;
-        padding: 4px 6px !important;
-        min-height: 22px !important;
-        border-radius: 9px !important;
-        font-size: 8.0px !important;
-        line-height: 1.1 !important;
-        white-space: nowrap !important;
-    }
-
-    @media screen and (max-height: 760px) {
-        [data-testid="stSidebarUserContent"] {
-            padding-bottom: 146px !important;
-        }
-
-        .sidebar-visual {
-            min-height: 126px !important;
-            max-height: 138px !important;
-        }
-
-        .sidebar-visual-subtitle {
-            font-size: 7.65px !important;
-            line-height: 1.12 !important;
-        }
-
-        .team-name {
-            font-size: 7.6px !important;
-            padding: 3px 5px !important;
-        }
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-
-
-# ============================================================
-# SIDEBAR WIDTH + BOTTOM CARD FINAL OVERRIDE — v30
-# ============================================================
-
-st.markdown(
-    """
-    <style>
-    /* Lebar sidebar v30: lebih kurus dari v29. */
-    [data-testid="stSidebar"],
-    [data-testid="stSidebarContent"],
-    section[data-testid="stSidebar"] {
-        width: 226px !important;
-        min-width: 226px !important;
-        max-width: 226px !important;
-        flex: 0 0 226px !important;
-        overflow-y: hidden !important;
-    }
-
-    [data-testid="stSidebarUserContent"] {
-        padding-left: 0.72rem !important;
-        padding-right: 0.72rem !important;
-        padding-bottom: 178px !important;
-        margin-top: -2.82rem !important;
-        overflow-y: hidden !important;
-    }
-
-    /* Elemen menu dibuat rapi seperti referensi. */
-    [data-testid="stSidebar"] .stRadio > label p {
-        font-size: 13.2px !important;
-        line-height: 1.15 !important;
-        margin-bottom: 4px !important;
-    }
-
-    [data-testid="stSidebar"] [role="radiogroup"] {
-        gap: 0px !important;
-    }
-
-    [data-testid="stSidebar"] [role="radiogroup"] label {
-        min-height: 27px !important;
-        padding: 2px 6px !important;
-        border-radius: 10px !important;
-    }
-
-    [data-testid="stSidebar"] [role="radiogroup"] label p {
-        font-size: 11.35px !important;
-        line-height: 1.15 !important;
-        white-space: nowrap !important;
-    }
-
-    [data-testid="stSidebar"] [role="radiogroup"] label > div:first-child {
-        transform: scale(0.70) !important;
-        margin-right: 0px !important;
-    }
-
-    /* Upload tetap compact di sidebar yang lebih kurus. */
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] label p {
-        font-size: 13.8px !important;
-        line-height: 1.18 !important;
-        margin-bottom: 4px !important;
-    }
-
-    [data-testid="stFileUploader"] section {
-        min-height: 86px !important;
-        padding: 7px !important;
-        border-radius: 12px !important;
-    }
-
-    [data-testid="stFileUploader"] section button,
-    [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
-    [data-testid="stFileUploader"] button[kind="secondary"] {
-        width: 116px !important;
-        min-width: 116px !important;
-        max-width: 116px !important;
-        height: 32px !important;
-        min-height: 32px !important;
-        border-radius: 10px !important;
-        font-size: 11.5px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-    }
-
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] small,
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] section small,
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] section p,
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] section span {
-        font-size: 9.9px !important;
-        line-height: 1.18 !important;
-    }
-
-    .data-status {
-        font-size: 10.1px !important;
-        line-height: 1.18 !important;
-        padding: 7px 8px !important;
-        margin: 5px 0 8px 0 !important;
-        border-radius: 12px !important;
-    }
-
-    .data-status span {
-        font-size: 8.8px !important;
-    }
-
-    /* Card dashboard tetap di bawah, tidak ke-crop, dan tidak bikin sidebar makin lebar. */
-    .sidebar-visual {
-        position: fixed !important;
-        left: 10px !important;
-        bottom: 12px !important;
-        width: 216px !important;
-        max-width: 216px !important;
-        min-height: 150px !important;
-        max-height: 164px !important;
-        box-sizing: border-box !important;
-        border-radius: 16px !important;
-        padding: 8px 10px !important;
-        margin: 0 !important;
-        overflow: hidden !important;
-        z-index: 20 !important;
-    }
-
-    .sidebar-visual::before {
-        width: 50px !important;
-        height: 50px !important;
-        right: -15px !important;
-        top: -18px !important;
-    }
-
-    .sidebar-icons {
-        gap: 6px !important;
-        margin-bottom: 6px !important;
-    }
-
-    .sidebar-icons span {
-        width: 25px !important;
-        height: 25px !important;
-        border-radius: 9px !important;
-    }
-
-    .sidebar-icons svg {
-        width: 13px !important;
-        height: 13px !important;
-    }
-
-    .sidebar-visual-title {
-        font-size: 12.2px !important;
-        line-height: 1.1 !important;
-        margin: 0 !important;
-    }
-
-    .sidebar-visual-subtitle {
-        font-size: 8.9px !important;
-        line-height: 1.24 !important;
-        margin-top: 4px !important;
-    }
-
-    .team-name {
-        margin-top: 6px !important;
-        padding: 5px 7px !important;
-        min-height: 23px !important;
-        border-radius: 10px !important;
-        font-size: 8.8px !important;
-        line-height: 1.15 !important;
-    }
-
-    /* Tombol sidebar sesuai width baru. */
-    #custom-sidebar-toggle-v32 {
-        left: 190px !important;
-        top: 4px !important;
-        width: 34px !important;
-        height: 30px !important;
-    }
-
-    body.sidebar-custom-closed #custom-sidebar-toggle-v32 {
-        left: 2px !important;
-    }
-
-    @media screen and (max-height: 760px) {
-        .sidebar-visual {
-            max-height: 145px !important;
-            min-height: 136px !important;
-        }
-
-        .sidebar-visual-subtitle {
-            font-size: 8.2px !important;
-            line-height: 1.18 !important;
-        }
-
-        .team-name {
-            font-size: 8.2px !important;
-            padding: 4px 6px !important;
-        }
-
-        [data-testid="stSidebarUserContent"] {
-            padding-bottom: 156px !important;
-        }
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-
-
-# ============================================================
-# SIDEBAR COMPACT OVERRIDE — v28
-# Fokus: ukuran sidebar lebih ramping seperti referensi, tanpa ubah isi.
-# ============================================================
-
-st.markdown(
-    """
-    <style>
-    /* Sidebar lebih ramping dan tidak terasa penuh. */
-    [data-testid="stSidebarUserContent"] {
-        padding-left: 0.72rem !important;
-        padding-right: 0.72rem !important;
-        padding-bottom: 6px !important;
-        margin-top: -2.85rem !important;
-        overflow-y: hidden !important;
-    }
-
-    [data-testid="stSidebar"],
-    [data-testid="stSidebarContent"],
-    [data-testid="stSidebarUserContent"] {
-        overflow-y: hidden !important;
-        scrollbar-width: none !important;
-    }
-
-    [data-testid="stSidebar"]::-webkit-scrollbar,
-    [data-testid="stSidebarContent"]::-webkit-scrollbar,
-    [data-testid="stSidebarUserContent"]::-webkit-scrollbar {
-        display: none !important;
-    }
-
-    /* Judul dan tombol mode dibuat lebih kecil. */
-    [data-testid="stSidebar"] .theme-label {
-        font-size: 13.2px !important;
-        line-height: 1.12 !important;
-        margin-bottom: 5px !important;
-    }
-
-    [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] {
-        gap: 0.40rem !important;
-        margin-bottom: 8px !important;
-    }
-
-    [data-testid="stSidebar"] .stButton > button {
-        height: 31px !important;
-        min-height: 31px !important;
-        border-radius: 12px !important;
-        font-size: 11.5px !important;
-        padding: 0 !important;
-    }
-
-    /* Upload block dibuat seperti referensi: tidak terlalu tinggi dan tombol tidak full besar. */
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] {
-        margin-top: 2px !important;
-        margin-bottom: 5px !important;
-    }
-
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] label p {
-        font-size: 14.6px !important;
-        line-height: 1.18 !important;
-        margin-bottom: 5px !important;
-        letter-spacing: 0.01em !important;
-    }
-
-    [data-testid="stFileUploader"] section {
-        min-height: 92px !important;
-        padding: 7px !important;
-        border-radius: 13px !important;
-    }
-
-    [data-testid="stFileUploader"] section button,
-    [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
-    [data-testid="stFileUploader"] button[kind="secondary"] {
-        width: 126px !important;
-        min-width: 126px !important;
-        max-width: 126px !important;
-        height: 34px !important;
-        min-height: 34px !important;
-        border-radius: 10px !important;
-        font-size: 12.3px !important;
-        gap: 7px !important;
-        padding: 0 10px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-    }
-
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] small,
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] section small {
-        font-size: 10.4px !important;
-        line-height: 1.20 !important;
-        margin-top: 2px !important;
-    }
-
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] section p,
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] section span {
-        font-size: 10.8px !important;
-        line-height: 1.20 !important;
-    }
-
-    /* Teks format dan status data lebih kecil. */
-    [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] p {
-        margin-bottom: 0.30rem !important;
-    }
-
-    [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] strong,
-    [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] b {
-        font-size: 11.2px !important;
-        line-height: 1.25 !important;
-    }
-
-    .data-status {
-        font-size: 10.6px !important;
-        line-height: 1.22 !important;
-        padding: 7px 9px !important;
-        margin: 5px 0 9px 0 !important;
-        border-radius: 12px !important;
-    }
-
-    .data-status span {
-        font-size: 9.0px !important;
-    }
-
-    .modern-status-dot {
-        width: 13px !important;
-        height: 13px !important;
-        min-width: 13px !important;
-        margin-right: 5px !important;
-        vertical-align: -2px !important;
-    }
-
-    .modern-status-dot::after {
-        width: 5px !important;
-        height: 5px !important;
-        left: 3.5px !important;
-        top: 3.5px !important;
-    }
-
-    /* Menu utama dipadatkan. */
-    [data-testid="stSidebar"] .stRadio > label p {
-        font-size: 13.8px !important;
-        line-height: 1.15 !important;
-        margin-bottom: 4px !important;
-    }
-
-    [data-testid="stSidebar"] [role="radiogroup"] {
-        gap: 1px !important;
-    }
-
-    [data-testid="stSidebar"] [role="radiogroup"] label {
-        min-height: 28px !important;
-        padding: 2px 7px !important;
-        border-radius: 10px !important;
-    }
-
-    [data-testid="stSidebar"] [role="radiogroup"] label p {
-        font-size: 11.8px !important;
-        line-height: 1.15 !important;
-    }
-
-    [data-testid="stSidebar"] [role="radiogroup"] label > div:first-child {
-        transform: scale(0.72) !important;
-        transform-origin: center !important;
-        margin-right: 2px !important;
-    }
-
-    /* Card dashboard sampah dibuat lebih pendek dan ramping. */
-    .sidebar-visual {
-        border-radius: 16px !important;
-        padding: 8px 10px !important;
-        margin: 8px 0 0 0 !important;
-        box-shadow: 0 7px 18px rgba(15, 23, 42, 0.14) !important;
-    }
-
-    .sidebar-visual::before {
-        width: 52px !important;
-        height: 52px !important;
-        right: -16px !important;
-        top: -18px !important;
-    }
-
-    .sidebar-icons {
-        gap: 6px !important;
-        margin-bottom: 6px !important;
-    }
-
-    .sidebar-icons span {
-        width: 25px !important;
-        height: 25px !important;
-        border-radius: 9px !important;
-    }
-
-    .sidebar-icons svg {
-        width: 13.5px !important;
-        height: 13.5px !important;
-    }
-
-    .sidebar-visual-title {
-        font-size: 12.2px !important;
-        line-height: 1.12 !important;
-        margin-top: 0 !important;
-    }
-
-    .sidebar-visual-subtitle {
-        font-size: 8.9px !important;
-        line-height: 1.24 !important;
-        margin-top: 3px !important;
-    }
-
-    .team-name {
-        margin-top: 6px !important;
-        padding: 5px 7px !important;
-        border-radius: 10px !important;
-        font-size: 9.0px !important;
-        line-height: 1.25 !important;
-        min-height: 24px !important;
-    }
-
-    /* Kurangi jarak kosong antar blok Streamlit di sidebar. */
-    [data-testid="stSidebar"] .element-container {
-        margin-bottom: 0.22rem !important;
-    }
-
-    [data-testid="stSidebar"] hr {
-        margin: 6px 0 !important;
-    }
-
-    /* Tombol sidebar tetap di atas dan tidak mengganggu isi. */
-    #custom-sidebar-toggle-v32 {
-        top: 4px !important;
-        width: 34px !important;
-        height: 30px !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 
 
 
@@ -3697,7 +2985,7 @@ st.markdown(
     }
 
     /* Tombol custom: ikon panel-web kecil, lebih halus, dan tidak menabrak hero. */
-    #custom-sidebar-toggle-v32 {
+    #custom-sidebar-toggle-v33 {
         position: fixed !important;
         top: 5px !important;
         left: 190px !important;
@@ -3722,7 +3010,7 @@ st.markdown(
         transition: left .22s ease, background .15s ease, border-color .15s ease, transform .15s ease, opacity .15s ease, box-shadow .15s ease !important;
     }
 
-    #custom-sidebar-toggle-v32 svg {
+    #custom-sidebar-toggle-v33 svg {
         width: 21px !important;
         height: 21px !important;
         display: block !important;
@@ -3734,7 +3022,7 @@ st.markdown(
         margin: 0 !important;
     }
 
-    #custom-sidebar-toggle-v32:hover {
+    #custom-sidebar-toggle-v33:hover {
         background: rgba(47,125,82,.92) !important;
         border-color: rgba(139,203,136,.76) !important;
         transform: translateY(-1px) !important;
@@ -3742,17 +3030,17 @@ st.markdown(
         box-shadow: 0 14px 28px rgba(0,0,0,.26) !important;
     }
 
-    body.sidebar-custom-closed #custom-sidebar-toggle-v32 {
+    body.sidebar-custom-closed #custom-sidebar-toggle-v33 {
         left: 2px !important;
         top: 5px !important;
         opacity: 1 !important;
     }
 
-    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v32 {
+    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v33 {
         opacity: .48 !important;
     }
 
-    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v32:hover {
+    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v33:hover {
         opacity: 1 !important;
     }
 
@@ -3763,11 +3051,11 @@ st.markdown(
     }
 
     @media screen and (max-width: 900px) {
-        #custom-sidebar-toggle-v32 {
+        #custom-sidebar-toggle-v33 {
             left: 190px !important;
             top: 5px !important;
         }
-        body.sidebar-custom-closed #custom-sidebar-toggle-v32 {
+        body.sidebar-custom-closed #custom-sidebar-toggle-v33 {
             left: 2px !important;
             top: 5px !important;
         }
@@ -3789,8 +3077,8 @@ def inject_custom_sidebar_toggle():
         <script>
         (function() {
             const doc = window.parent.document;
-            const STORAGE_KEY = "bandung_sidebar_custom_closed_v32";
-            const BTN_ID = "custom-sidebar-toggle-v32";
+            const STORAGE_KEY = "bandung_sidebar_custom_closed_v33";
+            const BTN_ID = "custom-sidebar-toggle-v33";
 
             function isClosed() {
                 return localStorage.getItem(STORAGE_KEY) === "1";
@@ -3815,7 +3103,7 @@ def inject_custom_sidebar_toggle():
             }
 
             function removeOldButtons() {
-                ["custom-sidebar-toggle-v19", "custom-sidebar-toggle-v20", "custom-sidebar-toggle-v21", "custom-sidebar-toggle-v22", "custom-sidebar-toggle-v23", "custom-sidebar-toggle-v30", "custom-sidebar-toggle-v31", "app-sidebar-toggle-btn",
+                ["custom-sidebar-toggle-v19", "custom-sidebar-toggle-v20", "custom-sidebar-toggle-v21", "custom-sidebar-toggle-v22", "custom-sidebar-toggle-v23", "custom-sidebar-toggle-v30", "custom-sidebar-toggle-v31", "custom-sidebar-toggle-v32", "app-sidebar-toggle-btn",
                  "custom-mobile-sidebar-button", "custom-sidebar-open-button", "custom-sidebar-close-button"].forEach(function(id) {
                     const old = doc.getElementById(id);
                     if (old) old.remove();
