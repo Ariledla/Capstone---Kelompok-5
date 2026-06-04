@@ -4136,10 +4136,6 @@ uploaded_file = st.sidebar.file_uploader(
     type=["xlsx", "xls", "csv"],
     help="Format minimal: kolom tahun, bulan, dan jumlah_sampah."
 )
-st.sidebar.markdown(
-    '<div class="data-input-note">Format wajib: <b>tahun</b>, <b>bulan</b>, <b>jumlah_sampah</b>.</div>',
-    unsafe_allow_html=True
-)
 
 try:
     uploaded_bytes = uploaded_file.getvalue() if uploaded_file is not None else None
