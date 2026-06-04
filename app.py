@@ -539,7 +539,7 @@ def apply_theme(mode):
 
         .block-container {{
             max-width: 1420px !important;
-            padding-top: 4rem !important;
+            padding-top: 1.15rem !important;
             padding-left: 0.95rem !important;
             padding-right: 0.95rem !important;
             padding-bottom: 1.5rem !important;
@@ -1075,6 +1075,23 @@ def apply_theme(mode):
             border-color: {cfg["accent"]} !important;
         }}
 
+        [data-testid="stFileUploader"] section {{
+            text-align: center !important;
+        }}
+
+        [data-testid="stFileUploader"] section small,
+        [data-testid="stFileUploader"] section p,
+        [data-testid="stFileUploader"] section span {{
+            text-align: center !important;
+        }}
+
+        [data-testid="stFileUploader"] section small {{
+            display: block !important;
+            width: 100% !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }}
+
         [data-testid="stFileUploader"] small {{
             color: {cfg["muted"]} !important;
         }}
@@ -1082,6 +1099,18 @@ def apply_theme(mode):
         [data-testid="stFileUploader"] section > div {{
             width: 100% !important;
         }}
+
+
+        [data-testid="stFileUploader"] section div,
+        [data-testid="stFileUploader"] section label {
+            text-align: center !important;
+            justify-content: center !important;
+        }
+
+        [data-testid="stFileUploader"] section [data-testid="stMarkdownContainer"] {
+            width: 100% !important;
+            text-align: center !important;
+        }
 
         [data-testid="stFileUploader"] section button,
         [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
@@ -3730,11 +3759,22 @@ def make_eda_decomposition(ts, theme):
     return fig
 
 
-def eda_metric_card(title, value, note, theme):
+def eda_metric_card(title, value, note, theme, icon="dashboard"):
+    icons = {
+        "calendar": '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>',
+        "average": '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18h16"/><path d="M7 15l4-8 3 6 3-4"/></svg>',
+        "up": '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-6 4 4 6-8"/><path d="M14 7h6v6"/></svg>',
+        "down": '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7l6 6 4-4 6 8"/><path d="M14 17h6v-6"/></svg>',
+        "dashboard": '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>',
+    }
+    icon_svg = icons.get(icon, icons["dashboard"])
     st.markdown(
         f"""
         <div class="eda-metric-card">
-            <div class="eda-metric-title">{title}</div>
+            <div class="eda-metric-head">
+                <span class="eda-metric-icon">{icon_svg}</span>
+                <div class="eda-metric-title">{title}</div>
+            </div>
             <div class="eda-metric-value">{value}</div>
             <div class="eda-metric-note">{note}</div>
         </div>
@@ -3773,11 +3813,34 @@ def render_eda_section(ts, theme):
             position: relative;
             z-index: 2;
         }}
+        .eda-metric-head {{
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 8px;
+        }}
+        .eda-metric-icon {{
+            width: 26px;
+            height: 26px;
+            min-width: 26px;
+            border-radius: 9px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: {theme["accent"]} !important;
+            background: {theme["accent_soft"]};
+            border: 1px solid {theme["border"]};
+        }}
+        .eda-metric-icon svg {{
+            width: 15px;
+            height: 15px;
+            display: block;
+        }}
         .eda-metric-title {{
             font-size: 12.5px;
             font-weight: 850;
             color: {theme["muted"]} !important;
-            margin-bottom: 7px;
+            margin-bottom: 0;
         }}
         .eda-metric-value {{
             font-size: 21px;
@@ -3862,7 +3925,8 @@ def render_eda_section(ts, theme):
         div[data-testid="stExpander"] [role="radiogroup"] > div:hover label::before {{
             border-color: #FF4B4B !important;
             background: radial-gradient(circle, #FF4B4B 0 42%, rgba(255,255,255,0.96) 43% 64%, transparent 65% 100%) !important;
-            box-shadow: 0 0 0 3px rgba(255, 75, 75, 0.13) !important;
+            box-shadow: 0 0 0 5px rgba(255, 75, 75, 0.16) !important;
+            transform: scale(1.08);
         }}
         div[data-testid="stExpander"] [role="radiogroup"] > div:has(input:checked) {{
             background: linear-gradient(90deg, rgba(139, 203, 136, 0.24) 0%, rgba(139, 203, 136, 0.16) 70%, rgba(139, 203, 136, 0.10) 100%) !important;
@@ -3929,13 +3993,13 @@ def render_eda_section(ts, theme):
     eda_values = ts.dropna()
     metric1, metric2, metric3, metric4 = st.columns(4, gap="large")
     with metric1:
-        eda_metric_card("Jumlah Observasi", f"{format_integer(len(eda_values))} bulan", f"{format_periode(eda_values.index.min())} - {format_periode(eda_values.index.max())}", theme)
+        eda_metric_card("Jumlah Observasi", f"{format_integer(len(eda_values))} bulan", f"{format_periode(eda_values.index.min())} - {format_periode(eda_values.index.max())}", theme, "calendar")
     with metric2:
-        eda_metric_card("Rata-rata Bulanan", f"{format_angka(eda_values.mean())} ton", "nilai tengah umum periode data", theme)
+        eda_metric_card("Rata-rata Bulanan", f"{format_angka(eda_values.mean())} ton", "nilai tengah umum periode data", theme, "average")
     with metric3:
-        eda_metric_card("Nilai Tertinggi", f"{format_angka(eda_values.max())} ton", format_periode(eda_values.idxmax()), theme)
+        eda_metric_card("Nilai Tertinggi", f"{format_angka(eda_values.max())} ton", format_periode(eda_values.idxmax()), theme, "up")
     with metric4:
-        eda_metric_card("Nilai Terendah", f"{format_angka(eda_values.min())} ton", format_periode(eda_values.idxmin()), theme)
+        eda_metric_card("Nilai Terendah", f"{format_angka(eda_values.min())} ton", format_periode(eda_values.idxmin()), theme, "down")
 
     st.markdown('<div class="eda-select-gap"></div>', unsafe_allow_html=True)
     st.markdown('<div class="small-title">Pilih tampilan EDA</div>', unsafe_allow_html=True)
@@ -4043,22 +4107,14 @@ with theme_col2:
         args=("Gelap",)
     )
 
-st.sidebar.markdown('''
-<div class="data-input-title">
-    <span class="modern-section-icon">
-        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 8.2A2.2 2.2 0 0 1 6.2 6H10l2 2.2h5.8A2.2 2.2 0 0 1 20 10.4v6.4A2.2 2.2 0 0 1 17.8 19H6.2A2.2 2.2 0 0 1 4 16.8z"/>
-            <path d="M12 10.2v5.8"/>
-            <path d="M9.8 13.8 12 16l2.2-2.2"/>
-        </svg>
-    </span>
-    <span class="data-input-title-text">Input Data</span>
-</div>
-''', unsafe_allow_html=True)
 uploaded_file = st.sidebar.file_uploader(
     "Upload data sampah terbaru",
     type=["xlsx", "xls", "csv"],
     help="Format minimal: kolom tahun, bulan, dan jumlah_sampah."
+)
+st.sidebar.markdown(
+    '<div class="data-input-note">Format wajib: <b>tahun</b>, <b>bulan</b>, <b>jumlah_sampah</b>.</div>',
+    unsafe_allow_html=True
 )
 
 try:
