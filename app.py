@@ -3328,7 +3328,26 @@ def build_eda_df(ts):
     return eda_df
 
 
-def apply_eda_layout(fig, theme, title, height=460, x_title=None, y_title="Jumlah sampah (ton)"):
+def hex_to_rgba(hex_color, alpha=0.18):
+    """Ubah warna hex menjadi rgba agar grafik tidak terlihat terlalu blok/penuh."""
+    if not isinstance(hex_color, str) or not hex_color.startswith("#") or len(hex_color) != 7:
+        return f"rgba(139, 203, 136, {alpha})"
+    r = int(hex_color[1:3], 16)
+    g = int(hex_color[3:5], 16)
+    b = int(hex_color[5:7], 16)
+    return f"rgba({r}, {g}, {b}, {alpha})"
+
+
+def eda_line_color(theme):
+    return theme.get("chart_hist", theme.get("accent", "#67F0C1"))
+
+
+def eda_fill_color(theme, alpha=0.16):
+    base = theme.get("chart_hist", theme.get("accent", "#67F0C1"))
+    return hex_to_rgba(base, alpha)
+
+
+def apply_eda_layout(fig, theme, title, height=430, x_title=None, y_title="Jumlah sampah (ton)"):
     fig.update_layout(
         title=dict(
             text=f"<b>{title}</b>",
@@ -3338,13 +3357,13 @@ def apply_eda_layout(fig, theme, title, height=460, x_title=None, y_title="Jumla
         ),
         paper_bgcolor=theme["chart_bg"],
         plot_bgcolor=theme["chart_bg"],
-        margin=dict(l=56, r=24, t=84, b=56),
+        margin=dict(l=54, r=24, t=72, b=52),
         height=height,
         hovermode="x unified",
         legend=dict(
             orientation="h",
             yanchor="bottom",
-            y=1.05,
+            y=1.04,
             xanchor="right",
             x=1,
             bgcolor=theme["chart_legend_bg"],
@@ -3382,6 +3401,8 @@ def make_eda_timeseries(ts, theme):
     peak_value = ts.max()
     low_date = ts.idxmin()
     low_value = ts.min()
+    line_color = eda_line_color(theme)
+    fill_color = eda_fill_color(theme, 0.12)
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(
@@ -3389,50 +3410,41 @@ def make_eda_timeseries(ts, theme):
         y=ts.values,
         mode="lines+markers",
         name="Jumlah Sampah",
-        line=dict(color=theme["chart_hist"], width=3.2, shape="spline"),
-        marker=dict(size=6.5, color=theme["chart_hist"], line=dict(color=theme["chart_bg"], width=1.2)),
+        line=dict(color=line_color, width=3.0, shape="spline"),
+        marker=dict(size=6.4, color=theme["chart_bg"], line=dict(color=line_color, width=1.8)),
         fill="tozeroy",
-        fillcolor=theme["chart_hist_fill"],
+        fillcolor=fill_color,
         hovertemplate="<b>%{x|%b %Y}</b><br>%{y:,.0f} ton<extra></extra>"
     ))
 
-    fig.add_annotation(
-        x=peak_date,
-        y=peak_value,
-        text=f"<b>Tertinggi</b><br>{format_integer(peak_value)} ton",
-        showarrow=True,
-        arrowhead=2,
-        ax=44,
-        ay=-42,
-        font=dict(size=12, color=theme["chart_font"], family="Arial"),
-        bgcolor=theme["annotation_bg"],
-        bordercolor=theme["annotation_border"],
-        borderwidth=1,
-        borderpad=4
-    )
+    for label, date_value, val, ax, ay in [
+        ("Tertinggi", peak_date, peak_value, 44, -38),
+        ("Terendah", low_date, low_value, -44, 38)
+    ]:
+        fig.add_annotation(
+            x=date_value,
+            y=val,
+            text=f"<b>{label}</b><br>{format_integer(val)} ton",
+            showarrow=True,
+            arrowhead=2,
+            ax=ax,
+            ay=ay,
+            font=dict(size=12, color=theme["chart_font"], family="Arial"),
+            bgcolor=theme["annotation_bg"],
+            bordercolor=theme["annotation_border"],
+            borderwidth=1,
+            borderpad=4
+        )
 
-    fig.add_annotation(
-        x=low_date,
-        y=low_value,
-        text=f"<b>Terendah</b><br>{format_integer(low_value)} ton",
-        showarrow=True,
-        arrowhead=2,
-        ax=-44,
-        ay=42,
-        font=dict(size=12, color=theme["chart_font"], family="Arial"),
-        bgcolor=theme["annotation_bg"],
-        bordercolor=theme["annotation_border"],
-        borderwidth=1,
-        borderpad=4
-    )
-
-    fig = apply_eda_layout(fig, theme, "Pola Time Series Jumlah Sampah", x_title="Periode")
+    fig = apply_eda_layout(fig, theme, "Pola Time Series Jumlah Sampah", x_title="Periode", height=430)
     fig.update_xaxes(tickformat="%Y")
     return fig
 
 
 def make_eda_moving_average(ts, theme):
     rolling_mean = ts.rolling(window=12).mean()
+    line_color = eda_line_color(theme)
+    soft_color = eda_fill_color(theme, 0.34)
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(
@@ -3440,9 +3452,8 @@ def make_eda_moving_average(ts, theme):
         y=ts.values,
         mode="lines+markers",
         name="Aktual",
-        line=dict(color=theme["chart_hist"], width=2.3),
-        marker=dict(size=5, color=theme["chart_hist"], line=dict(color=theme["chart_bg"], width=1)),
-        opacity=0.72,
+        line=dict(color=soft_color, width=2.2),
+        marker=dict(size=5, color=theme["chart_bg"], line=dict(color=line_color, width=1.3)),
         hovertemplate="<b>%{x|%b %Y}</b><br>Aktual: %{y:,.0f} ton<extra></extra>"
     ))
     fig.add_trace(go.Scatter(
@@ -3450,17 +3461,19 @@ def make_eda_moving_average(ts, theme):
         y=rolling_mean.values,
         mode="lines",
         name="Moving Average 12 Bulan",
-        line=dict(color=theme["chart_pred"], width=4.2, shape="spline"),
+        line=dict(color=line_color, width=3.8, shape="spline"),
         hovertemplate="<b>%{x|%b %Y}</b><br>MA 12 bulan: %{y:,.0f} ton<extra></extra>"
     ))
 
-    fig = apply_eda_layout(fig, theme, "Moving Average Jumlah Sampah", x_title="Periode")
+    fig = apply_eda_layout(fig, theme, "Moving Average Jumlah Sampah", x_title="Periode", height=430)
     fig.update_xaxes(tickformat="%Y")
     return fig
 
 
 def make_eda_boxplot_year(ts, theme):
     eda_df = build_eda_df(ts)
+    line_color = eda_line_color(theme)
+    fill_color = eda_fill_color(theme, 0.18)
     fig = go.Figure()
 
     for year, group in eda_df.groupby("tahun"):
@@ -3468,13 +3481,13 @@ def make_eda_boxplot_year(ts, theme):
             y=group["jumlah_sampah"],
             name=str(year),
             boxmean=True,
-            fillcolor=theme["chart_hist_fill"],
-            marker=dict(color=theme["chart_hist"], size=5),
-            line=dict(color=theme["chart_hist"], width=1.8),
+            fillcolor=fill_color,
+            marker=dict(color=line_color, size=5),
+            line=dict(color=line_color, width=1.8),
             hovertemplate=f"<b>{year}</b><br>%{{y:,.0f}} ton<extra></extra>"
         ))
 
-    fig = apply_eda_layout(fig, theme, "Sebaran Jumlah Sampah per Tahun", x_title="Tahun")
+    fig = apply_eda_layout(fig, theme, "Sebaran Jumlah Sampah per Tahun", x_title="Tahun", height=430)
     fig.update_layout(showlegend=False)
     return fig
 
@@ -3482,23 +3495,32 @@ def make_eda_boxplot_year(ts, theme):
 def make_eda_avg_year(ts, theme):
     eda_df = build_eda_df(ts)
     avg_year = eda_df.groupby("tahun", as_index=False)["jumlah_sampah"].mean()
+    line_color = eda_line_color(theme)
+    fill_color = eda_fill_color(theme, 0.14)
 
     fig = go.Figure()
     fig.add_trace(go.Bar(
         x=avg_year["tahun"].astype(str),
         y=avg_year["jumlah_sampah"],
         name="Rata-rata",
-        marker=dict(
-            color=theme["chart_hist"],
-            line=dict(color=theme["chart_legend_border"], width=1.2)
-        ),
+        marker=dict(color=fill_color, line=dict(color=line_color, width=1.8)),
         hovertemplate="<b>%{x}</b><br>Rata-rata: %{y:,.0f} ton<extra></extra>",
         text=[format_integer(v) for v in avg_year["jumlah_sampah"]],
-        textposition="outside"
+        textposition="outside",
+        textfont=dict(color=theme["chart_font"], size=11)
+    ))
+    fig.add_trace(go.Scatter(
+        x=avg_year["tahun"].astype(str),
+        y=avg_year["jumlah_sampah"],
+        mode="lines+markers",
+        name="Arah rata-rata",
+        line=dict(color=line_color, width=2.2, shape="spline"),
+        marker=dict(size=7, color=theme["chart_bg"], line=dict(color=line_color, width=1.8)),
+        hovertemplate="<b>%{x}</b><br>Rata-rata: %{y:,.0f} ton<extra></extra>"
     ))
 
-    fig = apply_eda_layout(fig, theme, "Rata-rata Jumlah Sampah per Tahun", x_title="Tahun", height=430)
-    fig.update_layout(showlegend=False)
+    fig = apply_eda_layout(fig, theme, "Rata-rata Jumlah Sampah per Tahun", x_title="Tahun", height=420)
+    fig.update_layout(showlegend=False, bargap=0.36)
     return fig
 
 
@@ -3506,23 +3528,32 @@ def make_eda_avg_month(ts, theme):
     eda_df = build_eda_df(ts)
     avg_month = eda_df.groupby(["bulan_num", "bulan"], as_index=False)["jumlah_sampah"].mean()
     avg_month = avg_month.sort_values("bulan_num")
+    line_color = eda_line_color(theme)
+    fill_color = eda_fill_color(theme, 0.14)
 
     fig = go.Figure()
     fig.add_trace(go.Bar(
         x=avg_month["bulan"],
         y=avg_month["jumlah_sampah"],
         name="Rata-rata",
-        marker=dict(
-            color=theme["chart_pred"],
-            line=dict(color=theme["chart_legend_border"], width=1.2)
-        ),
+        marker=dict(color=fill_color, line=dict(color=line_color, width=1.6)),
         hovertemplate="<b>%{x}</b><br>Rata-rata: %{y:,.0f} ton<extra></extra>",
         text=[format_integer(v) for v in avg_month["jumlah_sampah"]],
-        textposition="outside"
+        textposition="outside",
+        textfont=dict(color=theme["chart_font"], size=11)
+    ))
+    fig.add_trace(go.Scatter(
+        x=avg_month["bulan"],
+        y=avg_month["jumlah_sampah"],
+        mode="lines+markers",
+        name="Pola bulanan",
+        line=dict(color=line_color, width=2.2, shape="spline"),
+        marker=dict(size=6.5, color=theme["chart_bg"], line=dict(color=line_color, width=1.6)),
+        hovertemplate="<b>%{x}</b><br>Rata-rata: %{y:,.0f} ton<extra></extra>"
     ))
 
     fig = apply_eda_layout(fig, theme, "Rata-rata Jumlah Sampah per Bulan", x_title="Bulan", height=430)
-    fig.update_layout(showlegend=False)
+    fig.update_layout(showlegend=False, bargap=0.30)
     fig.update_xaxes(tickangle=-35)
     return fig
 
@@ -3537,52 +3568,76 @@ def make_eda_heatmap(ts, theme):
     ).reindex(columns=list(range(1, 13)))
 
     month_labels = [BULAN_INDO[i] for i in range(1, 13)]
-    text_values = pivot.applymap(lambda x: "" if pd.isna(x) else format_integer(x))
+    line_color = eda_line_color(theme)
+    values = []
+    x_values = []
+    y_values = []
+    text_values = []
 
-    fig = go.Figure(data=go.Heatmap(
-        z=pivot.values,
-        x=month_labels,
-        y=pivot.index.astype(str),
-        text=text_values.values,
-        texttemplate="%{text}",
-        textfont=dict(size=10, color=theme["chart_font"], family="Arial"),
-        colorscale=[
-            [0, theme["chart_bg"]],
-            [0.45, theme["chart_hist"]],
-            [1, theme["chart_pred"]]
-        ],
-        colorbar=dict(
-            title="Ton",
-            tickfont=dict(color=theme["chart_font"]),
-            titlefont=dict(color=theme["chart_font"])
+    for year in pivot.index:
+        for month_num in pivot.columns:
+            val = pivot.loc[year, month_num]
+            if pd.isna(val):
+                continue
+            x_values.append(BULAN_INDO[int(month_num)])
+            y_values.append(str(year))
+            values.append(float(val))
+            text_values.append(format_integer(val))
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=x_values,
+        y=y_values,
+        mode="markers+text",
+        text=text_values,
+        textposition="middle center",
+        textfont=dict(size=9.5, color=theme["chart_font"], family="Arial"),
+        marker=dict(
+            symbol="square",
+            size=42,
+            color=values,
+            colorscale=[
+                [0, eda_fill_color(theme, 0.10)],
+                [0.55, eda_fill_color(theme, 0.34)],
+                [1, line_color]
+            ],
+            opacity=0.82,
+            line=dict(color=line_color, width=1.1),
+            colorbar=dict(
+                title="Ton",
+                tickfont=dict(color=theme["chart_font"]),
+                titlefont=dict(color=theme["chart_font"]),
+                len=0.78
+            )
         ),
-        hovertemplate="<b>%{x} %{y}</b><br>%{z:,.0f} ton<extra></extra>"
+        hovertemplate="<b>%{x} %{y}</b><br>%{marker.color:,.0f} ton<extra></extra>"
     ))
 
-    fig = apply_eda_layout(fig, theme, "Heatmap Jumlah Sampah Tahun-Bulan", x_title="Bulan", y_title="Tahun", height=520)
-    fig.update_xaxes(tickangle=-35)
+    fig = apply_eda_layout(fig, theme, "Heatmap Jumlah Sampah Tahun-Bulan", x_title="Bulan", y_title="Tahun", height=470)
+    fig.update_xaxes(categoryorder="array", categoryarray=month_labels, tickangle=-35)
+    fig.update_yaxes(autorange="reversed")
+    fig.update_layout(showlegend=False)
     return fig
 
 
 def make_eda_distribution(ts, theme):
     mean_value = ts.mean()
     median_value = ts.median()
+    line_color = eda_line_color(theme)
+    fill_color = eda_fill_color(theme, 0.18)
 
     fig = go.Figure()
     fig.add_trace(go.Histogram(
         x=ts.values,
         nbinsx=11,
         name="Frekuensi",
-        marker=dict(
-            color=theme["chart_hist"],
-            line=dict(color=theme["chart_legend_border"], width=1.2)
-        ),
-        opacity=0.86,
+        marker=dict(color=fill_color, line=dict(color=line_color, width=1.7)),
+        opacity=1,
         hovertemplate="Jumlah sampah: %{x:,.0f} ton<br>Frekuensi: %{y}<extra></extra>"
     ))
 
-    fig.add_vline(x=mean_value, line_width=2, line_dash="dash", line_color=theme["chart_pred"])
-    fig.add_vline(x=median_value, line_width=2, line_dash="dot", line_color=theme["chart_hist"])
+    fig.add_vline(x=mean_value, line_width=2, line_dash="dash", line_color=line_color)
+    fig.add_vline(x=median_value, line_width=2, line_dash="dot", line_color=line_color)
 
     fig.add_annotation(
         x=mean_value,
@@ -3597,26 +3652,28 @@ def make_eda_distribution(ts, theme):
         borderwidth=1
     )
 
-    fig = apply_eda_layout(fig, theme, "Distribusi Jumlah Sampah", x_title="Jumlah sampah (ton)", y_title="Frekuensi", height=430)
+    fig = apply_eda_layout(fig, theme, "Distribusi Jumlah Sampah", x_title="Jumlah sampah (ton)", y_title="Frekuensi", height=420)
     return fig
 
 
 def make_eda_decomposition(ts, theme):
     decomposition = seasonal_decompose(ts, model="additive", period=12, extrapolate_trend="freq")
+    line_color = eda_line_color(theme)
+    soft_color = eda_fill_color(theme, 0.36)
 
     fig = make_subplots(
         rows=4,
         cols=1,
         shared_xaxes=True,
-        vertical_spacing=0.055,
+        vertical_spacing=0.05,
         subplot_titles=("Observed", "Trend", "Seasonal", "Residual")
     )
 
     components_data = [
-        (decomposition.observed, "Observed", theme["chart_hist"], "lines"),
-        (decomposition.trend, "Trend", theme["chart_pred"], "lines"),
-        (decomposition.seasonal, "Seasonal", theme["chart_hist"], "lines"),
-        (decomposition.resid, "Residual", theme["chart_pred"], "markers"),
+        (decomposition.observed, "Observed", line_color, "lines"),
+        (decomposition.trend, "Trend", line_color, "lines"),
+        (decomposition.seasonal, "Seasonal", soft_color, "lines"),
+        (decomposition.resid, "Residual", line_color, "markers"),
     ]
 
     for row, (series, name, color, mode) in enumerate(components_data, start=1):
@@ -3625,8 +3682,8 @@ def make_eda_decomposition(ts, theme):
             y=series.values,
             mode=mode,
             name=name,
-            line=dict(color=color, width=2.5),
-            marker=dict(size=5, color=color, line=dict(color=theme["chart_bg"], width=0.8)),
+            line=dict(color=color, width=2.4),
+            marker=dict(size=5, color=theme["chart_bg"], line=dict(color=line_color, width=1.2)),
             hovertemplate=f"<b>%{{x|%b %Y}}</b><br>{name}: %{{y:,.0f}}<extra></extra>"
         ), row=row, col=1)
 
@@ -3639,8 +3696,8 @@ def make_eda_decomposition(ts, theme):
         ),
         paper_bgcolor=theme["chart_bg"],
         plot_bgcolor=theme["chart_bg"],
-        margin=dict(l=56, r=24, t=88, b=48),
-        height=650,
+        margin=dict(l=54, r=24, t=74, b=42),
+        height=600,
         hovermode="x unified",
         showlegend=False,
         font=dict(color=theme["chart_font"], family="Arial")
@@ -3685,34 +3742,12 @@ def render_eda_section(ts, theme):
     st.markdown(
         f"""
         <style>
-        .eda-control-panel {{
-            background:
-                radial-gradient(circle at 8% 5%, {theme["accent_soft"]}, transparent 30%),
-                {theme["card"]};
-            border: 1px solid {theme["border"]};
-            border-radius: 22px;
-            padding: 20px 22px;
-            margin: 10px 0 20px 0;
-            box-shadow: 0 10px 28px {theme["shadow"]};
-        }}
-        .eda-title {{
-            font-size: 20px;
-            font-weight: 900;
-            color: {theme["text"]} !important;
-            margin-bottom: 5px;
-        }}
-        .eda-desc {{
-            font-size: 13.5px;
-            line-height: 1.6;
-            color: {theme["muted"]} !important;
-            margin-bottom: 13px;
-        }}
         .eda-metric-card {{
-            background: linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0)), {theme["card"]};
+            background: linear-gradient(145deg, rgba(255,255,255,0.030), rgba(255,255,255,0)), {theme["card"]};
             border: 1px solid {theme["border"]};
             border-radius: 18px;
             padding: 15px 16px;
-            min-height: 102px;
+            min-height: 98px;
             box-shadow: 0 8px 22px {theme["shadow"]};
         }}
         .eda-metric-title {{
@@ -3734,13 +3769,13 @@ def render_eda_section(ts, theme):
             margin-top: 6px;
         }}
         .eda-select-gap {{
-            height: 28px;
+            height: 20px;
         }}
 
-        /* EDA dropdown versi stabil: pakai expander, klik sekali buka dan klik lagi tutup */
+        /* EDA dropdown stabil: klik judul sekali buka, klik lagi tutup */
         div[data-testid="stExpander"] {{
-            margin-top: 12px !important;
-            margin-bottom: 26px !important;
+            margin-top: 10px !important;
+            margin-bottom: 18px !important;
             border: none !important;
         }}
         div[data-testid="stExpander"] details {{
@@ -3751,7 +3786,7 @@ def render_eda_section(ts, theme):
             box-shadow: none !important;
         }}
         div[data-testid="stExpander"] summary {{
-            min-height: 58px !important;
+            min-height: 54px !important;
             padding: 0 18px !important;
             font-size: 15.5px !important;
             font-weight: 850 !important;
@@ -3765,8 +3800,8 @@ def render_eda_section(ts, theme):
         div[data-testid="stExpander"] summary svg {{
             color: {theme["accent"]} !important;
             fill: {theme["accent"]} !important;
-            width: 18px !important;
-            height: 18px !important;
+            width: 17px !important;
+            height: 17px !important;
         }}
         div[data-testid="stExpander"] div[data-testid="stExpanderDetails"] {{
             background: #080C12 !important;
@@ -3779,7 +3814,7 @@ def render_eda_section(ts, theme):
             gap: 4px !important;
         }}
         div[data-testid="stExpander"] [role="radiogroup"] label {{
-            min-height: 40px !important;
+            min-height: 38px !important;
             border-radius: 10px !important;
             padding: 7px 10px !important;
             color: {theme["text"]} !important;
@@ -3793,34 +3828,13 @@ def render_eda_section(ts, theme):
         div[data-testid="stExpander"] [role="radiogroup"] label:has(input:checked) {{
             background: rgba(139, 203, 136, 0.16) !important;
         }}
-        .eda-closed-note {{
-            background: {theme["card"]};
-            border: 1px solid {theme["border"]};
-            border-radius: 18px;
-            padding: 16px 18px;
-            margin-top: 14px;
-            color: {theme["muted"]} !important;
-            font-size: 13.5px;
-            font-weight: 650;
-            box-shadow: 0 8px 22px {theme["shadow"]};
-        }}
         @media screen and (max-width: 900px) {{
-            .eda-control-panel {{ padding: 14px; border-radius: 17px; }}
-            .eda-title {{ font-size: 16px; }}
-            .eda-desc {{ font-size: 11.8px; }}
             .eda-metric-card {{ padding: 11px 12px; min-height: 84px; }}
             .eda-metric-title {{ font-size: 10.5px; }}
             .eda-metric-value {{ font-size: 14.5px; }}
             .eda-metric-note {{ font-size: 9.6px; }}
         }}
         </style>
-        <div class="eda-control-panel">
-            <div class="eda-title">Eksplorasi Data Interaktif</div>
-            <div class="eda-desc">
-                Pilih satu jenis EDA agar dashboard tetap ringan, fokus, dan tidak menampilkan semua grafik sekaligus.
-                Visualisasi dibuat dengan Plotly agar tampil modern, interaktif, dan menyatu dengan tema dashboard.
-            </div>
-        </div>
         """,
         unsafe_allow_html=True
     )
@@ -3837,7 +3851,6 @@ def render_eda_section(ts, theme):
         eda_metric_card("Nilai Terendah", f"{format_angka(eda_values.min())} ton", format_periode(eda_values.idxmin()), theme)
 
     st.markdown('<div class="eda-select-gap"></div>', unsafe_allow_html=True)
-
     st.markdown('<div class="small-title">Pilih tampilan EDA</div>', unsafe_allow_html=True)
 
     if "eda_choice" not in st.session_state or st.session_state.eda_choice not in EDA_OPTIONS:
