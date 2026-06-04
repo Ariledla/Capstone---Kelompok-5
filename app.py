@@ -2154,16 +2154,12 @@ def inject_sidebar_state_helper():
           const win = window.parent;
 
           const BUTTON_ID = 'app-sidebar-toggle-btn';
-          const STYLE_ID = 'app-sidebar-toggle-style-v6';
+          const STYLE_ID = 'app-sidebar-toggle-style-v5';
           const OLD_IDS = [
             'custom-mobile-sidebar-button',
             'custom-sidebar-open-button',
             'custom-sidebar-close-button',
-            'custom-sidebar-toggle-style',
-            'app-sidebar-toggle-style-v2',
-            'app-sidebar-toggle-style-v3',
-            'app-sidebar-toggle-style-v4',
-            'app-sidebar-toggle-style-v5'
+            'custom-sidebar-toggle-style'
           ];
 
           function cleanupOldButtons() {
@@ -2181,7 +2177,7 @@ def inject_sidebar_state_helper():
               doc.head.appendChild(style);
             }
             style.textContent = `
-              /* Native Streamlit sidebar button tetap ada untuk diklik via JS, tapi disembunyikan total secara visual */
+              /* Hilangkan semua ikon hamburger/native Streamlit supaya tidak dobel */
               [data-testid="stSidebarCollapsedControl"],
               [data-testid="collapsedControl"],
               [data-testid="stSidebarCollapsedControl"] button,
@@ -2195,7 +2191,7 @@ def inject_sidebar_state_helper():
               button[kind="headerNoPadding"],
               button[data-testid="baseButton-headerNoPadding"],
               button[data-testid="stBaseButton-headerNoPadding"],
-              button[data-testid*="header" i]:not(#${BUTTON_ID}) {
+              button[data-testid*="header" i] {
                 opacity: 0 !important;
                 visibility: hidden !important;
                 color: transparent !important;
@@ -2218,7 +2214,7 @@ def inject_sidebar_state_helper():
               button[title*="sidebar" i]:not(#${BUTTON_ID}) *,
               button[aria-label*="sidebar" i]:not(#${BUTTON_ID}) *,
               button[kind="headerNoPadding"] *,
-              button[data-testid*="header" i]:not(#${BUTTON_ID}) * {
+              button[data-testid*="header" i] * {
                 opacity: 0 !important;
                 visibility: hidden !important;
               }
@@ -2227,11 +2223,11 @@ def inject_sidebar_state_helper():
                 position: fixed !important;
                 top: 18px !important;
                 left: 22px !important;
-                width: 58px !important;
-                height: 46px !important;
-                min-width: 58px !important;
-                min-height: 46px !important;
-                border-radius: 16px !important;
+                width: 54px !important;
+                height: 42px !important;
+                min-width: 54px !important;
+                min-height: 42px !important;
+                border-radius: 15px !important;
                 border: 1px solid rgba(139,203,136,.54) !important;
                 background: rgba(18,30,23,.88) !important;
                 color: #F5F7F2 !important;
@@ -2243,9 +2239,8 @@ def inject_sidebar_state_helper():
                 z-index: 2147483647 !important;
                 box-shadow: 0 12px 28px rgba(0,0,0,.24) !important;
                 cursor: pointer !important;
-                transition: opacity .15s ease, background .15s ease, border-color .15s ease, transform .15s ease, left .18s ease, width .18s ease, height .18s ease !important;
+                transition: opacity .15s ease, background .15s ease, border-color .15s ease, transform .15s ease, left .18s ease, width .18s ease !important;
                 outline: none !important;
-                overflow: hidden !important;
               }
 
               #${BUTTON_ID}:hover {
@@ -2255,23 +2250,21 @@ def inject_sidebar_state_helper():
               }
 
               #${BUTTON_ID} svg {
-                width: 25px !important;
-                height: 25px !important;
+                width: 22px !important;
+                height: 22px !important;
                 display: block !important;
                 stroke: currentColor !important;
                 fill: none !important;
-                margin: 0 auto !important;
-                transform: translateX(0px) !important;
               }
 
               body.sidebar-is-open #${BUTTON_ID} {
                 top: 22px !important;
                 left: 248px !important;
-                width: 46px !important;
-                height: 40px !important;
-                min-width: 46px !important;
-                min-height: 40px !important;
-                border-radius: 14px !important;
+                width: 42px !important;
+                height: 38px !important;
+                min-width: 42px !important;
+                min-height: 38px !important;
+                border-radius: 13px !important;
                 opacity: .18 !important;
                 background: rgba(18,30,23,.44) !important;
                 border-color: rgba(139,203,136,.34) !important;
@@ -2288,8 +2281,8 @@ def inject_sidebar_state_helper():
                 opacity: 1 !important;
                 top: 18px !important;
                 left: 22px !important;
-                width: 58px !important;
-                height: 46px !important;
+                width: 54px !important;
+                height: 42px !important;
               }
 
               body.sidebar-is-closed [data-testid="stAppViewContainer"],
@@ -2301,7 +2294,6 @@ def inject_sidebar_state_helper():
                 width: 100vw !important;
                 max-width: 100vw !important;
                 left: 0 !important;
-                right: 0 !important;
                 transform: none !important;
               }
 
@@ -2313,8 +2305,6 @@ def inject_sidebar_state_helper():
                 margin-right: auto !important;
                 padding-left: 0 !important;
                 padding-right: 0 !important;
-                position: relative !important;
-                will-change: transform !important;
               }
 
               @media screen and (max-width: 900px) {
@@ -2345,19 +2335,25 @@ def inject_sidebar_state_helper():
 
           function svgChevron(direction) {
             const isLeft = direction === 'left';
-            /* viewBox 32 biar dua chevron benar-benar tengah di kotak */
-            const d1 = isLeft ? 'M15.5 8 9 16l6.5 8' : 'M16.5 8 23 16l-6.5 8';
-            const d2 = isLeft ? 'M23 8 16.5 16 23 24' : 'M9 8l6.5 8L9 24';
+            const d1 = isLeft ? 'M14.5 5.5 8 12l6.5 6.5' : 'M9.5 5.5 16 12l-6.5 6.5';
+            const d2 = isLeft ? 'M20.5 5.5 14 12l6.5 6.5' : 'M3.5 5.5 10 12l-6.5 6.5';
             return `
-              <svg viewBox="0 0 32 32" aria-hidden="true">
-                <path d="${d1}" stroke-width="3.25" stroke-linecap="round" stroke-linejoin="round"></path>
-                <path d="${d2}" stroke-width="3.25" stroke-linecap="round" stroke-linejoin="round"></path>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="${d1}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="${d2}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"></path>
               </svg>
             `;
           }
 
           function getSidebar() {
             return doc.querySelector('section[data-testid="stSidebar"], [data-testid="stSidebar"]');
+          }
+
+          function elementLooksVisible(el) {
+            if (!el) return false;
+            const rect = el.getBoundingClientRect();
+            const style = win.getComputedStyle(el);
+            return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
           }
 
           function sidebarIsOpen() {
@@ -2374,7 +2370,7 @@ def inject_sidebar_state_helper():
           }
 
           function nativeButtonByLabel(words) {
-            const candidates = Array.from(doc.querySelectorAll('button, [role="button"], [data-testid="stSidebarCollapsedControl"], [data-testid="collapsedControl"]'))
+            const candidates = Array.from(doc.querySelectorAll('button, [role="button"]'))
               .filter((el) => el.id !== BUTTON_ID);
 
             for (const el of candidates) {
@@ -2392,9 +2388,7 @@ def inject_sidebar_state_helper():
 
           function findNativeOpenButton() {
             return doc.querySelector('[data-testid="stSidebarCollapsedControl"] button') ||
-                   doc.querySelector('[data-testid="stSidebarCollapsedControl"]') ||
                    doc.querySelector('[data-testid="collapsedControl"] button') ||
-                   doc.querySelector('[data-testid="collapsedControl"]') ||
                    doc.querySelector('button[aria-label="Open sidebar"]') ||
                    doc.querySelector('button[title="Open sidebar"]') ||
                    nativeButtonByLabel(['open sidebar', 'expand sidebar', 'show sidebar', 'sidebarcollapsedcontrol', 'headernopadding']);
@@ -2406,40 +2400,29 @@ def inject_sidebar_state_helper():
                    nativeButtonByLabel(['close sidebar', 'collapse sidebar', 'hide sidebar']);
           }
 
-          function fireClick(el) {
-            if (!el) return false;
-            try {
-              el.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, cancelable: true, view: win }));
-              el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, view: win }));
-              el.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, view: win }));
-              el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: win }));
-              return true;
-            } catch(e) {
-              try { el.click(); return true; } catch(err) { return false; }
-            }
-          }
-
           function clickNativeToggle(open) {
             const target = open ? findNativeCloseButton() : findNativeOpenButton();
-            if (target && fireClick(target)) {
-              setTimeout(syncState, 120);
-              setTimeout(syncState, 420);
-              setTimeout(syncState, 900);
-              return;
+            if (target) {
+              try {
+                target.click();
+                setTimeout(syncState, 120);
+                setTimeout(syncState, 420);
+                return;
+              } catch (e) {}
             }
 
-            const all = Array.from(doc.querySelectorAll('button, [role="button"], [data-testid="stSidebarCollapsedControl"], [data-testid="collapsedControl"]'))
+            /* fallback: cari tombol native Streamlit terdekat yang bukan tombol custom */
+            const all = Array.from(doc.querySelectorAll('button, [role="button"]'))
               .filter((el) => el.id !== BUTTON_ID);
             const fallback = all.find((el) => {
               const raw = [el.getAttribute('aria-label'), el.getAttribute('title'), el.getAttribute('data-testid')]
                 .filter(Boolean).join(' ').toLowerCase();
-              return raw.includes('sidebar') || raw.includes('headernopadding') || raw.includes('collapsedcontrol');
+              return raw.includes('sidebar') || raw.includes('headernopadding');
             });
             if (fallback) {
-              fireClick(fallback);
+              fallback.click();
               setTimeout(syncState, 120);
               setTimeout(syncState, 420);
-              setTimeout(syncState, 900);
             }
           }
 
@@ -2449,19 +2432,6 @@ def inject_sidebar_state_helper():
 
           function getBlockContainer() {
             return doc.querySelector('.block-container, [data-testid="stMainBlockContainer"]');
-          }
-
-          function centerClosedContent(block) {
-            if (!block) return;
-            block.style.setProperty('transform', 'translateX(0px)', 'important');
-            block.style.setProperty('position', 'relative', 'important');
-
-            win.requestAnimationFrame(function() {
-              const rect = block.getBoundingClientRect();
-              const desiredLeft = Math.max(28, (win.innerWidth - rect.width) / 2);
-              const delta = Math.round(desiredLeft - rect.left);
-              block.style.setProperty('transform', `translateX(${delta}px)`, 'important');
-            });
           }
 
           function applyContentLayout(open) {
@@ -2476,7 +2446,6 @@ def inject_sidebar_state_helper():
               main.style.removeProperty('width');
               main.style.removeProperty('max-width');
               main.style.removeProperty('left');
-              main.style.removeProperty('right');
               main.style.removeProperty('transform');
 
               block.style.removeProperty('width');
@@ -2485,13 +2454,10 @@ def inject_sidebar_state_helper():
               block.style.removeProperty('margin-right');
               block.style.removeProperty('padding-left');
               block.style.removeProperty('padding-right');
-              block.style.removeProperty('transform');
-              block.style.removeProperty('position');
             } else {
               main.style.setProperty('margin-left', '0px', 'important');
               main.style.setProperty('padding-left', '0px', 'important');
               main.style.setProperty('left', '0px', 'important');
-              main.style.setProperty('right', '0px', 'important');
               main.style.setProperty('transform', 'none', 'important');
               main.style.setProperty('width', '100vw', 'important');
               main.style.setProperty('max-width', '100vw', 'important');
@@ -2502,9 +2468,6 @@ def inject_sidebar_state_helper():
               block.style.setProperty('margin-right', 'auto', 'important');
               block.style.setProperty('padding-left', '0px', 'important');
               block.style.setProperty('padding-right', '0px', 'important');
-              centerClosedContent(block);
-              setTimeout(function() { centerClosedContent(block); }, 160);
-              setTimeout(function() { centerClosedContent(block); }, 520);
             }
           }
 
@@ -3064,6 +3027,7 @@ def make_eval_chart(actual, predicted, theme):
 # ============================================================
 
 EDA_OPTIONS = [
+    "Tutup / sembunyikan visualisasi EDA",
     "Time Series Plot",
     "Moving Average 12 Bulan",
     "Boxplot per Tahun",
@@ -3557,6 +3521,12 @@ def render_eda_section(ts, theme):
         key="eda_choice"
     )
 
+    if eda_choice == "Tutup / sembunyikan visualisasi EDA":
+        st.markdown(
+            '<div class="eda-closed-note">Visualisasi EDA sedang ditutup. Pilih salah satu grafik di dropdown untuk menampilkan analisis.</div>',
+            unsafe_allow_html=True
+        )
+        return
 
     if eda_choice == "Time Series Plot":
         fig_eda = make_eda_timeseries(ts, theme)
