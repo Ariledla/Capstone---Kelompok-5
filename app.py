@@ -2153,41 +2153,379 @@ def inject_sidebar_state_helper():
           const doc = window.parent.document;
           const win = window.parent;
 
-          function removeOldCustomButtons() {
-            [
-              'custom-mobile-sidebar-button',
-              'custom-sidebar-open-button',
-              'custom-sidebar-close-button',
-              'custom-sidebar-toggle-style'
-            ].forEach((id) => {
-              const el = doc.getElementById(id);
-              if (el) el.remove();
+          const BUTTON_ID = 'app-sidebar-toggle-btn';
+          const STYLE_ID = 'app-sidebar-toggle-style-v5';
+          const OLD_IDS = [
+            'custom-mobile-sidebar-button',
+            'custom-sidebar-open-button',
+            'custom-sidebar-close-button',
+            'custom-sidebar-toggle-style'
+          ];
+
+          function cleanupOldButtons() {
+            OLD_IDS.forEach((id) => {
+              const old = doc.getElementById(id);
+              if (old) old.remove();
             });
           }
 
+          function injectStyle() {
+            let style = doc.getElementById(STYLE_ID);
+            if (!style) {
+              style = doc.createElement('style');
+              style.id = STYLE_ID;
+              doc.head.appendChild(style);
+            }
+            style.textContent = `
+              /* Hilangkan semua ikon hamburger/native Streamlit supaya tidak dobel */
+              [data-testid="stSidebarCollapsedControl"],
+              [data-testid="collapsedControl"],
+              [data-testid="stSidebarCollapsedControl"] button,
+              [data-testid="collapsedControl"] button,
+              button[title="Open sidebar"],
+              button[aria-label="Open sidebar"],
+              button[title="Close sidebar"],
+              button[aria-label="Close sidebar"],
+              button[title*="sidebar" i]:not(#${BUTTON_ID}),
+              button[aria-label*="sidebar" i]:not(#${BUTTON_ID}),
+              button[kind="headerNoPadding"],
+              button[data-testid="baseButton-headerNoPadding"],
+              button[data-testid="stBaseButton-headerNoPadding"],
+              button[data-testid*="header" i] {
+                opacity: 0 !important;
+                visibility: hidden !important;
+                color: transparent !important;
+                background: transparent !important;
+                border: 0 !important;
+                box-shadow: none !important;
+                pointer-events: none !important;
+                width: 1px !important;
+                height: 1px !important;
+                min-width: 1px !important;
+                min-height: 1px !important;
+                max-width: 1px !important;
+                max-height: 1px !important;
+                overflow: hidden !important;
+                z-index: -1 !important;
+              }
+
+              [data-testid="stSidebarCollapsedControl"] *,
+              [data-testid="collapsedControl"] *,
+              button[title*="sidebar" i]:not(#${BUTTON_ID}) *,
+              button[aria-label*="sidebar" i]:not(#${BUTTON_ID}) *,
+              button[kind="headerNoPadding"] *,
+              button[data-testid*="header" i] * {
+                opacity: 0 !important;
+                visibility: hidden !important;
+              }
+
+              #${BUTTON_ID} {
+                position: fixed !important;
+                top: 18px !important;
+                left: 22px !important;
+                width: 54px !important;
+                height: 42px !important;
+                min-width: 54px !important;
+                min-height: 42px !important;
+                border-radius: 15px !important;
+                border: 1px solid rgba(139,203,136,.54) !important;
+                background: rgba(18,30,23,.88) !important;
+                color: #F5F7F2 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                z-index: 2147483647 !important;
+                box-shadow: 0 12px 28px rgba(0,0,0,.24) !important;
+                cursor: pointer !important;
+                transition: opacity .15s ease, background .15s ease, border-color .15s ease, transform .15s ease, left .18s ease, width .18s ease !important;
+                outline: none !important;
+              }
+
+              #${BUTTON_ID}:hover {
+                background: rgba(47,125,82,.96) !important;
+                border-color: rgba(139,203,136,.90) !important;
+                transform: translateY(-1px) !important;
+              }
+
+              #${BUTTON_ID} svg {
+                width: 22px !important;
+                height: 22px !important;
+                display: block !important;
+                stroke: currentColor !important;
+                fill: none !important;
+              }
+
+              body.sidebar-is-open #${BUTTON_ID} {
+                top: 22px !important;
+                left: 248px !important;
+                width: 42px !important;
+                height: 38px !important;
+                min-width: 42px !important;
+                min-height: 38px !important;
+                border-radius: 13px !important;
+                opacity: .18 !important;
+                background: rgba(18,30,23,.44) !important;
+                border-color: rgba(139,203,136,.34) !important;
+              }
+
+              body.sidebar-is-open.sidebar-hover #${BUTTON_ID},
+              body.sidebar-is-open #${BUTTON_ID}:hover {
+                opacity: 1 !important;
+                background: rgba(47,125,82,.94) !important;
+                border-color: rgba(139,203,136,.86) !important;
+              }
+
+              body.sidebar-is-closed #${BUTTON_ID} {
+                opacity: 1 !important;
+                top: 18px !important;
+                left: 22px !important;
+                width: 54px !important;
+                height: 42px !important;
+              }
+
+              body.sidebar-is-closed [data-testid="stAppViewContainer"],
+              body.sidebar-is-closed [data-testid="stMain"],
+              body.sidebar-is-closed section.main,
+              body.sidebar-is-closed .main {
+                margin-left: 0 !important;
+                padding-left: 0 !important;
+                width: 100vw !important;
+                max-width: 100vw !important;
+                left: 0 !important;
+                transform: none !important;
+              }
+
+              body.sidebar-is-closed .block-container,
+              body.sidebar-is-closed [data-testid="stMainBlockContainer"] {
+                width: min(1500px, calc(100vw - 160px)) !important;
+                max-width: min(1500px, calc(100vw - 160px)) !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+              }
+
+              @media screen and (max-width: 900px) {
+                #${BUTTON_ID} {
+                  top: 11px !important;
+                  left: 11px !important;
+                  width: 48px !important;
+                  height: 42px !important;
+                  border-radius: 14px !important;
+                }
+                body.sidebar-is-open #${BUTTON_ID} {
+                  top: 13px !important;
+                  left: 232px !important;
+                  width: 40px !important;
+                  height: 36px !important;
+                  opacity: .84 !important;
+                }
+                body.sidebar-is-closed .block-container,
+                body.sidebar-is-closed [data-testid="stMainBlockContainer"] {
+                  width: calc(100vw - 22px) !important;
+                  max-width: calc(100vw - 22px) !important;
+                  padding-left: 0 !important;
+                  padding-right: 0 !important;
+                }
+              }
+            `;
+          }
+
+          function svgChevron(direction) {
+            const isLeft = direction === 'left';
+            const d1 = isLeft ? 'M14.5 5.5 8 12l6.5 6.5' : 'M9.5 5.5 16 12l-6.5 6.5';
+            const d2 = isLeft ? 'M20.5 5.5 14 12l6.5 6.5' : 'M3.5 5.5 10 12l-6.5 6.5';
+            return `
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="${d1}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="${d2}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            `;
+          }
+
+          function getSidebar() {
+            return doc.querySelector('section[data-testid="stSidebar"], [data-testid="stSidebar"]');
+          }
+
+          function elementLooksVisible(el) {
+            if (!el) return false;
+            const rect = el.getBoundingClientRect();
+            const style = win.getComputedStyle(el);
+            return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+          }
+
           function sidebarIsOpen() {
-            const sidebar = doc.querySelector('section[data-testid="stSidebar"], [data-testid="stSidebar"]');
+            const sidebar = getSidebar();
             if (!sidebar) return false;
 
             const rect = sidebar.getBoundingClientRect();
             const style = win.getComputedStyle(sidebar);
             const hiddenByStyle = style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0';
-            const visibleWidth = rect.width > 120;
-            const visiblePosition = rect.right > 120 && rect.left < 80;
+            const hasRealText = /Pilih Tampilan|Input Data|Menu Utama|Dashboard Sampah|Upload data/i.test(sidebar.innerText || '');
+            const inViewport = rect.width > 140 && rect.right > 160 && rect.left < 90;
 
-            return !hiddenByStyle && visibleWidth && visiblePosition;
+            return !hiddenByStyle && inViewport && hasRealText;
           }
 
-          function syncSidebarClass() {
-            removeOldCustomButtons();
+          function nativeButtonByLabel(words) {
+            const candidates = Array.from(doc.querySelectorAll('button, [role="button"]'))
+              .filter((el) => el.id !== BUTTON_ID);
+
+            for (const el of candidates) {
+              const raw = [
+                el.getAttribute('aria-label'),
+                el.getAttribute('title'),
+                el.getAttribute('data-testid'),
+                el.textContent
+              ].filter(Boolean).join(' ').toLowerCase();
+
+              if (words.some((w) => raw.includes(w))) return el;
+            }
+            return null;
+          }
+
+          function findNativeOpenButton() {
+            return doc.querySelector('[data-testid="stSidebarCollapsedControl"] button') ||
+                   doc.querySelector('[data-testid="collapsedControl"] button') ||
+                   doc.querySelector('button[aria-label="Open sidebar"]') ||
+                   doc.querySelector('button[title="Open sidebar"]') ||
+                   nativeButtonByLabel(['open sidebar', 'expand sidebar', 'show sidebar', 'sidebarcollapsedcontrol', 'headernopadding']);
+          }
+
+          function findNativeCloseButton() {
+            return doc.querySelector('button[aria-label="Close sidebar"]') ||
+                   doc.querySelector('button[title="Close sidebar"]') ||
+                   nativeButtonByLabel(['close sidebar', 'collapse sidebar', 'hide sidebar']);
+          }
+
+          function clickNativeToggle(open) {
+            const target = open ? findNativeCloseButton() : findNativeOpenButton();
+            if (target) {
+              try {
+                target.click();
+                setTimeout(syncState, 120);
+                setTimeout(syncState, 420);
+                return;
+              } catch (e) {}
+            }
+
+            /* fallback: cari tombol native Streamlit terdekat yang bukan tombol custom */
+            const all = Array.from(doc.querySelectorAll('button, [role="button"]'))
+              .filter((el) => el.id !== BUTTON_ID);
+            const fallback = all.find((el) => {
+              const raw = [el.getAttribute('aria-label'), el.getAttribute('title'), el.getAttribute('data-testid')]
+                .filter(Boolean).join(' ').toLowerCase();
+              return raw.includes('sidebar') || raw.includes('headernopadding');
+            });
+            if (fallback) {
+              fallback.click();
+              setTimeout(syncState, 120);
+              setTimeout(syncState, 420);
+            }
+          }
+
+          function getMainContainer() {
+            return doc.querySelector('[data-testid="stMain"], section.main, .main');
+          }
+
+          function getBlockContainer() {
+            return doc.querySelector('.block-container, [data-testid="stMainBlockContainer"]');
+          }
+
+          function applyContentLayout(open) {
+            const main = getMainContainer();
+            const block = getBlockContainer();
+
+            if (!main || !block) return;
+
+            if (open) {
+              main.style.removeProperty('margin-left');
+              main.style.removeProperty('padding-left');
+              main.style.removeProperty('width');
+              main.style.removeProperty('max-width');
+              main.style.removeProperty('left');
+              main.style.removeProperty('transform');
+
+              block.style.removeProperty('width');
+              block.style.removeProperty('max-width');
+              block.style.removeProperty('margin-left');
+              block.style.removeProperty('margin-right');
+              block.style.removeProperty('padding-left');
+              block.style.removeProperty('padding-right');
+            } else {
+              main.style.setProperty('margin-left', '0px', 'important');
+              main.style.setProperty('padding-left', '0px', 'important');
+              main.style.setProperty('left', '0px', 'important');
+              main.style.setProperty('transform', 'none', 'important');
+              main.style.setProperty('width', '100vw', 'important');
+              main.style.setProperty('max-width', '100vw', 'important');
+
+              block.style.setProperty('width', 'min(1500px, calc(100vw - 160px))', 'important');
+              block.style.setProperty('max-width', 'min(1500px, calc(100vw - 160px))', 'important');
+              block.style.setProperty('margin-left', 'auto', 'important');
+              block.style.setProperty('margin-right', 'auto', 'important');
+              block.style.setProperty('padding-left', '0px', 'important');
+              block.style.setProperty('padding-right', '0px', 'important');
+            }
+          }
+
+          function ensureButton() {
+            let btn = doc.getElementById(BUTTON_ID);
+            if (!btn) {
+              btn = doc.createElement('button');
+              btn.id = BUTTON_ID;
+              btn.type = 'button';
+              btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                clickNativeToggle(sidebarIsOpen());
+              });
+              btn.addEventListener('mouseenter', function() {
+                doc.body.classList.add('sidebar-button-hover');
+              });
+              btn.addEventListener('mouseleave', function() {
+                doc.body.classList.remove('sidebar-button-hover');
+              });
+              doc.body.appendChild(btn);
+            }
+            return btn;
+          }
+
+          let sidebarHoverBound = false;
+          function bindSidebarHover() {
+            const sidebar = getSidebar();
+            if (!sidebar || sidebarHoverBound) return;
+            sidebarHoverBound = true;
+            sidebar.addEventListener('mouseenter', function() {
+              doc.body.classList.add('sidebar-hover');
+            });
+            sidebar.addEventListener('mouseleave', function() {
+              doc.body.classList.remove('sidebar-hover');
+            });
+          }
+
+          function syncState() {
+            cleanupOldButtons();
+            injectStyle();
+            bindSidebarHover();
+
             const open = sidebarIsOpen();
             doc.body.classList.toggle('sidebar-is-open', open);
             doc.body.classList.toggle('sidebar-is-closed', !open);
+
+            const btn = ensureButton();
+            btn.setAttribute('aria-label', open ? 'Tutup sidebar' : 'Buka sidebar');
+            btn.title = open ? 'Tutup sidebar' : 'Buka sidebar';
+            btn.innerHTML = svgChevron(open ? 'left' : 'right');
+            applyContentLayout(open);
           }
 
-          syncSidebarClass();
-          win.addEventListener('resize', syncSidebarClass);
-          setInterval(syncSidebarClass, 350);
+          syncState();
+          win.addEventListener('resize', syncState);
+          win.addEventListener('click', function() { setTimeout(syncState, 120); }, true);
+          setInterval(syncState, 500);
         })();
         </script>
         """,
@@ -2195,6 +2533,7 @@ def inject_sidebar_state_helper():
     )
 
 inject_sidebar_state_helper()
+
 
 
 # UI COMPONENTS
@@ -3121,8 +3460,14 @@ def render_eda_section(ts, theme):
             height: 34px;
         }}
         div[data-baseweb="select"] {{
-            margin-top: 8px !important;
-            margin-bottom: 18px !important;
+            margin-top: 12px !important;
+            margin-bottom: 26px !important;
+        }}
+        div[data-baseweb="popover"] ul,
+        div[role="listbox"] {{
+            max-height: 280px !important;
+            overflow-y: auto !important;
+            border-radius: 16px !important;
         }}
         .eda-closed-note {{
             background: {theme["card"]};
