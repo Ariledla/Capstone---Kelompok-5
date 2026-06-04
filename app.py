@@ -1322,58 +1322,58 @@ def apply_theme(mode):
         }}
 
 
-        [data-testid="stSidebar"] [data-testid="stFileUploader"] label p {
+        [data-testid="stSidebar"] [data-testid="stFileUploader"] label p {{
             font-size: 16px !important;
             line-height: 1.25 !important;
             margin-bottom: 6px !important;
             letter-spacing: 0.01em !important;
-        }
+        }}
 
         [data-testid="stSidebar"] [data-testid="stFileUploader"] small,
-        [data-testid="stSidebar"] [data-testid="stFileUploader"] section small {
+        [data-testid="stSidebar"] [data-testid="stFileUploader"] section small {{
             font-size: 11px !important;
             line-height: 1.25 !important;
             margin-top: 2px !important;
-        }
+        }}
 
-        [data-testid="stSidebar"] [data-testid="stFileUploader"] {
+        [data-testid="stSidebar"] [data-testid="stFileUploader"] {{
             margin-bottom: 6px !important;
-        }
+        }}
 
-        [data-testid="stSidebar"] .stRadio > label p {
+        [data-testid="stSidebar"] .stRadio > label p {{
             font-size: 15px !important;
             line-height: 1.2 !important;
             margin-bottom: 4px !important;
-        }
+        }}
 
-        [data-testid="stSidebar"] [role="radiogroup"] {
+        [data-testid="stSidebar"] [role="radiogroup"] {{
             gap: 2px !important;
-        }
+        }}
 
-        [data-testid="stSidebar"] [role="radiogroup"] label {
+        [data-testid="stSidebar"] [role="radiogroup"] label {{
             min-height: 34px !important;
             padding-top: 3px !important;
             padding-bottom: 3px !important;
-        }
+        }}
 
-        [data-testid="stSidebar"] [role="radiogroup"] label p {
+        [data-testid="stSidebar"] [role="radiogroup"] label p {{
             font-size: 13.2px !important;
             line-height: 1.2 !important;
-        }
+        }}
 
         
-        [data-testid="stSidebar"] .theme-label {
+        [data-testid="stSidebar"] .theme-label {{
             font-size: 14px !important;
             margin-bottom: 5px !important;
-        }
+        }}
 
-        [data-testid="stSidebar"] hr {
+        [data-testid="stSidebar"] hr {{
             margin: 8px 0 !important;
-        }
+        }}
 
-        [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] p {
+        [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] p {{
             margin-bottom: 0.35rem !important;
-        }
+        }}
 
         .custom-table-wrapper {{
             width: 100%;
