@@ -2497,11 +2497,11 @@ st.markdown(
     }
 
     /* Tombol custom: ikon panel-web kecil, lebih halus, dan tidak menabrak hero. */
-    #custom-sidebar-toggle-v22 {
+    #custom-sidebar-toggle-v23 {
         position: fixed !important;
         top: 5px !important;
         left: 258px !important;
-        width: 34px !important;
+        width: 36px !important;
         height: 32px !important;
         border-radius: 11px !important;
         border: 1px solid rgba(139,203,136,.28) !important;
@@ -2518,22 +2518,23 @@ st.markdown(
         user-select: none !important;
         padding: 0 !important;
         margin: 0 !important;
+        text-align: center !important;
         transition: left .22s ease, background .15s ease, border-color .15s ease, transform .15s ease, opacity .15s ease, box-shadow .15s ease !important;
     }
 
-    #custom-sidebar-toggle-v22 svg {
-        width: 18px !important;
-        height: 18px !important;
+    #custom-sidebar-toggle-v23 svg {
+        width: 21px !important;
+        height: 21px !important;
         display: block !important;
         stroke: currentColor !important;
         fill: none !important;
-        stroke-width: 2.15 !important;
+        stroke-width: 2.35 !important;
         stroke-linecap: round !important;
         stroke-linejoin: round !important;
         margin: 0 !important;
     }
 
-    #custom-sidebar-toggle-v22:hover {
+    #custom-sidebar-toggle-v23:hover {
         background: rgba(47,125,82,.92) !important;
         border-color: rgba(139,203,136,.76) !important;
         transform: translateY(-1px) !important;
@@ -2541,17 +2542,17 @@ st.markdown(
         box-shadow: 0 14px 28px rgba(0,0,0,.26) !important;
     }
 
-    body.sidebar-custom-closed #custom-sidebar-toggle-v22 {
+    body.sidebar-custom-closed #custom-sidebar-toggle-v23 {
         left: 2px !important;
         top: 5px !important;
         opacity: 1 !important;
     }
 
-    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v22 {
+    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v23 {
         opacity: .48 !important;
     }
 
-    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v22:hover {
+    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v23:hover {
         opacity: 1 !important;
     }
 
@@ -2562,11 +2563,11 @@ st.markdown(
     }
 
     @media screen and (max-width: 900px) {
-        #custom-sidebar-toggle-v22 {
+        #custom-sidebar-toggle-v23 {
             left: 258px !important;
             top: 5px !important;
         }
-        body.sidebar-custom-closed #custom-sidebar-toggle-v22 {
+        body.sidebar-custom-closed #custom-sidebar-toggle-v23 {
             left: 2px !important;
             top: 5px !important;
         }
@@ -2588,8 +2589,8 @@ def inject_custom_sidebar_toggle():
         <script>
         (function() {
             const doc = window.parent.document;
-            const STORAGE_KEY = "bandung_sidebar_custom_closed_v22";
-            const BTN_ID = "custom-sidebar-toggle-v22";
+            const STORAGE_KEY = "bandung_sidebar_custom_closed_v23";
+            const BTN_ID = "custom-sidebar-toggle-v23";
 
             function isClosed() {
                 return localStorage.getItem(STORAGE_KEY) === "1";
@@ -2597,9 +2598,9 @@ def inject_custom_sidebar_toggle():
 
             function panelSvg(direction) {
                 const arrow = direction === "right"
-                    ? '<path d="M11 8l4 4-4 4"/><path d="M7 8l4 4-4 4"/>'
-                    : '<path d="M13 8l-4 4 4 4"/><path d="M17 8l-4 4 4 4"/>';
-                return '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="3" opacity=".26"/>' + arrow + '</svg>';
+                    ? '<path d="M7.2 6.8l5.2 5.2-5.2 5.2"/><path d="M12.2 6.8l5.2 5.2-5.2 5.2"/>'
+                    : '<path d="M16.8 6.8L11.6 12l5.2 5.2"/><path d="M11.8 6.8L6.6 12l5.2 5.2"/>';
+                return '<svg viewBox="0 0 24 24" aria-hidden="true">' + arrow + '</svg>';
             }
 
             function setClosed(closed) {
@@ -2614,7 +2615,7 @@ def inject_custom_sidebar_toggle():
             }
 
             function removeOldButtons() {
-                ["custom-sidebar-toggle-v19", "custom-sidebar-toggle-v20", "custom-sidebar-toggle-v21", "app-sidebar-toggle-btn",
+                ["custom-sidebar-toggle-v19", "custom-sidebar-toggle-v20", "custom-sidebar-toggle-v21", "custom-sidebar-toggle-v22", "app-sidebar-toggle-btn",
                  "custom-mobile-sidebar-button", "custom-sidebar-open-button", "custom-sidebar-close-button"].forEach(function(id) {
                     const old = doc.getElementById(id);
                     if (old) old.remove();
