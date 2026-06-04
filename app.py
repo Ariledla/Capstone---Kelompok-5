@@ -583,15 +583,17 @@ def apply_theme(mode):
         .data-input-title {{
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             width: 100%;
             margin-top: 18px;
             margin-bottom: 10px;
-            padding: 12px 14px;
-            border-radius: 18px;
+            padding: 9px 11px;
+            border-radius: 15px;
             border: 1px solid {cfg["border"]};
-            background: linear-gradient(135deg, rgba(139, 203, 136, 0.18), rgba(139, 203, 136, 0.08));
-            box-shadow: 0 12px 28px {cfg["shadow"]};
+            background:
+                linear-gradient(145deg, rgba(255,255,255,0.030), rgba(255,255,255,0)),
+                {cfg["card"]};
+            box-shadow: 0 8px 20px {cfg["shadow"]};
             box-sizing: border-box;
         }}
 
@@ -604,22 +606,23 @@ def apply_theme(mode):
         }}
 
         .modern-section-icon {{
-            width: 34px;
-            height: 34px;
-            min-width: 34px;
-            border-radius: 12px;
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            border-radius: 10px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(139, 203, 136, 0.12));
-            border: 1px solid rgba(255,255,255,0.14);
+            background:
+                linear-gradient(135deg, {cfg["accent_soft"]}, rgba(226, 177, 93, 0.11));
+            border: 1px solid {cfg["border"]};
             color: {cfg["accent"]} !important;
             box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
         }}
 
         .modern-section-icon svg {{
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             display: block;
         }}
 
@@ -869,13 +872,33 @@ def apply_theme(mode):
         }}
 
         .info-card {{
-            background: {cfg["card"]};
+            background:
+                linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0)),
+                {cfg["card"]};
             border: 1px solid {cfg["border"]};
-            border-radius: 20px;
-            padding: 19px 22px;
-            margin-bottom: 20px;
+            border-radius: 22px;
+            padding: 22px 24px;
+            margin-bottom: 22px;
             min-height: auto;
-            box-shadow: 0 8px 26px {cfg["shadow"]};
+            box-shadow: 0 12px 30px {cfg["shadow"]};
+            position: relative;
+            overflow: hidden;
+        }}
+
+        .info-card::before {{
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 22px;
+            background:
+                radial-gradient(circle at 6% 12%, {cfg["accent_soft"]}, transparent 32%),
+                radial-gradient(circle at 96% 8%, rgba(226, 177, 93, 0.09), transparent 30%);
+            pointer-events: none;
+        }}
+
+        .info-card > * {{
+            position: relative;
+            z-index: 2;
         }}
 
         .text-muted {{
@@ -3725,12 +3748,30 @@ def render_eda_section(ts, theme):
         f"""
         <style>
         .eda-metric-card {{
-            background: linear-gradient(145deg, rgba(255,255,255,0.030), rgba(255,255,255,0)), {theme["card"]};
+            background:
+                linear-gradient(145deg, rgba(255,255,255,0.030), rgba(255,255,255,0)),
+                {theme["card"]};
             border: 1px solid {theme["border"]};
-            border-radius: 18px;
+            border-radius: 20px;
             padding: 15px 16px;
             min-height: 98px;
-            box-shadow: 0 8px 22px {theme["shadow"]};
+            box-shadow: 0 10px 26px {theme["shadow"]};
+            position: relative;
+            overflow: hidden;
+        }}
+        .eda-metric-card::before {{
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            background:
+                radial-gradient(circle at 12% 10%, {theme["accent_soft"]}, transparent 34%),
+                radial-gradient(circle at 95% 8%, rgba(226, 177, 93, 0.08), transparent 30%);
+            pointer-events: none;
+        }}
+        .eda-metric-card > * {{
+            position: relative;
+            z-index: 2;
         }}
         .eda-metric-title {{
             font-size: 12.5px;
@@ -3817,6 +3858,11 @@ def render_eda_section(ts, theme):
         }}
         div[data-testid="stExpander"] [role="radiogroup"] > div:hover {{
             background: rgba(139, 203, 136, 0.08) !important;
+        }}
+        div[data-testid="stExpander"] [role="radiogroup"] > div:hover label::before {{
+            border-color: #FF4B4B !important;
+            background: radial-gradient(circle, #FF4B4B 0 42%, rgba(255,255,255,0.96) 43% 64%, transparent 65% 100%) !important;
+            box-shadow: 0 0 0 3px rgba(255, 75, 75, 0.13) !important;
         }}
         div[data-testid="stExpander"] [role="radiogroup"] > div:has(input:checked) {{
             background: linear-gradient(90deg, rgba(139, 203, 136, 0.24) 0%, rgba(139, 203, 136, 0.16) 70%, rgba(139, 203, 136, 0.10) 100%) !important;
@@ -3950,9 +3996,9 @@ def render_eda_section(ts, theme):
     elif eda_choice == "Heatmap Tahun-Bulan":
         fig_eda = make_eda_heatmap(ts, theme)
         insight_items = [
-            "Heatmap memperlihatkan intensitas jumlah sampah berdasarkan kombinasi tahun dan bulan.",
-            "Warna yang lebih kuat menunjukkan nilai jumlah sampah yang lebih tinggi.",
-            "Visual ini cocok untuk mencari pola anomali, lonjakan, atau penurunan pada periode tertentu."
+            "Heatmap menunjukkan pola jumlah sampah berdasarkan kombinasi tahun dan bulan.",
+            "Warna yang lebih pekat menandakan jumlah sampah yang lebih tinggi pada periode tersebut.",
+            "Visual ini membantu menemukan bulan dengan lonjakan, penurunan, atau pola tidak biasa."
         ]
     elif eda_choice == "Distribusi Jumlah Sampah":
         fig_eda = make_eda_distribution(ts, theme)
@@ -4211,13 +4257,13 @@ if menu == "Simulasi Pengelolaan":
     bullet_card(
         "Catatan simulasi",
         [
-            f"Model prediksi yang aktif adalah <b>{forecast_model_label}</b> dan dipilih otomatis berdasarkan data terbaru.",
-            f"Biaya penanganan yang digunakan adalah <b>{format_rupiah(biaya_per_ton)} per ton</b>.",
-            f"Kapasitas truk compactor digunakan sebesar <b>{kapasitas_truk_compactor_m3} m³</b> per muatan.",
-            f"Prediksi sampah dalam ton dikonversi menjadi volume menggunakan densitas <b>{format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³</b>.",
-            f"Hari operasional angkut digunakan sebesar <b>{hari_operasional_angkut_per_minggu} hari per minggu</b>.",
-            "Kebutuhan muatan truk dan hari operasional angkut dibulatkan ke atas agar estimasi tidak kurang dari kebutuhan lapangan.",
-            "Dashboard ini berfungsi sebagai simulasi awal untuk membantu perencanaan operasional."
+            f"Model prediksi yang digunakan adalah <b>{forecast_model_label}</b>, dipilih otomatis berdasarkan data historis terbaru.",
+            f"Asumsi biaya penanganan adalah <b>{format_rupiah(biaya_per_ton)} per ton</b>.",
+            f"Kapasitas truk compactor yang digunakan adalah <b>{kapasitas_truk_compactor_m3} m³</b> per muatan.",
+            f"Prediksi sampah dalam satuan ton dikonversi menjadi volume memakai densitas <b>{format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³</b>.",
+            f"Frekuensi hari angkut diasumsikan <b>{hari_operasional_angkut_per_minggu} hari per minggu</b>.",
+            "Kebutuhan muatan truk dan hari angkut dibulatkan ke atas agar estimasi lebih aman untuk kebutuhan lapangan.",
+            "Dashboard ini digunakan sebagai simulasi awal untuk mendukung perencanaan operasional pengelolaan sampah."
         ]
     )
 
