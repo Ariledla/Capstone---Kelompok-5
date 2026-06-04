@@ -229,6 +229,15 @@ def prepare_display_table(output):
         ]
     ]
 
+    display = display.rename(columns={
+        "Prediksi Sampah (Ton)": "♻️ Prediksi Sampah (Ton)",
+        "Estimasi Anggaran": "💰 Estimasi Anggaran",
+        "Estimasi Volume Sampah (m³)": "📦 Estimasi Volume Sampah (m³)",
+        "Estimasi Hari Operasional Angkut": "📆 Estimasi Hari Operasional Angkut",
+        "Estimasi Kebutuhan Muatan Truk": "🚛 Estimasi Kebutuhan Muatan Truk",
+        "Muatan Truk per Hari Angkut": "🚚 Muatan Truk per Hari Angkut"
+    })
+
     return display
 
 
@@ -2151,7 +2160,7 @@ if menu == "Simulasi Pengelolaan":
 
     with input1:
         forecast_steps = st.slider(
-            "Simulasi untuk berapa bulan ke depan?",
+            "🗓️ Simulasi untuk berapa bulan ke depan?",
             min_value=1,
             max_value=12,
             value=12,
@@ -2160,7 +2169,7 @@ if menu == "Simulasi Pengelolaan":
 
     with input2:
         biaya_per_ton = st.number_input(
-            "Biaya penanganan per ton",
+            "💰 Biaya penanganan per ton",
             min_value=0,
             value=308482,
             step=1000
@@ -2168,14 +2177,14 @@ if menu == "Simulasi Pengelolaan":
 
     with input3:
         kapasitas_truk_compactor_m3 = st.selectbox(
-            "Kapasitas truk compactor (m³)",
+            "🚛 Kapasitas truk compactor (m³)",
             options=[6, 12],
             index=1
         )
 
     with input4:
         hari_operasional_angkut_per_minggu = st.number_input(
-            "Hari operasional angkut per minggu",
+            "📆 Hari operasional angkut per minggu",
             min_value=1,
             max_value=7,
             value=4,
@@ -2203,44 +2212,44 @@ if menu == "Simulasi Pengelolaan":
     end_period = format_periode(simulation_df["Tanggal"].max())
 
     mobile_kpi_summary([
-        {"label": "Periode", "value": f"{start_period} - {end_period}", "note": f"{forecast_steps} bulan ke depan"},
-        {"label": "Total Sampah", "value": f"{format_angka(total_sampah)} ton"},
-        {"label": "Total Anggaran", "value": format_rupiah(total_anggaran), "note": f"{format_rupiah(biaya_per_ton)} per ton"},
-        {"label": "Total Volume", "value": f"{format_angka(total_volume_sampah)} m³", "note": f"densitas {format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³"},
-        {"label": "Beban Tertinggi", "value": highest_row["Periode"], "note": f"{format_angka(highest_row['Prediksi Sampah (Ton)'])} ton"},
-        {"label": "Beban Terendah", "value": lowest_row["Periode"], "note": f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton"},
-        {"label": "Total Muatan Truk", "value": f"{format_integer(total_muatan_truk)} muatan", "note": f"kapasitas {kapasitas_truk_compactor_m3} m³"},
-        {"label": "Muatan Maks/Hari Angkut", "value": f"{format_integer(int(simulation_df['Muatan Truk per Hari Angkut'].max()))} muatan/hari"},
-        {"label": "Hari Angkut/Minggu", "value": f"{hari_operasional_angkut_per_minggu} hari/minggu", "note": "parameter jadwal angkut"},
+        {"label": "🗓️ Periode", "value": f"{start_period} - {end_period}", "note": f"{forecast_steps} bulan ke depan"},
+        {"label": "♻️ Total Sampah", "value": f"{format_angka(total_sampah)} ton"},
+        {"label": "💰 Total Anggaran", "value": format_rupiah(total_anggaran), "note": f"{format_rupiah(biaya_per_ton)} per ton"},
+        {"label": "📦 Total Volume", "value": f"{format_angka(total_volume_sampah)} m³", "note": f"densitas {format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³"},
+        {"label": "📈 Beban Tertinggi", "value": highest_row["Periode"], "note": f"{format_angka(highest_row['Prediksi Sampah (Ton)'])} ton"},
+        {"label": "📉 Beban Terendah", "value": lowest_row["Periode"], "note": f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton"},
+        {"label": "🚛 Total Muatan Truk", "value": f"{format_integer(total_muatan_truk)} muatan", "note": f"kapasitas {kapasitas_truk_compactor_m3} m³"},
+        {"label": "🚚 Muatan Maks/Hari Angkut", "value": f"{format_integer(int(simulation_df['Muatan Truk per Hari Angkut'].max()))} muatan/hari"},
+        {"label": "📆 Hari Angkut/Minggu", "value": f"{hari_operasional_angkut_per_minggu} hari/minggu", "note": "parameter jadwal angkut"},
     ])
 
     row1_col1, row1_col2, row1_col3, row1_col4 = st.columns(4, gap="large")
 
     with row1_col1:
-        kpi_card("Periode Simulasi", f"{start_period} - {end_period}", f"{forecast_steps} bulan ke depan")
+        kpi_card("🗓️ Periode Simulasi", f"{start_period} - {end_period}", f"{forecast_steps} bulan ke depan")
 
     with row1_col2:
-        kpi_card("Total Prediksi Sampah", f"{format_angka(total_sampah)} ton")
+        kpi_card("♻️ Total Prediksi Sampah", f"{format_angka(total_sampah)} ton")
 
     with row1_col3:
-        kpi_card("Total Estimasi Anggaran", format_rupiah(total_anggaran), f" {format_rupiah(biaya_per_ton)} per ton")
+        kpi_card("💰 Total Estimasi Anggaran", format_rupiah(total_anggaran), f" {format_rupiah(biaya_per_ton)} per ton")
 
     with row1_col4:
-        kpi_card("Total Estimasi Volume", f"{format_angka(total_volume_sampah)} m³", f"Densitas {format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³")
+        kpi_card("📦 Total Estimasi Volume", f"{format_angka(total_volume_sampah)} m³", f"Densitas {format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³")
 
     row2_col1, row2_col2, row2_col3, row2_col4 = st.columns(4, gap="large")
 
     with row2_col1:
-        kpi_card("Beban Tertinggi", highest_row["Periode"], f"{format_angka(highest_row['Prediksi Sampah (Ton)'])} ton")
+        kpi_card("📈 Beban Tertinggi", highest_row["Periode"], f"{format_angka(highest_row['Prediksi Sampah (Ton)'])} ton")
 
     with row2_col2:
-        kpi_card("Beban Terendah", lowest_row["Periode"], f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton")
+        kpi_card("📉 Beban Terendah", lowest_row["Periode"], f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton")
 
     with row2_col3:
-        kpi_card("Total Kebutuhan Muatan Truk", f"{format_integer(total_muatan_truk)} muatan", f"Kapasitas {kapasitas_truk_compactor_m3} m³")
+        kpi_card("🚛 Total Kebutuhan Muatan Truk", f"{format_integer(total_muatan_truk)} muatan", f"Kapasitas {kapasitas_truk_compactor_m3} m³")
 
     with row2_col4:
-        kpi_card("Muatan Maksimum per Hari Angkut", f"{format_integer(int(simulation_df['Muatan Truk per Hari Angkut'].max()))} muatan/hari", f"{hari_operasional_angkut_per_minggu} hari angkut/minggu")
+        kpi_card("🚚 Muatan Maksimum per Hari Angkut", f"{format_integer(int(simulation_df['Muatan Truk per Hari Angkut'].max()))} muatan/hari", f"{hari_operasional_angkut_per_minggu} hari angkut/minggu")
 
     fig_forecast = make_forecast_chart(ts, forecast, theme)
     st.plotly_chart(
@@ -2249,11 +2258,11 @@ if menu == "Simulasi Pengelolaan":
         config={"displayModeBar": False, "responsive": True}
     )
 
-    st.markdown('<div class="small-title table-title-mobile-tight">Tabel Simulasi Kebutuhan Operasional</div>', unsafe_allow_html=True)
+    st.markdown('<div class="small-title table-title-mobile-tight">📋 Tabel Simulasi Kebutuhan Operasional</div>', unsafe_allow_html=True)
     show_table(prepare_display_table(simulation_df))
 
     bullet_card(
-        "Catatan simulasi",
+        "📝 Catatan simulasi",
         [
             f"Biaya penanganan yang digunakan adalah <b>{format_rupiah(biaya_per_ton)} per ton</b>.",
             f"Kapasitas truk compactor digunakan sebesar <b>{kapasitas_truk_compactor_m3} m³</b> per muatan.",
