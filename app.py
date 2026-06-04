@@ -3037,7 +3037,7 @@ if source_data_type == "upload":
     )
 else:
     st.sidebar.markdown(
-        f'<div class="data-status info">ℹ️ Data bawaan aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
+        f'<div class="data-status info">Data bawaan aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
         unsafe_allow_html=True
     )
 
