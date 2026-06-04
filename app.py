@@ -3496,31 +3496,23 @@ def make_eda_avg_year(ts, theme):
     eda_df = build_eda_df(ts)
     avg_year = eda_df.groupby("tahun", as_index=False)["jumlah_sampah"].mean()
     line_color = eda_line_color(theme)
-    fill_color = eda_fill_color(theme, 0.14)
+    fill_color = eda_fill_color(theme, 0.12)
 
     fig = go.Figure()
     fig.add_trace(go.Bar(
         x=avg_year["tahun"].astype(str),
         y=avg_year["jumlah_sampah"],
         name="Rata-rata",
-        marker=dict(color=fill_color, line=dict(color=line_color, width=1.8)),
+        marker=dict(color=fill_color, line=dict(color=line_color, width=2.0)),
         hovertemplate="<b>%{x}</b><br>Rata-rata: %{y:,.0f} ton<extra></extra>",
         text=[format_integer(v) for v in avg_year["jumlah_sampah"]],
         textposition="outside",
-        textfont=dict(color=theme["chart_font"], size=11)
-    ))
-    fig.add_trace(go.Scatter(
-        x=avg_year["tahun"].astype(str),
-        y=avg_year["jumlah_sampah"],
-        mode="lines+markers",
-        name="Arah rata-rata",
-        line=dict(color=line_color, width=2.2, shape="spline"),
-        marker=dict(size=7, color=theme["chart_bg"], line=dict(color=line_color, width=1.8)),
-        hovertemplate="<b>%{x}</b><br>Rata-rata: %{y:,.0f} ton<extra></extra>"
+        textfont=dict(color=theme["chart_font"], size=12, family="Arial")
     ))
 
-    fig = apply_eda_layout(fig, theme, "Rata-rata Jumlah Sampah per Tahun", x_title="Tahun", height=420)
-    fig.update_layout(showlegend=False, bargap=0.36)
+    fig = apply_eda_layout(fig, theme, "Rata-rata Jumlah Sampah per Tahun", x_title="Tahun", height=410)
+    fig.update_layout(showlegend=False, bargap=0.38, uniformtext_minsize=9, uniformtext_mode="hide")
+    fig.update_yaxes(rangemode="tozero")
     return fig
 
 
@@ -3529,32 +3521,24 @@ def make_eda_avg_month(ts, theme):
     avg_month = eda_df.groupby(["bulan_num", "bulan"], as_index=False)["jumlah_sampah"].mean()
     avg_month = avg_month.sort_values("bulan_num")
     line_color = eda_line_color(theme)
-    fill_color = eda_fill_color(theme, 0.14)
+    fill_color = eda_fill_color(theme, 0.12)
 
     fig = go.Figure()
     fig.add_trace(go.Bar(
         x=avg_month["bulan"],
         y=avg_month["jumlah_sampah"],
         name="Rata-rata",
-        marker=dict(color=fill_color, line=dict(color=line_color, width=1.6)),
+        marker=dict(color=fill_color, line=dict(color=line_color, width=2.0)),
         hovertemplate="<b>%{x}</b><br>Rata-rata: %{y:,.0f} ton<extra></extra>",
         text=[format_integer(v) for v in avg_month["jumlah_sampah"]],
         textposition="outside",
-        textfont=dict(color=theme["chart_font"], size=11)
-    ))
-    fig.add_trace(go.Scatter(
-        x=avg_month["bulan"],
-        y=avg_month["jumlah_sampah"],
-        mode="lines+markers",
-        name="Pola bulanan",
-        line=dict(color=line_color, width=2.2, shape="spline"),
-        marker=dict(size=6.5, color=theme["chart_bg"], line=dict(color=line_color, width=1.6)),
-        hovertemplate="<b>%{x}</b><br>Rata-rata: %{y:,.0f} ton<extra></extra>"
+        textfont=dict(color=theme["chart_font"], size=11, family="Arial")
     ))
 
-    fig = apply_eda_layout(fig, theme, "Rata-rata Jumlah Sampah per Bulan", x_title="Bulan", height=430)
-    fig.update_layout(showlegend=False, bargap=0.30)
+    fig = apply_eda_layout(fig, theme, "Rata-rata Jumlah Sampah per Bulan", x_title="Bulan", height=420)
+    fig.update_layout(showlegend=False, bargap=0.34, uniformtext_minsize=9, uniformtext_mode="hide")
     fig.update_xaxes(tickangle=-35)
+    fig.update_yaxes(rangemode="tozero")
     return fig
 
 
@@ -3568,93 +3552,77 @@ def make_eda_heatmap(ts, theme):
     ).reindex(columns=list(range(1, 13)))
 
     month_labels = [BULAN_INDO[i] for i in range(1, 13)]
+    z_values = pivot.to_numpy(dtype=float)
+
     line_color = eda_line_color(theme)
-    values = []
-    x_values = []
-    y_values = []
-    text_values = []
+    bg_color = theme.get("chart_bg", "#111915")
+    card_color = theme.get("card", "#222A24")
 
-    for year in pivot.index:
-        for month_num in pivot.columns:
-            val = pivot.loc[year, month_num]
-            if pd.isna(val):
-                continue
-            x_values.append(BULAN_INDO[int(month_num)])
-            y_values.append(str(year))
-            values.append(float(val))
-            text_values.append(format_integer(val))
-
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        x=x_values,
-        y=y_values,
-        mode="markers+text",
-        text=text_values,
-        textposition="middle center",
-        textfont=dict(size=9.5, color=theme["chart_font"], family="Arial"),
-        marker=dict(
-            symbol="square",
-            size=42,
-            color=values,
-            colorscale=[
-                [0, eda_fill_color(theme, 0.10)],
-                [0.55, eda_fill_color(theme, 0.34)],
-                [1, line_color]
-            ],
-            opacity=0.82,
-            line=dict(color=line_color, width=1.1),
-            colorbar=dict(
-                title="Ton",
-                tickfont=dict(color=theme["chart_font"]),
-                titlefont=dict(color=theme["chart_font"]),
-                len=0.78
-            )
+    # Heatmap dibuat minimal-valid supaya aman di berbagai versi Plotly/Streamlit.
+    # Hindari texttemplate/xgap/ygap/marker.colorbar yang sebelumnya rawan error.
+    fig = go.Figure(data=go.Heatmap(
+        x=month_labels,
+        y=[str(y) for y in pivot.index],
+        z=z_values,
+        colorscale=[
+            [0.00, bg_color],
+            [0.50, card_color],
+            [1.00, line_color]
+        ],
+        hoverongaps=False,
+        showscale=True,
+        colorbar=dict(
+            title="Ton",
+            tickfont=dict(color=theme["chart_font"], size=11),
+            len=0.76,
+            thickness=12,
+            outlinewidth=0
         ),
-        hovertemplate="<b>%{x} %{y}</b><br>%{marker.color:,.0f} ton<extra></extra>"
+        hovertemplate="<b>%{x} %{y}</b><br>Jumlah sampah: %{z:,.0f} ton<extra></extra>"
     ))
 
+    # Angka di dalam cell pakai annotation, bukan texttemplate, agar kompatibel.
+    if pivot.size:
+        finite_values = z_values[np.isfinite(z_values)]
+        threshold = np.nanmedian(finite_values) if finite_values.size else np.nan
+        for row_idx, year in enumerate(pivot.index):
+            for col_idx, month in enumerate(month_labels):
+                value = z_values[row_idx, col_idx]
+                if np.isfinite(value):
+                    fig.add_annotation(
+                        x=month,
+                        y=str(year),
+                        text=format_integer(value),
+                        showarrow=False,
+                        font=dict(size=10, color=theme["chart_font"]),
+                        opacity=0.92
+                    )
+
     fig = apply_eda_layout(fig, theme, "Heatmap Jumlah Sampah Tahun-Bulan", x_title="Bulan", y_title="Tahun", height=470)
-    fig.update_xaxes(categoryorder="array", categoryarray=month_labels, tickangle=-35)
-    fig.update_yaxes(autorange="reversed")
     fig.update_layout(showlegend=False)
+    fig.update_xaxes(tickangle=-35, showgrid=False)
+    fig.update_yaxes(autorange="reversed", showgrid=False)
     return fig
 
 
 def make_eda_distribution(ts, theme):
-    mean_value = ts.mean()
-    median_value = ts.median()
     line_color = eda_line_color(theme)
-    fill_color = eda_fill_color(theme, 0.18)
+    fill_color = eda_fill_color(theme, 0.12)
 
     fig = go.Figure()
     fig.add_trace(go.Histogram(
         x=ts.values,
-        nbinsx=11,
+        nbinsx=10,
         name="Frekuensi",
-        marker=dict(color=fill_color, line=dict(color=line_color, width=1.7)),
+        marker=dict(color=fill_color, line=dict(color=line_color, width=2.0)),
         opacity=1,
-        hovertemplate="Jumlah sampah: %{x:,.0f} ton<br>Frekuensi: %{y}<extra></extra>"
+        hovertemplate="Rentang jumlah sampah: %{x:,.0f} ton<br>Frekuensi: %{y}<extra></extra>"
     ))
 
-    fig.add_vline(x=mean_value, line_width=2, line_dash="dash", line_color=line_color)
-    fig.add_vline(x=median_value, line_width=2, line_dash="dot", line_color=line_color)
-
-    fig.add_annotation(
-        x=mean_value,
-        y=1,
-        yref="paper",
-        text=f"Mean<br>{format_integer(mean_value)} ton",
-        showarrow=False,
-        yanchor="bottom",
-        font=dict(size=12, color=theme["chart_font"]),
-        bgcolor=theme["annotation_bg"],
-        bordercolor=theme["annotation_border"],
-        borderwidth=1
-    )
-
-    fig = apply_eda_layout(fig, theme, "Distribusi Jumlah Sampah", x_title="Jumlah sampah (ton)", y_title="Frekuensi", height=420)
+    fig = apply_eda_layout(fig, theme, "Distribusi Frekuensi Jumlah Sampah", x_title="Jumlah sampah (ton)", y_title="Frekuensi", height=410)
+    fig.update_layout(showlegend=False, bargap=0.08)
+    fig.update_yaxes(rangemode="tozero")
     return fig
-
 
 def make_eda_decomposition(ts, theme):
     decomposition = seasonal_decompose(ts, model="additive", period=12, extrapolate_trend="freq")
@@ -3805,28 +3773,63 @@ def render_eda_section(ts, theme):
         }}
         div[data-testid="stExpander"] div[data-testid="stExpanderDetails"] {{
             background: #080C12 !important;
-            border-top: 1px solid {theme["border"]} !important;
+            border-top: none !important;
             padding: 8px 12px 12px 12px !important;
         }}
         div[data-testid="stExpander"] [role="radiogroup"] {{
+            width: 100% !important;
             display: flex !important;
             flex-direction: column !important;
             gap: 4px !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }}
+
+        /* Balik ke rasa desain lama: radio tetap bulat bawaan,
+           tetapi area hover/aktif melebar penuh dari kiri sampai kanan panel. */
+        div[data-testid="stExpander"] [role="radiogroup"] > div {{
+            width: 100% !important;
+            min-width: 100% !important;
+            box-sizing: border-box !important;
+            border-radius: 11px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: transparent !important;
+        }}
+        div[data-testid="stExpander"] [role="radiogroup"] > div:hover {{
+            background: rgba(139, 203, 136, 0.10) !important;
+        }}
+        div[data-testid="stExpander"] [role="radiogroup"] > div:has(input:checked) {{
+            background: rgba(139, 203, 136, 0.16) !important;
         }}
         div[data-testid="stExpander"] [role="radiogroup"] label {{
-            min-height: 38px !important;
-            border-radius: 10px !important;
-            padding: 7px 10px !important;
+            width: 100% !important;
+            min-width: 100% !important;
+            min-height: 42px !important;
+            box-sizing: border-box !important;
+            border-radius: 11px !important;
+            padding: 7px 14px !important;
+            margin: 0 !important;
             color: {theme["text"]} !important;
             font-size: 14px !important;
             font-weight: 750 !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+            background: transparent !important;
         }}
-        div[data-testid="stExpander"] [role="radiogroup"] label:hover {{
-            background: rgba(139, 203, 136, 0.12) !important;
+        div[data-testid="stExpander"] [role="radiogroup"] label > div {{
+            width: auto !important;
+            flex: 0 0 auto !important;
         }}
+        div[data-testid="stExpander"] [role="radiogroup"] label:hover,
         div[data-testid="stExpander"] [role="radiogroup"] label[data-checked="true"],
         div[data-testid="stExpander"] [role="radiogroup"] label:has(input:checked) {{
-            background: rgba(139, 203, 136, 0.16) !important;
+            background: transparent !important;
+        }}
+        div[data-testid="stExpander"] [role="radiogroup"] p {{
+            color: {theme["text"]} !important;
+            font-weight: 750 !important;
         }}
         @media screen and (max-width: 900px) {{
             .eda-metric-card {{ padding: 11px 12px; min-height: 84px; }}
