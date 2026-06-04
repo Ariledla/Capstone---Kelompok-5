@@ -580,8 +580,16 @@ def apply_theme(mode):
 
         [data-testid="stSidebar"],
         [data-testid="stSidebarContent"],
-        section[data-testid="stSidebar"] {{
+        section[data-testid="stSidebar"],
+        [data-testid="stSidebarUserContent"] {{
             overflow-y: hidden !important;
+            scrollbar-width: none !important;
+        }}
+
+        [data-testid="stSidebar"]::-webkit-scrollbar,
+        [data-testid="stSidebarContent"]::-webkit-scrollbar,
+        [data-testid="stSidebarUserContent"]::-webkit-scrollbar {{
+            display: none !important;
         }}
 
         [data-testid="stSidebar"] * {{
@@ -935,9 +943,9 @@ def apply_theme(mode):
                 {cfg["card"]};
             border: 1px solid {cfg["border"]};
             border-radius: 20px;
-            padding: 13px 18px 17px 18px;
-            height: 126px;
-            min-height: 126px;
+            padding: 12px 15px 15px 15px;
+            height: 120px;
+            min-height: 120px;
             box-shadow: 0 10px 26px {cfg["shadow"]};
             display: flex;
             flex-direction: column;
@@ -945,7 +953,7 @@ def apply_theme(mode):
             align-items: stretch;
             gap: 5px;
             transform: translateY(-1px);
-            margin-bottom: 18px;
+            margin-bottom: 14px;
             box-sizing: border-box;
             overflow: hidden;
             position: relative;
@@ -1055,23 +1063,23 @@ def apply_theme(mode):
             text-overflow: ellipsis;
         }}
 
-        body:not(.sidebar-custom-closed) .kpi-card {
+        body:not(.sidebar-custom-closed) .kpi-card {{
             padding-left: 16px !important;
             padding-right: 16px !important;
-        }
+        }}
 
-        body:not(.sidebar-custom-closed) .kpi-value {
+        body:not(.sidebar-custom-closed) .kpi-value {{
             font-size: clamp(17px, 1.05vw, 25px) !important;
-        }
+        }}
 
-        body:not(.sidebar-custom-closed) .kpi-value-long {
+        body:not(.sidebar-custom-closed) .kpi-value-long {{
             font-size: clamp(14px, 0.88vw, 20px) !important;
-        }
+        }}
 
-        body:not(.sidebar-custom-closed) .kpi-value-period {
+        body:not(.sidebar-custom-closed) .kpi-value-period {{
             font-size: clamp(16px, 0.98vw, 22px) !important;
             white-space: normal !important;
-        }
+        }}
 
         .mobile-kpi-label-row {{
             display: flex;
@@ -3813,7 +3821,7 @@ def render_eda_section(ts, theme):
     )
 
     eda_values = ts.dropna()
-    metric1, metric2, metric3, metric4 = st.columns(4, gap="medium")
+    metric1, metric2, metric3, metric4 = st.columns(4, gap="small")
     with metric1:
         eda_metric_card("Jumlah Observasi", f"{format_integer(len(eda_values))} bulan", f"{format_periode(eda_values.index.min())} - {format_periode(eda_values.index.max())}", theme, "calendar")
     with metric2:
@@ -4023,7 +4031,7 @@ if menu == "Simulasi Pengelolaan":
         unsafe_allow_html=True
     )
 
-    input1, input2, input3, input4 = st.columns(4, gap="medium")
+    input1, input2, input3, input4 = st.columns(4, gap="small")
 
     with input1:
         forecast_steps = st.slider(
@@ -4090,7 +4098,7 @@ if menu == "Simulasi Pengelolaan":
         {"label": "📆 Hari Angkut/Minggu", "value": f"{hari_operasional_angkut_per_minggu} hari/minggu", "note": "parameter jadwal angkut"},
     ])
 
-    row1_col1, row1_col2, row1_col3, row1_col4 = st.columns(4, gap="medium")
+    row1_col1, row1_col2, row1_col3, row1_col4 = st.columns(4, gap="small")
 
     with row1_col1:
         kpi_card("🗓️ Periode Simulasi", f"{start_period} - {end_period}", f"{forecast_steps} bulan ke depan")
@@ -4104,7 +4112,7 @@ if menu == "Simulasi Pengelolaan":
     with row1_col4:
         kpi_card("📦 Total Estimasi Volume", f"{format_angka(total_volume_sampah)} m³", f"Densitas {format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³")
 
-    row2_col1, row2_col2, row2_col3, row2_col4 = st.columns(4, gap="medium")
+    row2_col1, row2_col2, row2_col3, row2_col4 = st.columns(4, gap="small")
 
     with row2_col1:
         kpi_card("📈 Beban Tertinggi", highest_row["Periode"], f"{format_angka(highest_row['Prediksi Sampah (Ton)'])} ton")
@@ -4155,7 +4163,7 @@ elif menu == "Ringkasan Data & Model":
 
     eval_df, comparison_df, test_actual, test_forecast, eval_model_label, eval_model_selection_df = evaluate_sarima(ts)
 
-    left, right = st.columns(2, gap="medium")
+    left, right = st.columns(2, gap="small")
 
     with left:
         bullet_card(
