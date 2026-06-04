@@ -581,31 +581,45 @@ def apply_theme(mode):
         }}
 
         .data-input-title {{
-            font-size: 13px;
-            font-weight: 900;
-            margin-top: 18px;
-            margin-bottom: 8px;
-            color: {cfg["text"]} !important;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
+            width: 100%;
+            margin-top: 18px;
+            margin-bottom: 10px;
+            padding: 12px 14px;
+            border-radius: 18px;
+            border: 1px solid {cfg["border"]};
+            background: linear-gradient(135deg, rgba(139, 203, 136, 0.18), rgba(139, 203, 136, 0.08));
+            box-shadow: 0 12px 28px {cfg["shadow"]};
+            box-sizing: border-box;
+        }}
+
+        .data-input-title-text {{
+            font-size: 13px;
+            font-weight: 900;
+            color: {cfg["text"]} !important;
+            letter-spacing: 0.01em;
+            line-height: 1.1;
         }}
 
         .modern-section-icon {{
-            width: 20px;
-            height: 20px;
-            border-radius: 8px;
+            width: 34px;
+            height: 34px;
+            min-width: 34px;
+            border-radius: 12px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, {cfg["accent_soft"]}, rgba(226, 177, 93, 0.14));
-            border: 1px solid {cfg["border"]};
+            background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(139, 203, 136, 0.12));
+            border: 1px solid rgba(255,255,255,0.14);
             color: {cfg["accent"]} !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
         }}
 
         .modern-section-icon svg {{
-            width: 13px;
-            height: 13px;
+            width: 18px;
+            height: 18px;
             display: block;
         }}
 
@@ -3754,16 +3768,23 @@ def render_eda_section(ts, theme):
             box-shadow: none !important;
         }}
         div[data-testid="stExpander"] summary {{
-            min-height: 54px !important;
+            min-height: 56px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
             padding: 0 18px !important;
             font-size: 15.5px !important;
             font-weight: 850 !important;
             color: {theme["text"]} !important;
             display: flex !important;
             align-items: center !important;
+            background: linear-gradient(90deg, rgba(139, 203, 136, 0.20) 0%, rgba(139, 203, 136, 0.12) 64%, rgba(139, 203, 136, 0.08) 100%) !important;
+            transition: background 0.16s ease-in-out !important;
+        }}
+        div[data-testid="stExpander"] details[open] > summary {{
+            background: linear-gradient(90deg, rgba(139, 203, 136, 0.24) 0%, rgba(139, 203, 136, 0.16) 64%, rgba(139, 203, 136, 0.10) 100%) !important;
         }}
         div[data-testid="stExpander"] summary:hover {{
-            background: {theme["accent_soft"]} !important;
+            background: linear-gradient(90deg, rgba(139, 203, 136, 0.26) 0%, rgba(139, 203, 136, 0.17) 64%, rgba(139, 203, 136, 0.11) 100%) !important;
         }}
         div[data-testid="stExpander"] summary svg {{
             color: {theme["accent"]} !important;
@@ -3774,28 +3795,13 @@ def render_eda_section(ts, theme):
         div[data-testid="stExpander"] div[data-testid="stExpanderDetails"] {{
             background: #080C12 !important;
             border-top: none !important;
-            padding: 8px 12px 12px 12px !important;
-        }}
-        div[data-testid="stExpander"] [role="radiogroup"] {{
-            width: 100% !important;
-            display: flex !important;
-            flex-direction: column !important;
-            gap: 4px !important;
-            padding: 0 !important;
-            margin: 0 !important;
-        }}
-
-        /* EDA option list clean: tanpa bulatan merah/putih, full-row highlight dari kiri sampai kanan. */
-        div[data-testid="stExpander"] div[data-testid="stExpanderDetails"] {{
-            background: #080C12 !important;
-            border-top: none !important;
             padding: 8px 0 10px 0 !important;
         }}
         div[data-testid="stExpander"] [role="radiogroup"] {{
             width: 100% !important;
             display: flex !important;
             flex-direction: column !important;
-            gap: 0 !important;
+            gap: 6px !important;
             padding: 0 !important;
             margin: 0 !important;
         }}
@@ -3807,36 +3813,52 @@ def render_eda_section(ts, theme):
             margin: 0 !important;
             padding: 0 !important;
             background: transparent !important;
+            overflow: hidden !important;
+        }}
+        div[data-testid="stExpander"] [role="radiogroup"] > div:hover {{
+            background: rgba(139, 203, 136, 0.08) !important;
+        }}
+        div[data-testid="stExpander"] [role="radiogroup"] > div:has(input:checked) {{
+            background: linear-gradient(90deg, rgba(139, 203, 136, 0.24) 0%, rgba(139, 203, 136, 0.16) 70%, rgba(139, 203, 136, 0.10) 100%) !important;
+            border-left: 3px solid rgba(165, 224, 161, 0.88) !important;
         }}
         div[data-testid="stExpander"] [role="radiogroup"] label {{
             width: 100% !important;
             min-width: 100% !important;
-            min-height: 46px !important;
+            min-height: 50px !important;
             box-sizing: border-box !important;
             border-radius: 0 !important;
-            padding: 10px 24px !important;
+            padding: 12px 24px !important;
             margin: 0 !important;
             color: {theme["text"]} !important;
             font-size: 14.2px !important;
             font-weight: 760 !important;
             display: flex !important;
             align-items: center !important;
+            gap: 12px !important;
             background: transparent !important;
             cursor: pointer !important;
             transition: background 0.14s ease-in-out !important;
         }}
-        /* Hilangkan bulatan radio bawaan yang kelihatan merah/aneh. */
+        /* Hilangkan radio bawaan, ganti dengan bulatan custom yang lebih clean. */
         div[data-testid="stExpander"] [role="radiogroup"] label > div:first-child {{
             display: none !important;
         }}
-        div[data-testid="stExpander"] [role="radiogroup"] label:hover {{
-            background: rgba(139, 203, 136, 0.10) !important;
+        div[data-testid="stExpander"] [role="radiogroup"] label::before {{
+            content: "";
+            width: 14px;
+            height: 14px;
+            min-width: 14px;
+            border-radius: 50%;
+            border: 2px solid rgba(232, 239, 228, 0.32);
+            background: rgba(255,255,255,0.03);
+            box-sizing: border-box;
+            transition: all 0.14s ease-in-out;
         }}
-        div[data-testid="stExpander"] [role="radiogroup"] label:has(input:checked),
-        div[data-testid="stExpander"] [role="radiogroup"] > div:has(input:checked) label {{
-            background: rgba(139, 203, 136, 0.16) !important;
-            border-left: 3px solid {theme["accent"]} !important;
-            padding-left: 21px !important;
+        div[data-testid="stExpander"] [role="radiogroup"] > div:has(input:checked) label::before {{
+            border-color: {theme["accent"]};
+            background: radial-gradient(circle, {theme["accent"]} 0 42%, rgba(255,255,255,0.96) 43% 64%, transparent 65% 100%);
+            box-shadow: 0 0 0 3px rgba(139, 203, 136, 0.12);
         }}
         div[data-testid="stExpander"] [role="radiogroup"] p {{
             color: {theme["text"]} !important;
@@ -3844,7 +3866,6 @@ def render_eda_section(ts, theme):
             line-height: 1.2 !important;
             margin: 0 !important;
         }}
-        div[data-testid="stExpander"] [role="radiogroup"] label:has(input:checked) p,
         div[data-testid="stExpander"] [role="radiogroup"] > div:has(input:checked) p {{
             font-weight: 900 !important;
         }}
@@ -3979,12 +4000,13 @@ with theme_col2:
 st.sidebar.markdown('''
 <div class="data-input-title">
     <span class="modern-section-icon">
-        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H9l2 2.2h7.5A2.5 2.5 0 0 1 21 9.7v7.8A2.5 2.5 0 0 1 18.5 20h-13A2.5 2.5 0 0 1 3 17.5z"/>
-            <path d="M8 13h8"/>
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 8.2A2.2 2.2 0 0 1 6.2 6H10l2 2.2h5.8A2.2 2.2 0 0 1 20 10.4v6.4A2.2 2.2 0 0 1 17.8 19H6.2A2.2 2.2 0 0 1 4 16.8z"/>
+            <path d="M12 10.2v5.8"/>
+            <path d="M9.8 13.8 12 16l2.2-2.2"/>
         </svg>
     </span>
-    Input Data
+    <span class="data-input-title-text">Input Data</span>
 </div>
 ''', unsafe_allow_html=True)
 uploaded_file = st.sidebar.file_uploader(
