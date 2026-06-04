@@ -986,6 +986,28 @@ def apply_theme(mode):
             color: {cfg["accent"]} !important;
             fill: {cfg["accent"]} !important;
             opacity: 1 !important;
+            transition: transform 0.18s ease-in-out !important;
+            transform-origin: center !important;
+        }}
+
+        /* Dropdown EDA/select: saat opsi terbuka, chevron kanan berubah arah ke atas */
+        div[data-baseweb="select"] [aria-expanded="true"] svg,
+        div[data-baseweb="select"]:has([aria-expanded="true"]) svg {{
+            transform: rotate(180deg) !important;
+        }}
+
+        /* Hilangkan scrollbar ganda pada panel opsi select */
+        div[data-baseweb="popover"] ul,
+        div[role="listbox"] {{
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }}
+
+        div[data-baseweb="popover"] ul::-webkit-scrollbar,
+        div[role="listbox"]::-webkit-scrollbar {{
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
         }}
 
         [data-testid="stNumberInput"] {{
@@ -3580,11 +3602,36 @@ def render_eda_section(ts, theme):
             margin-top: 12px !important;
             margin-bottom: 26px !important;
         }}
+
+        /* Panel opsi EDA: cukup satu scrollbar halaman, tidak perlu scrollbar dalam dropdown */
+        div[data-baseweb="popover"] {{
+            z-index: 999999 !important;
+        }}
         div[data-baseweb="popover"] ul,
         div[role="listbox"] {{
-            max-height: 280px !important;
-            overflow-y: auto !important;
+            max-height: none !important;
+            overflow-y: visible !important;
             border-radius: 16px !important;
+            padding: 8px 8px !important;
+            background: #080C12 !important;
+            border: 1px solid {theme["border"]} !important;
+            box-shadow: 0 18px 42px rgba(0,0,0,0.28) !important;
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }}
+        div[data-baseweb="popover"] ul::-webkit-scrollbar,
+        div[role="listbox"]::-webkit-scrollbar {{
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+        }}
+        div[role="option"] {{
+            border-radius: 10px !important;
+            margin: 3px 0 !important;
+            min-height: 42px !important;
+        }}
+        div[role="option"]:hover {{
+            background: rgba(139, 203, 136, 0.12) !important;
         }}
         .eda-closed-note {{
             background: {theme["card"]};
