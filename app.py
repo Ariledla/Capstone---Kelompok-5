@@ -6,9 +6,11 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import streamlit.components.v1 as components
 
 from statsmodels.tsa.statespace.sarimax import SARIMAX
+from statsmodels.tsa.seasonal import seasonal_decompose
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 # ============================================================
@@ -19,7 +21,7 @@ st.set_page_config(
     page_title="Simulasi Sampah Kota Bandung",
     page_icon="♻️",
     layout="wide",
-    initial_sidebar_state="auto"
+    initial_sidebar_state="expanded"
 )
 
 FILE_NAME = "jumlah_capaian_penanganan_sampah_di_kota_bandung.xlsx"
@@ -373,12 +375,12 @@ def prepare_display_table(output):
     ]
 
     display = display.rename(columns={
-        "Prediksi Sampah (Ton)": "♻️ Prediksi Sampah (Ton)",
-        "Estimasi Anggaran": "💰 Estimasi Anggaran",
-        "Estimasi Volume Sampah (m³)": "📦 Estimasi Volume Sampah (m³)",
-        "Estimasi Hari Operasional Angkut": "📆 Estimasi Hari Operasional Angkut",
-        "Estimasi Kebutuhan Muatan Truk": "🚛 Estimasi Kebutuhan Muatan Truk",
-        "Muatan Truk per Hari Angkut": "🚚 Muatan Truk per Hari Angkut"
+        "Prediksi Sampah (Ton)": "Prediksi<br>Sampah (Ton)",
+        "Estimasi Anggaran": "Estimasi<br>Anggaran",
+        "Estimasi Volume Sampah (m³)": "Estimasi<br>Volume (m³)",
+        "Estimasi Hari Operasional Angkut": "Hari<br>Operasional<br>Angkut",
+        "Estimasi Kebutuhan Muatan Truk": "Kebutuhan<br>Muatan<br>Truk",
+        "Muatan Truk per Hari Angkut": "Muatan<br>Truk/Hari"
     })
 
     return display
@@ -512,8 +514,19 @@ def apply_theme(mode):
             color: {cfg["text"]} !important;
         }}
 
-        header, footer, #MainMenu {{
-            visibility: hidden;
+        footer, #MainMenu,
+        [data-testid="stToolbar"],
+        [data-testid="stDecoration"],
+        [data-testid="stStatusWidget"] {{
+            display: none !important;
+        }}
+
+        header,
+        [data-testid="stHeader"] {{
+            visibility: visible !important;
+            background: transparent !important;
+            height: 0 !important;
+            min-height: 0 !important;
         }}
 
         .mobile-kpi-summary {{
@@ -568,11 +581,49 @@ def apply_theme(mode):
         }}
 
         .data-input-title {{
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            margin-top: 18px;
+            margin-bottom: 10px;
+            padding: 9px 11px;
+            border-radius: 15px;
+            border: 1px solid {cfg["border"]};
+            background:
+                linear-gradient(145deg, rgba(255,255,255,0.030), rgba(255,255,255,0)),
+                {cfg["card"]};
+            box-shadow: 0 8px 20px {cfg["shadow"]};
+            box-sizing: border-box;
+        }}
+
+        .data-input-title-text {{
             font-size: 13px;
             font-weight: 900;
-            margin-top: 18px;
-            margin-bottom: 8px;
             color: {cfg["text"]} !important;
+            letter-spacing: 0.01em;
+            line-height: 1.1;
+        }}
+
+        .modern-section-icon {{
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                linear-gradient(135deg, {cfg["accent_soft"]}, rgba(226, 177, 93, 0.11));
+            border: 1px solid {cfg["border"]};
+            color: {cfg["accent"]} !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+        }}
+
+        .modern-section-icon svg {{
+            width: 16px;
+            height: 16px;
+            display: block;
         }}
 
         .data-input-note {{
@@ -601,6 +652,29 @@ def apply_theme(mode):
             color: {cfg["muted"]} !important;
             font-size: 10.8px;
             font-weight: 650;
+        }}
+
+        .modern-status-dot {{
+            width: 16px;
+            height: 16px;
+            border-radius: 6px;
+            display: inline-flex;
+            vertical-align: -3px;
+            margin-right: 7px;
+            border: 1px solid {cfg["border"]};
+            background: {cfg["accent_soft"]};
+            position: relative;
+        }}
+
+        .modern-status-dot::after {{
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: {cfg["accent"]};
+            position: absolute;
+            left: 4px;
+            top: 4px;
         }}
 
         .data-status.success {{
@@ -679,6 +753,37 @@ def apply_theme(mode):
             margin-bottom: 8px;
             position: relative;
             z-index: 2;
+        }}
+
+        .sidebar-icons {{
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 13px;
+            position: relative;
+            z-index: 2;
+            line-height: 1;
+        }}
+
+        .sidebar-icons span {{
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.22);
+            backdrop-filter: blur(8px);
+            color: white !important;
+            box-shadow: 0 10px 22px rgba(0,0,0,0.16);
+        }}
+
+        .sidebar-icons svg {{
+            width: 22px;
+            height: 22px;
+            display: block;
+            stroke: currentColor;
         }}
 
         .sidebar-visual-title {{
@@ -767,13 +872,33 @@ def apply_theme(mode):
         }}
 
         .info-card {{
-            background: {cfg["card"]};
+            background:
+                linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0)),
+                {cfg["card"]};
             border: 1px solid {cfg["border"]};
-            border-radius: 20px;
-            padding: 19px 22px;
-            margin-bottom: 20px;
+            border-radius: 22px;
+            padding: 22px 24px;
+            margin-bottom: 22px;
             min-height: auto;
-            box-shadow: 0 8px 26px {cfg["shadow"]};
+            box-shadow: 0 12px 30px {cfg["shadow"]};
+            position: relative;
+            overflow: hidden;
+        }}
+
+        .info-card::before {{
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 22px;
+            background:
+                radial-gradient(circle at 6% 12%, {cfg["accent_soft"]}, transparent 32%),
+                radial-gradient(circle at 96% 8%, rgba(226, 177, 93, 0.09), transparent 30%);
+            pointer-events: none;
+        }}
+
+        .info-card > * {{
+            position: relative;
+            z-index: 2;
         }}
 
         .text-muted {{
@@ -789,51 +914,156 @@ def apply_theme(mode):
         }}
 
         .kpi-card {{
-            background: {cfg["card"]};
+            background:
+                linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0.000)),
+                {cfg["card"]};
             border: 1px solid {cfg["border"]};
-            border-radius: 20px;
-            padding: 17px 18px;
-            min-height: 104px;
-            box-shadow: 0 8px 24px {cfg["shadow"]};
+            border-radius: 22px;
+            padding: 15px 22px 21px 22px;
+            height: 140px;
+            min-height: 140px;
+            box-shadow: 0 12px 30px {cfg["shadow"]};
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: flex-start;
-            gap: 7px;
+            align-items: stretch;
+            gap: 6px;
+            transform: translateY(-2px);
             margin-bottom: 22px;
             box-sizing: border-box;
             overflow: hidden;
+            position: relative;
+            width: 100%;
+        }}
+
+        .kpi-card::before {{
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 22px;
+            background:
+                radial-gradient(circle at 16% 8%, {cfg["accent_soft"]}, transparent 34%),
+                radial-gradient(circle at 95% 12%, rgba(226, 177, 93, 0.10), transparent 32%);
+            pointer-events: none;
+        }}
+
+        .kpi-header {{
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            height: 29px;
+            min-height: 29px;
+            width: 100%;
+        }}
+
+        .kpi-icon {{
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: {cfg["accent"]} !important;
+            background:
+                linear-gradient(135deg, {cfg["accent_soft"]}, rgba(226, 177, 93, 0.12));
+            border: 1px solid {cfg["border"]};
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+        }}
+
+        .kpi-icon svg {{
+            width: 17px;
+            height: 17px;
+            display: block;
         }}
 
         .kpi-label {{
             color: {cfg["muted"]} !important;
-            font-size: 13px;
+            font-size: 13.3px;
             font-weight: 900;
-            line-height: 1.15;
+            line-height: 1.18;
             letter-spacing: -0.1px;
             margin: 0;
+            max-width: 100%;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
         }}
 
         .kpi-value {{
+            position: relative;
+            z-index: 2;
             color: {cfg["text"]} !important;
-            font-size: 22px;
-            font-weight: 900;
-            line-height: 1.16;
-            letter-spacing: -0.4px;
-            word-break: normal;
-            overflow-wrap: anywhere;
+            font-size: clamp(23px, 1.42vw, 31px);
+            font-weight: 950;
+            line-height: 1.06;
+            letter-spacing: -0.6px;
             margin: 0;
+            min-height: 32px;
+            display: flex;
+            align-items: center;
+            overflow-wrap: normal;
+            word-break: keep-all;
+            white-space: nowrap;
+        }}
+
+        .kpi-value-long {{
+            font-size: clamp(18px, 1.05vw, 24px);
+            line-height: 1.06;
+            letter-spacing: -0.45px;
+        }}
+
+        .kpi-value-period {{
+            font-size: clamp(22px, 1.30vw, 28px);
+            line-height: 1.12;
+            white-space: normal;
+            word-break: normal;
+            overflow-wrap: normal;
         }}
 
         .kpi-note {{
+            position: relative;
+            z-index: 2;
             color: {cfg["muted"]} !important;
-            font-size: 11.5px;
-            font-weight: 650;
-            line-height: 1.35;
+            font-size: 11.8px;
+            font-weight: 760;
+            line-height: 1.15;
             margin: 0;
             opacity: 0.95;
+            min-height: 13px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }}
 
+        .mobile-kpi-label-row {{
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            min-width: 0;
+        }}
+
+        .mobile-kpi-icon {{
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: {cfg["accent"]} !important;
+            background: {cfg["accent_soft"]};
+            border: 1px solid {cfg["border"]};
+        }}
+
+        .mobile-kpi-icon svg {{
+            width: 12px;
+            height: 12px;
+            display: block;
+        }}
         [data-testid="stFileUploader"] section {{
             background: {cfg["card"]} !important;
             border: 1px dashed {cfg["border"]} !important;
@@ -847,6 +1077,35 @@ def apply_theme(mode):
 
         [data-testid="stFileUploader"] small {{
             color: {cfg["muted"]} !important;
+        }}
+
+        [data-testid="stFileUploader"] section > div {{
+            width: 100% !important;
+        }}
+
+        [data-testid="stFileUploader"] section button,
+        [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
+        [data-testid="stFileUploader"] button[kind="secondary"] {{
+            width: 100% !important;
+            min-height: 50px !important;
+            border-radius: 13px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 10px !important;
+            font-weight: 850 !important;
+            font-size: 15px !important;
+            background: {cfg["input_btn"]} !important;
+            color: {cfg["text"]} !important;
+            border: 1px solid {cfg["border"]} !important;
+        }}
+
+        [data-testid="stFileUploader"] section button:hover,
+        [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"]:hover,
+        [data-testid="stFileUploader"] button[kind="secondary"]:hover {{
+            background: {cfg["accent_hover"]} !important;
+            color: white !important;
+            border-color: {cfg["accent_hover"]} !important;
         }}
 
         div[data-baseweb="select"] > div {{
@@ -868,6 +1127,39 @@ def apply_theme(mode):
             color: {cfg["accent"]} !important;
             fill: {cfg["accent"]} !important;
             opacity: 1 !important;
+            transition: transform 0.18s ease-in-out !important;
+            transform-origin: center !important;
+        }}
+
+        /* Dropdown EDA/select: saat opsi terbuka, chevron kanan berubah arah ke atas */
+        div[data-baseweb="select"] [aria-expanded="true"] svg,
+        div[data-baseweb="select"]:has([aria-expanded="true"]) svg {{
+            transform: rotate(180deg) !important;
+        }}
+
+        /* Hilangkan scrollbar ganda pada panel opsi select */
+        div[data-baseweb="popover"],
+        div[data-baseweb="popover"] > div,
+        div[data-baseweb="popover"] > div > div {{
+            border: none !important;
+            outline: none !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }}
+
+        div[data-baseweb="popover"] ul,
+        div[role="listbox"] {{
+            border: none !important;
+            outline: none !important;
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }}
+
+        div[data-baseweb="popover"] ul::-webkit-scrollbar,
+        div[role="listbox"]::-webkit-scrollbar {{
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
         }}
 
         [data-testid="stNumberInput"] {{
@@ -957,23 +1249,23 @@ def apply_theme(mode):
 
         .custom-table-wrapper {{
             width: 100%;
-            overflow-x: auto;
+            overflow-x: hidden !important;
             border: none !important;
             border-radius: 18px;
             background: transparent !important;
             margin-bottom: 24px;
             box-shadow: none !important;
-            overflow: visible;
         }}
 
         table.custom-table {{
             width: 100%;
+            table-layout: fixed !important;
             border-collapse: separate;
             border-spacing: 0;
             background: transparent !important;
             color: {cfg["text"]} !important;
-            font-size: 13px;
-            line-height: 1.2;
+            font-size: 11.2px;
+            line-height: 1.16;
             margin: 0 !important;
             border: none !important;
             border-radius: 18px;
@@ -983,16 +1275,26 @@ def apply_theme(mode):
         table.custom-table thead tr th {{
             background: {cfg["card2"]} !important;
             color: {cfg["text"]} !important;
-            font-weight: 850;
-            padding: 11px 14px;
-            height: 42px;
+            font-weight: 900;
+            padding: 8px 8px;
+            height: 38px;
             border-top: 1px solid {cfg["border"]};
             border-bottom: 1px solid {cfg["border"]};
             border-right: 1px solid {cfg["border"]};
             text-align: left;
-            white-space: nowrap;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            word-break: normal;
             vertical-align: middle;
         }}
+
+        table.custom-table thead tr th:nth-child(1) {{ width: 10.5%; }}
+        table.custom-table thead tr th:nth-child(2) {{ width: 12%; }}
+        table.custom-table thead tr th:nth-child(3) {{ width: 13.5%; }}
+        table.custom-table thead tr th:nth-child(4) {{ width: 14%; }}
+        table.custom-table thead tr th:nth-child(5) {{ width: 15%; }}
+        table.custom-table thead tr th:nth-child(6) {{ width: 16%; }}
+        table.custom-table thead tr th:nth-child(7) {{ width: 14%; }}
 
         table.custom-table thead tr th:first-child {{
             border-left: 1px solid {cfg["border"]};
@@ -1007,12 +1309,14 @@ def apply_theme(mode):
         table.custom-table tbody tr th {{
             background: {cfg["card"]} !important;
             color: {cfg["text"]} !important;
-            padding: 11px 14px;
-            height: 42px;
+            padding: 8px 8px;
+            height: 36px;
             border-right: 1px solid {cfg["border"]};
             border-bottom: 1px solid {cfg["border"]};
-            font-weight: 650;
-            white-space: nowrap;
+            font-weight: 700;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            word-break: normal;
             vertical-align: middle;
         }}
 
@@ -1023,9 +1327,9 @@ def apply_theme(mode):
 
         table.custom-table tbody tr:last-child td,
         table.custom-table tbody tr:last-child th {{
-            height: 42px !important;
-            padding-top: 11px !important;
-            padding-bottom: 11px !important;
+            height: 36px !important;
+            padding-top: 8px !important;
+            padding-bottom: 8px !important;
         }}
 
         table.custom-table tbody tr:last-child td:first-child,
@@ -1549,6 +1853,17 @@ def apply_theme(mode):
                 margin-bottom: 6px !important;
             }}
 
+            .sidebar-icons {{
+                gap: 10px !important;
+                margin-bottom: 8px !important;
+                font-size: 24px !important;
+            }}
+
+            .sidebar-icons span {{
+                width: 28px !important;
+                height: 28px !important;
+            }}
+
             .sidebar-visual-title {{
                 font-size: 15px !important;
             }}
@@ -1793,6 +2108,228 @@ def apply_theme(mode):
                 line-height: 1.12 !important;
             }}
 
+
+
+        /* FINAL OVERRIDE: native sidebar toggle dibuat seperti tombol web, bukan hamburger */
+        [data-testid="stSidebarCollapsedControl"],
+        [data-testid="collapsedControl"] {{
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }}
+
+        [data-testid="stSidebarCollapsedControl"]:not(:has(button)),
+        [data-testid="collapsedControl"]:not(:has(button)),
+        [data-testid="stSidebarCollapsedControl"] button,
+        [data-testid="collapsedControl"] button,
+        button[title="Open sidebar"],
+        button[aria-label="Open sidebar"],
+        button[title*="sidebar" i],
+        button[aria-label*="sidebar" i],
+        button[kind="headerNoPadding"],
+        button[data-testid="baseButton-headerNoPadding"],
+        button[data-testid="stBaseButton-headerNoPadding"],
+        button[data-testid*="header" i] {{
+            position: fixed !important;
+            top: 20px !important;
+            left: 22px !important;
+            width: 58px !important;
+            height: 46px !important;
+            min-width: 58px !important;
+            min-height: 46px !important;
+            max-width: 58px !important;
+            max-height: 46px !important;
+            border-radius: 16px !important;
+            border: 1px solid rgba(139, 203, 136, 0.44) !important;
+            background: rgba(18, 30, 23, 0.88) !important;
+            box-shadow: 0 12px 30px rgba(0,0,0,.22) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            color: transparent !important;
+            cursor: pointer !important;
+            overflow: hidden !important;
+            z-index: 2147483646 !important;
+            transition: background .16s ease, border-color .16s ease, transform .16s ease, box-shadow .16s ease !important;
+        }}
+
+        [data-testid="stSidebarCollapsedControl"]:not(:has(button)):hover,
+        [data-testid="collapsedControl"]:not(:has(button)):hover,
+        [data-testid="stSidebarCollapsedControl"] button:hover,
+        [data-testid="collapsedControl"] button:hover,
+        button[title="Open sidebar"]:hover,
+        button[aria-label="Open sidebar"]:hover,
+        button[title*="sidebar" i]:hover,
+        button[aria-label*="sidebar" i]:hover,
+        button[kind="headerNoPadding"]:hover,
+        button[data-testid="baseButton-headerNoPadding"]:hover,
+        button[data-testid="stBaseButton-headerNoPadding"]:hover,
+        button[data-testid*="header" i]:hover {{
+            background: rgba(47, 125, 82, 0.96) !important;
+            border-color: rgba(139, 203, 136, 0.86) !important;
+            transform: translateY(-1px) !important;
+        }}
+
+        [data-testid="stSidebarCollapsedControl"]:not(:has(button)) > *,
+        [data-testid="collapsedControl"]:not(:has(button)) > *,
+        [data-testid="stSidebarCollapsedControl"] button > *,
+        [data-testid="collapsedControl"] button > *,
+        button[title="Open sidebar"] > *,
+        button[aria-label="Open sidebar"] > *,
+        button[title*="sidebar" i] > *,
+        button[aria-label*="sidebar" i] > *,
+        button[kind="headerNoPadding"] > *,
+        button[data-testid="baseButton-headerNoPadding"] > *,
+        button[data-testid="stBaseButton-headerNoPadding"] > *,
+        button[data-testid*="header" i] > * {{
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }}
+
+        [data-testid="stSidebarCollapsedControl"]:not(:has(button))::before,
+        [data-testid="collapsedControl"]:not(:has(button))::before,
+        [data-testid="stSidebarCollapsedControl"] button::before,
+        [data-testid="collapsedControl"] button::before,
+        button[title="Open sidebar"]::before,
+        button[aria-label="Open sidebar"]::before,
+        button[title*="sidebar" i]::before,
+        button[aria-label*="sidebar" i]::before,
+        button[kind="headerNoPadding"]::before,
+        button[data-testid="baseButton-headerNoPadding"]::before,
+        button[data-testid="stBaseButton-headerNoPadding"]::before,
+        button[data-testid*="header" i]::before {{
+            content: ">>";
+            color: #F5F7F2 !important;
+            font-size: 20px !important;
+            font-weight: 650 !important;
+            letter-spacing: -2px !important;
+            line-height: 1 !important;
+            transform: translateX(-1px) !important;
+        }}
+
+        button[title="Close sidebar"],
+        button[aria-label="Close sidebar"] {{
+            position: fixed !important;
+            top: 22px !important;
+            left: 246px !important;
+            width: 44px !important;
+            height: 40px !important;
+            min-width: 44px !important;
+            min-height: 40px !important;
+            max-width: 44px !important;
+            max-height: 40px !important;
+            border-radius: 14px !important;
+            border: 1px solid rgba(139, 203, 136, 0.36) !important;
+            background: rgba(18, 30, 23, 0.55) !important;
+            box-shadow: 0 10px 24px rgba(0,0,0,.18) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            color: transparent !important;
+            cursor: pointer !important;
+            overflow: hidden !important;
+            z-index: 2147483646 !important;
+        }}
+
+        button[title="Close sidebar"]:hover,
+        button[aria-label="Close sidebar"]:hover {{
+            background: rgba(47, 125, 82, 0.92) !important;
+            border-color: rgba(139, 203, 136, 0.82) !important;
+            transform: translateY(-1px) !important;
+        }}
+
+        button[title="Close sidebar"] > *,
+        button[aria-label="Close sidebar"] > * {{
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }}
+
+        button[title="Close sidebar"]::before,
+        button[aria-label="Close sidebar"]::before {{
+            content: "<<";
+            color: #F5F7F2 !important;
+            font-size: 20px !important;
+            font-weight: 650 !important;
+            letter-spacing: -2px !important;
+            line-height: 1 !important;
+            transform: translateX(-1px) !important;
+        }}
+
+
+        body.sidebar-is-open button[data-testid*="header" i],
+        body.sidebar-is-open button[kind="headerNoPadding"],
+        body.sidebar-is-open button[data-testid="baseButton-headerNoPadding"],
+        body.sidebar-is-open button[data-testid="stBaseButton-headerNoPadding"] {{
+            top: 22px !important;
+            left: 246px !important;
+            width: 44px !important;
+            height: 40px !important;
+            min-width: 44px !important;
+            min-height: 40px !important;
+            max-width: 44px !important;
+            max-height: 40px !important;
+            border-radius: 14px !important;
+            background: rgba(18, 30, 23, 0.55) !important;
+            border-color: rgba(139, 203, 136, 0.36) !important;
+        }}
+
+        body.sidebar-is-open button[data-testid*="header" i]::before,
+        body.sidebar-is-open button[kind="headerNoPadding"]::before,
+        body.sidebar-is-open button[data-testid="baseButton-headerNoPadding"]::before,
+        body.sidebar-is-open button[data-testid="stBaseButton-headerNoPadding"]::before {{
+            content: "<<" !important;
+        }}
+
+        body.sidebar-is-closed [data-testid="stAppViewContainer"],
+        body.sidebar-is-closed [data-testid="stMain"],
+        body.sidebar-is-closed section.main,
+        body.sidebar-is-closed .main {{
+            margin-left: 0 !important;
+            padding-left: 0 !important;
+            width: 100vw !important;
+        }}
+
+        body.sidebar-is-closed .block-container,
+        body.sidebar-is-closed [data-testid="stMainBlockContainer"] {{
+            max-width: min(1640px, calc(100vw - 96px)) !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }}
+
+        @media screen and (max-width: 900px) {{
+            [data-testid="stSidebarCollapsedControl"] button,
+            [data-testid="collapsedControl"] button,
+            button[title="Open sidebar"],
+            button[aria-label="Open sidebar"],
+            button[kind="headerNoPadding"],
+            button[data-testid="baseButton-headerNoPadding"],
+            button[data-testid="stBaseButton-headerNoPadding"] {{
+                top: 11px !important;
+                left: 11px !important;
+                width: 48px !important;
+                height: 42px !important;
+                min-width: 48px !important;
+                min-height: 42px !important;
+                border-radius: 14px !important;
+            }}
+
+            button[title="Close sidebar"],
+            button[aria-label="Close sidebar"] {{
+                top: 13px !important;
+                left: 230px !important;
+                width: 42px !important;
+                height: 38px !important;
+            }}
+        }}
         }}
         </style>
         """,
@@ -1805,82 +2342,592 @@ def apply_theme(mode):
 theme = apply_theme(st.session_state.theme_mode)
 
 
-def inject_mobile_sidebar_button():
+# ============================================================
+# FIXED SIDEBAR OVERRIDE
+# Sidebar dibuat diam/stabil. Semua eksperimen tombol buka-tutup sidebar
+# dimatikan supaya layout tidak crop, tidak overlap, dan tidak bergeser aneh.
+# ============================================================
+
+st.markdown(
+    """
+    <style>
+    /* Matikan semua tombol collapse/open/close sidebar bawaan maupun sisa custom */
+    #app-sidebar-toggle-btn,
+    #custom-mobile-sidebar-button,
+    #custom-sidebar-open-button,
+    #custom-sidebar-close-button,
+    [data-testid="stSidebarCollapsedControl"],
+    [data-testid="collapsedControl"],
+    [data-testid="stSidebarNav"],
+    button[title="Open sidebar"],
+    button[aria-label="Open sidebar"],
+    button[title="Close sidebar"],
+    button[aria-label="Close sidebar"],
+    button[title*="sidebar" i],
+    button[aria-label*="sidebar" i],
+    button[data-testid="stBaseButton-headerNoPadding"],
+    button[data-testid="baseButton-headerNoPadding"],
+    button[kind="headerNoPadding"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        min-width: 0 !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border: 0 !important;
+    }
+
+    /* Pastikan sidebar tetap tampil normal dan tidak tertarik transform dari eksperimen sebelumnya */
+    section[data-testid="stSidebar"],
+    [data-testid="stSidebar"] {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        transform: none !important;
+        position: relative !important;
+        left: auto !important;
+        top: auto !important;
+        z-index: 10 !important;
+    }
+
+    [data-testid="stAppViewContainer"],
+    [data-testid="stMain"],
+    section.main,
+    .main {
+        transform: none !important;
+        margin-left: 0 !important;
+        overflow-x: hidden !important;
+    }
+
+    .block-container,
+    [data-testid="stMainBlockContainer"] {
+        transform: none !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    body.sidebar-is-open,
+    body.sidebar-is-closed,
+    body.sidebar-hover,
+    body.sidebar-button-hover {
+        transform: none !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+def inject_sidebar_state_helper():
     components.html(
         """
         <script>
         (function() {
           const doc = window.parent.document;
-          const isMobile = () => window.parent.innerWidth <= 900;
-          function findNativeSidebarButton() {
+          const win = window.parent;
+
+          const BUTTON_ID = 'app-sidebar-toggle-btn';
+          const STYLE_ID = 'app-sidebar-toggle-style-v6';
+          const OLD_IDS = [
+            'custom-mobile-sidebar-button',
+            'custom-sidebar-open-button',
+            'custom-sidebar-close-button',
+            'custom-sidebar-toggle-style',
+            'app-sidebar-toggle-style-v2',
+            'app-sidebar-toggle-style-v3',
+            'app-sidebar-toggle-style-v4',
+            'app-sidebar-toggle-style-v5'
+          ];
+
+          function cleanupOldButtons() {
+            OLD_IDS.forEach((id) => {
+              const old = doc.getElementById(id);
+              if (old) old.remove();
+            });
+          }
+
+          function injectStyle() {
+            let style = doc.getElementById(STYLE_ID);
+            if (!style) {
+              style = doc.createElement('style');
+              style.id = STYLE_ID;
+              doc.head.appendChild(style);
+            }
+            style.textContent = `
+              /* Native Streamlit sidebar button tetap ada untuk diklik via JS, tapi disembunyikan total secara visual */
+              [data-testid="stSidebarCollapsedControl"],
+              [data-testid="collapsedControl"],
+              [data-testid="stSidebarCollapsedControl"] button,
+              [data-testid="collapsedControl"] button,
+              button[title="Open sidebar"],
+              button[aria-label="Open sidebar"],
+              button[title="Close sidebar"],
+              button[aria-label="Close sidebar"],
+              button[title*="sidebar" i]:not(#${BUTTON_ID}),
+              button[aria-label*="sidebar" i]:not(#${BUTTON_ID}),
+              button[kind="headerNoPadding"],
+              button[data-testid="baseButton-headerNoPadding"],
+              button[data-testid="stBaseButton-headerNoPadding"],
+              button[data-testid*="header" i]:not(#${BUTTON_ID}) {
+                opacity: 0 !important;
+                visibility: hidden !important;
+                color: transparent !important;
+                background: transparent !important;
+                border: 0 !important;
+                box-shadow: none !important;
+                pointer-events: none !important;
+                width: 1px !important;
+                height: 1px !important;
+                min-width: 1px !important;
+                min-height: 1px !important;
+                max-width: 1px !important;
+                max-height: 1px !important;
+                overflow: hidden !important;
+                z-index: -1 !important;
+              }
+
+              [data-testid="stSidebarCollapsedControl"] *,
+              [data-testid="collapsedControl"] *,
+              button[title*="sidebar" i]:not(#${BUTTON_ID}) *,
+              button[aria-label*="sidebar" i]:not(#${BUTTON_ID}) *,
+              button[kind="headerNoPadding"] *,
+              button[data-testid*="header" i]:not(#${BUTTON_ID}) * {
+                opacity: 0 !important;
+                visibility: hidden !important;
+              }
+
+              #${BUTTON_ID} {
+                position: fixed !important;
+                top: 18px !important;
+                left: 22px !important;
+                width: 58px !important;
+                height: 46px !important;
+                min-width: 58px !important;
+                min-height: 46px !important;
+                border-radius: 16px !important;
+                border: 1px solid rgba(139,203,136,.54) !important;
+                background: rgba(18,30,23,.88) !important;
+                color: #F5F7F2 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                z-index: 2147483647 !important;
+                box-shadow: 0 12px 28px rgba(0,0,0,.24) !important;
+                cursor: pointer !important;
+                transition: opacity .15s ease, background .15s ease, border-color .15s ease, transform .15s ease, left .18s ease, width .18s ease, height .18s ease !important;
+                outline: none !important;
+                overflow: hidden !important;
+              }
+
+              #${BUTTON_ID}:hover {
+                background: rgba(47,125,82,.96) !important;
+                border-color: rgba(139,203,136,.90) !important;
+                transform: translateY(-1px) !important;
+              }
+
+              #${BUTTON_ID} svg {
+                width: 25px !important;
+                height: 25px !important;
+                display: block !important;
+                stroke: currentColor !important;
+                fill: none !important;
+                margin: 0 auto !important;
+                transform: translateX(0px) !important;
+              }
+
+              body.sidebar-is-open #${BUTTON_ID} {
+                top: 22px !important;
+                left: 248px !important;
+                width: 46px !important;
+                height: 40px !important;
+                min-width: 46px !important;
+                min-height: 40px !important;
+                border-radius: 14px !important;
+                opacity: .18 !important;
+                background: rgba(18,30,23,.44) !important;
+                border-color: rgba(139,203,136,.34) !important;
+              }
+
+              body.sidebar-is-open.sidebar-hover #${BUTTON_ID},
+              body.sidebar-is-open #${BUTTON_ID}:hover {
+                opacity: 1 !important;
+                background: rgba(47,125,82,.94) !important;
+                border-color: rgba(139,203,136,.86) !important;
+              }
+
+              body.sidebar-is-closed #${BUTTON_ID} {
+                opacity: 1 !important;
+                top: 18px !important;
+                left: 22px !important;
+                width: 58px !important;
+                height: 46px !important;
+              }
+
+              body.sidebar-is-closed [data-testid="stAppViewContainer"],
+              body.sidebar-is-closed [data-testid="stMain"],
+              body.sidebar-is-closed section.main,
+              body.sidebar-is-closed .main {
+                margin-left: 0 !important;
+                padding-left: 0 !important;
+                width: 100vw !important;
+                max-width: 100vw !important;
+                left: 0 !important;
+                right: 0 !important;
+                transform: none !important;
+              }
+
+              body.sidebar-is-closed .block-container,
+              body.sidebar-is-closed [data-testid="stMainBlockContainer"] {
+                width: min(1500px, calc(100vw - 160px)) !important;
+                max-width: min(1500px, calc(100vw - 160px)) !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                position: relative !important;
+                will-change: transform !important;
+              }
+
+              @media screen and (max-width: 900px) {
+                #${BUTTON_ID} {
+                  top: 11px !important;
+                  left: 11px !important;
+                  width: 48px !important;
+                  height: 42px !important;
+                  border-radius: 14px !important;
+                }
+                body.sidebar-is-open #${BUTTON_ID} {
+                  top: 13px !important;
+                  left: 232px !important;
+                  width: 40px !important;
+                  height: 36px !important;
+                  opacity: .84 !important;
+                }
+                body.sidebar-is-closed .block-container,
+                body.sidebar-is-closed [data-testid="stMainBlockContainer"] {
+                  width: calc(100vw - 22px) !important;
+                  max-width: calc(100vw - 22px) !important;
+                  padding-left: 0 !important;
+                  padding-right: 0 !important;
+                }
+              }
+            `;
+          }
+
+          function svgChevron(direction) {
+            const isLeft = direction === 'left';
+            /* viewBox 32 biar dua chevron benar-benar tengah di kotak */
+            const d1 = isLeft ? 'M15.5 8 9 16l6.5 8' : 'M16.5 8 23 16l-6.5 8';
+            const d2 = isLeft ? 'M23 8 16.5 16 23 24' : 'M9 8l6.5 8L9 24';
+            return `
+              <svg viewBox="0 0 32 32" aria-hidden="true">
+                <path d="${d1}" stroke-width="3.25" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="${d2}" stroke-width="3.25" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            `;
+          }
+
+          function getSidebar() {
+            return doc.querySelector('section[data-testid="stSidebar"], [data-testid="stSidebar"]');
+          }
+
+          function sidebarIsOpen() {
+            const sidebar = getSidebar();
+            if (!sidebar) return false;
+
+            const rect = sidebar.getBoundingClientRect();
+            const style = win.getComputedStyle(sidebar);
+            const hiddenByStyle = style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0';
+            const hasRealText = /Pilih Tampilan|Input Data|Menu Utama|Dashboard Sampah|Upload data/i.test(sidebar.innerText || '');
+            const inViewport = rect.width > 140 && rect.right > 160 && rect.left < 90;
+
+            return !hiddenByStyle && inViewport && hasRealText;
+          }
+
+          function nativeButtonByLabel(words) {
+            const candidates = Array.from(doc.querySelectorAll('button, [role="button"], [data-testid="stSidebarCollapsedControl"], [data-testid="collapsedControl"]'))
+              .filter((el) => el.id !== BUTTON_ID);
+
+            for (const el of candidates) {
+              const raw = [
+                el.getAttribute('aria-label'),
+                el.getAttribute('title'),
+                el.getAttribute('data-testid'),
+                el.textContent
+              ].filter(Boolean).join(' ').toLowerCase();
+
+              if (words.some((w) => raw.includes(w))) return el;
+            }
+            return null;
+          }
+
+          function findNativeOpenButton() {
             return doc.querySelector('[data-testid="stSidebarCollapsedControl"] button') ||
                    doc.querySelector('[data-testid="stSidebarCollapsedControl"]') ||
                    doc.querySelector('[data-testid="collapsedControl"] button') ||
                    doc.querySelector('[data-testid="collapsedControl"]') ||
-                   doc.querySelector('button[title="Open sidebar"]') ||
                    doc.querySelector('button[aria-label="Open sidebar"]') ||
-                   doc.querySelector('button[kind="headerNoPadding"]') ||
-                   doc.querySelector('button[data-testid="baseButton-headerNoPadding"]') ||
-                   doc.querySelector('button[data-testid="stBaseButton-headerNoPadding"]');
+                   doc.querySelector('button[title="Open sidebar"]') ||
+                   nativeButtonByLabel(['open sidebar', 'expand sidebar', 'show sidebar', 'sidebarcollapsedcontrol', 'headernopadding']);
           }
-          function makeButton() {
-            let b = doc.getElementById('custom-mobile-sidebar-button');
-            if (!b) {
-              b = doc.createElement('button');
-              b.id = 'custom-mobile-sidebar-button';
-              b.innerHTML = '☰';
-              b.setAttribute('aria-label', 'Buka menu');
-              b.onclick = function() {
-                const native = findNativeSidebarButton();
-                if (native) native.click();
-              };
-              doc.body.appendChild(b);
+
+          function findNativeCloseButton() {
+            return doc.querySelector('button[aria-label="Close sidebar"]') ||
+                   doc.querySelector('button[title="Close sidebar"]') ||
+                   nativeButtonByLabel(['close sidebar', 'collapse sidebar', 'hide sidebar']);
+          }
+
+          function fireClick(el) {
+            if (!el) return false;
+            try {
+              el.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, cancelable: true, view: win }));
+              el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, view: win }));
+              el.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, view: win }));
+              el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: win }));
+              return true;
+            } catch(e) {
+              try { el.click(); return true; } catch(err) { return false; }
             }
-            b.style.cssText = `
-              display: ${isMobile() ? 'flex' : 'none'};
-              position: fixed;
-              top: 10px;
-              left: 10px;
-              z-index: 2147483647;
-              width: 42px;
-              height: 42px;
-              align-items: center;
-              justify-content: center;
-              border-radius: 13px;
-              border: 1px solid rgba(120,145,125,.55);
-              background: rgba(20,32,25,.96);
-              color: #F8FAF7;
-              font-size: 23px;
-              font-weight: 900;
-              line-height: 1;
-              box-shadow: 0 8px 22px rgba(0,0,0,.24);
-              cursor: pointer;
-            `;
           }
-          makeButton();
-          window.parent.addEventListener('resize', makeButton);
-          setInterval(makeButton, 900);
+
+          function clickNativeToggle(open) {
+            const target = open ? findNativeCloseButton() : findNativeOpenButton();
+            if (target && fireClick(target)) {
+              setTimeout(syncState, 120);
+              setTimeout(syncState, 420);
+              setTimeout(syncState, 900);
+              return;
+            }
+
+            const all = Array.from(doc.querySelectorAll('button, [role="button"], [data-testid="stSidebarCollapsedControl"], [data-testid="collapsedControl"]'))
+              .filter((el) => el.id !== BUTTON_ID);
+            const fallback = all.find((el) => {
+              const raw = [el.getAttribute('aria-label'), el.getAttribute('title'), el.getAttribute('data-testid')]
+                .filter(Boolean).join(' ').toLowerCase();
+              return raw.includes('sidebar') || raw.includes('headernopadding') || raw.includes('collapsedcontrol');
+            });
+            if (fallback) {
+              fireClick(fallback);
+              setTimeout(syncState, 120);
+              setTimeout(syncState, 420);
+              setTimeout(syncState, 900);
+            }
+          }
+
+          function getMainContainer() {
+            return doc.querySelector('[data-testid="stMain"], section.main, .main');
+          }
+
+          function getBlockContainer() {
+            return doc.querySelector('.block-container, [data-testid="stMainBlockContainer"]');
+          }
+
+          function centerClosedContent(block) {
+            if (!block) return;
+            block.style.setProperty('transform', 'translateX(0px)', 'important');
+            block.style.setProperty('position', 'relative', 'important');
+
+            win.requestAnimationFrame(function() {
+              const rect = block.getBoundingClientRect();
+              const desiredLeft = Math.max(28, (win.innerWidth - rect.width) / 2);
+              const delta = Math.round(desiredLeft - rect.left);
+              block.style.setProperty('transform', `translateX(${delta}px)`, 'important');
+            });
+          }
+
+          function applyContentLayout(open) {
+            const main = getMainContainer();
+            const block = getBlockContainer();
+
+            if (!main || !block) return;
+
+            if (open) {
+              main.style.removeProperty('margin-left');
+              main.style.removeProperty('padding-left');
+              main.style.removeProperty('width');
+              main.style.removeProperty('max-width');
+              main.style.removeProperty('left');
+              main.style.removeProperty('right');
+              main.style.removeProperty('transform');
+
+              block.style.removeProperty('width');
+              block.style.removeProperty('max-width');
+              block.style.removeProperty('margin-left');
+              block.style.removeProperty('margin-right');
+              block.style.removeProperty('padding-left');
+              block.style.removeProperty('padding-right');
+              block.style.removeProperty('transform');
+              block.style.removeProperty('position');
+            } else {
+              main.style.setProperty('margin-left', '0px', 'important');
+              main.style.setProperty('padding-left', '0px', 'important');
+              main.style.setProperty('left', '0px', 'important');
+              main.style.setProperty('right', '0px', 'important');
+              main.style.setProperty('transform', 'none', 'important');
+              main.style.setProperty('width', '100vw', 'important');
+              main.style.setProperty('max-width', '100vw', 'important');
+
+              block.style.setProperty('width', 'min(1500px, calc(100vw - 160px))', 'important');
+              block.style.setProperty('max-width', 'min(1500px, calc(100vw - 160px))', 'important');
+              block.style.setProperty('margin-left', 'auto', 'important');
+              block.style.setProperty('margin-right', 'auto', 'important');
+              block.style.setProperty('padding-left', '0px', 'important');
+              block.style.setProperty('padding-right', '0px', 'important');
+              centerClosedContent(block);
+              setTimeout(function() { centerClosedContent(block); }, 160);
+              setTimeout(function() { centerClosedContent(block); }, 520);
+            }
+          }
+
+          function ensureButton() {
+            let btn = doc.getElementById(BUTTON_ID);
+            if (!btn) {
+              btn = doc.createElement('button');
+              btn.id = BUTTON_ID;
+              btn.type = 'button';
+              btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                clickNativeToggle(sidebarIsOpen());
+              });
+              btn.addEventListener('mouseenter', function() {
+                doc.body.classList.add('sidebar-button-hover');
+              });
+              btn.addEventListener('mouseleave', function() {
+                doc.body.classList.remove('sidebar-button-hover');
+              });
+              doc.body.appendChild(btn);
+            }
+            return btn;
+          }
+
+          let sidebarHoverBound = false;
+          function bindSidebarHover() {
+            const sidebar = getSidebar();
+            if (!sidebar || sidebarHoverBound) return;
+            sidebarHoverBound = true;
+            sidebar.addEventListener('mouseenter', function() {
+              doc.body.classList.add('sidebar-hover');
+            });
+            sidebar.addEventListener('mouseleave', function() {
+              doc.body.classList.remove('sidebar-hover');
+            });
+          }
+
+          function syncState() {
+            cleanupOldButtons();
+            injectStyle();
+            bindSidebarHover();
+
+            const open = sidebarIsOpen();
+            doc.body.classList.toggle('sidebar-is-open', open);
+            doc.body.classList.toggle('sidebar-is-closed', !open);
+
+            const btn = ensureButton();
+            btn.setAttribute('aria-label', open ? 'Tutup sidebar' : 'Buka sidebar');
+            btn.title = open ? 'Tutup sidebar' : 'Buka sidebar';
+            btn.innerHTML = svgChevron(open ? 'left' : 'right');
+            applyContentLayout(open);
+          }
+
+          syncState();
+          win.addEventListener('resize', syncState);
+          win.addEventListener('click', function() { setTimeout(syncState, 120); }, true);
+          setInterval(syncState, 500);
         })();
         </script>
         """,
         height=0,
     )
 
-inject_mobile_sidebar_button()
+# Sidebar fixed: helper toggle dimatikan agar layout stabil.
+# inject_sidebar_state_helper()
 
 
-# ============================================================
+
 # UI COMPONENTS
 # ============================================================
 
+def clean_kpi_label(label):
+    label = str(label)
+    emoji_tokens = [
+        "🗓️", "♻️", "💰", "📦", "📈", "📉", "🚛", "🚚", "📆", "📋", "📝", "📂", "✅", "ℹ️",
+        "🗓", "☀️", "🌙"
+    ]
+    for token in emoji_tokens:
+        label = label.replace(token, "")
+    return " ".join(label.split())
+
+
+def resolve_kpi_icon(label):
+    text = clean_kpi_label(label).lower()
+    if "periode" in text or "bulan" in text:
+        return "calendar"
+    if "sampah" in text:
+        return "waste"
+    if "anggaran" in text or "biaya" in text or "rupiah" in text:
+        return "money"
+    if "volume" in text or "densitas" in text:
+        return "cube"
+    if "tertinggi" in text:
+        return "trend_up"
+    if "terendah" in text:
+        return "trend_down"
+    if "hari angkut" in text or "maksimum" in text or "maks/hari" in text:
+        return "route"
+    if "muatan" in text or "truk" in text:
+        return "truck"
+    return "dashboard"
+
+
+def kpi_svg(icon_name):
+    if icon_name == "calendar":
+        return '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M8 3.5v4M16 3.5v4M4.8 10h14.4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M8 14h2.2M13.8 14H16M8 17h2.2" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>'
+    if icon_name == "waste":
+        return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.3 7.4 10 3.8c.9-1.2 2.7-1.2 3.6.1l1.1 1.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.8 5.4h3.8l-1.1-3.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M17.7 10.1 20 14.2c.7 1.3-.2 2.9-1.7 2.9h-2" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.4 13.9 14.5 17l3.6.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 18.7H6.4c-1.5 0-2.4-1.6-1.7-2.9l1-1.7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.7 14.1H5.1l1.5 3.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    if icon_name == "money":
+        return '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="7" width="16" height="11" rx="2.4" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M7 10.8h2.2M14.8 14.2H17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><circle cx="12" cy="12.5" r="2.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M7.3 6.8l9.2-2.3c1.2-.3 2.3.4 2.6 1.5l.2.8" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>'
+    if icon_name == "cube":
+        return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5 20 8v8.2l-8 4.3-8-4.3V8l8-4.5Z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M4.4 8.2 12 12.6l7.6-4.4M12 20.2v-7.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    if icon_name == "trend_up":
+        return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 17.5h15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M6 15.5l4.2-4.2 3.2 3.1 5.2-6" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.3 8.3h3.4v3.4" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    if icon_name == "trend_down":
+        return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 17.5h15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M6 8.2l4.2 4.1 3.2-3.1 5.2 6" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.3 15.3h3.4v-3.4" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    if icon_name == "truck":
+        return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.8 8h10.4v8.2H3.8z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M14.2 10.2h3.6l2.4 2.8v3.2h-6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7.2" cy="17" r="1.7" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="17.2" cy="17" r="1.7" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M5.4 11h5.8" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>'
+    if icon_name == "route":
+        return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="6.5" r="2.2" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="17" cy="17.5" r="2.2" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M9.2 6.5h4.6c2 0 3.2 1 3.2 2.7s-1.2 2.7-3.2 2.7H10c-2 0-3.2 1-3.2 2.7s1.2 2.9 3.2 2.9h4.8" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    return '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="6" rx="2" fill="none" stroke="currentColor" stroke-width="1.9"/><rect x="13" y="5" width="7" height="6" rx="2" fill="none" stroke="currentColor" stroke-width="1.9"/><rect x="4" y="13" width="7" height="6" rx="2" fill="none" stroke="currentColor" stroke-width="1.9"/><rect x="13" y="13" width="7" height="6" rx="2" fill="none" stroke="currentColor" stroke-width="1.9"/></svg>'
+
+
 def kpi_card(label, value, note=None):
-    note_html = f'<div class="kpi-note">{note}</div>' if note else ""
+    clean_label = clean_kpi_label(label)
+    icon_html = kpi_svg(resolve_kpi_icon(label))
+    note_html = note if note else "&nbsp;"
+    value_text = str(value)
+    label_text = clean_label.lower()
+    extra_classes = []
+    if "periode" in label_text:
+        extra_classes.append("kpi-value-period")
+    if len(value_text) > 15 or value_text.startswith("Rp"):
+        extra_classes.append("kpi-value-long")
+    value_class = "kpi-value" + (" " + " ".join(extra_classes) if extra_classes else "")
+
     st.markdown(
         f"""
         <div class="kpi-card">
-            <div class="kpi-label">{label}</div>
-            <div class="kpi-value">{value}</div>
-            {note_html}
+            <div class="kpi-header">
+                <div class="kpi-icon">{icon_html}</div>
+                <div class="kpi-label">{clean_label}</div>
+            </div>
+            <div class="{value_class}">{value}</div>
+            <div class="kpi-note">{note_html}</div>
         </div>
         """,
         unsafe_allow_html=True
@@ -1890,10 +2937,15 @@ def kpi_card(label, value, note=None):
 def mobile_kpi_summary(items):
     html_items = ""
     for item in items:
+        clean_label = clean_kpi_label(item["label"])
+        icon_html = kpi_svg(resolve_kpi_icon(item["label"]))
         note_html = f'<div class="mobile-kpi-note">{item.get("note", "")}</div>' if item.get("note") else ""
         html_items += (
             f'<div class="mobile-kpi-item">'
-            f'<div class="mobile-kpi-label">{item["label"]}</div>'
+            f'<div class="mobile-kpi-label-row">'
+            f'<div class="mobile-kpi-icon">{icon_html}</div>'
+            f'<div class="mobile-kpi-label">{clean_label}</div>'
+            f'</div>'
             f'<div class="mobile-kpi-value">{item["value"]}</div>'
             f'{note_html}'
             f'</div>'
@@ -2286,6 +3338,688 @@ def make_eval_chart(actual, predicted, theme):
 
 
 # ============================================================
+# MODERN EDA VISUALIZATION
+# ============================================================
+
+EDA_OPTIONS = [
+    "Time Series Plot",
+    "Moving Average 12 Bulan",
+    "Boxplot per Tahun",
+    "Rata-rata per Tahun",
+    "Rata-rata per Bulan",
+    "Heatmap Tahun-Bulan",
+    "Distribusi Jumlah Sampah",
+    "Seasonal Decomposition",
+]
+
+
+def build_eda_df(ts):
+    eda_df = pd.DataFrame({
+        "tanggal": ts.index,
+        "jumlah_sampah": ts.values
+    })
+    eda_df["tahun"] = eda_df["tanggal"].dt.year
+    eda_df["bulan_num"] = eda_df["tanggal"].dt.month
+    eda_df["bulan"] = eda_df["bulan_num"].map(BULAN_INDO)
+    eda_df["periode"] = eda_df["tanggal"].apply(format_periode)
+    return eda_df
+
+
+def hex_to_rgba(hex_color, alpha=0.18):
+    """Ubah warna hex menjadi rgba agar grafik tidak terlihat terlalu blok/penuh."""
+    if not isinstance(hex_color, str) or not hex_color.startswith("#") or len(hex_color) != 7:
+        return f"rgba(139, 203, 136, {alpha})"
+    r = int(hex_color[1:3], 16)
+    g = int(hex_color[3:5], 16)
+    b = int(hex_color[5:7], 16)
+    return f"rgba({r}, {g}, {b}, {alpha})"
+
+
+def eda_line_color(theme):
+    return theme.get("chart_hist", theme.get("accent", "#67F0C1"))
+
+
+def eda_fill_color(theme, alpha=0.16):
+    base = theme.get("chart_hist", theme.get("accent", "#67F0C1"))
+    return hex_to_rgba(base, alpha)
+
+
+def apply_eda_layout(fig, theme, title, height=430, x_title=None, y_title="Jumlah sampah (ton)"):
+    fig.update_layout(
+        title=dict(
+            text=f"<b>{title}</b>",
+            x=0.5,
+            xanchor="center",
+            font=dict(size=20, color=theme["chart_font"], family="Arial")
+        ),
+        paper_bgcolor=theme["chart_bg"],
+        plot_bgcolor=theme["chart_bg"],
+        margin=dict(l=54, r=24, t=72, b=52),
+        height=height,
+        hovermode="x unified",
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.04,
+            xanchor="right",
+            x=1,
+            bgcolor=theme["chart_legend_bg"],
+            bordercolor=theme["chart_legend_border"],
+            borderwidth=1,
+            font=dict(size=12, color=theme["chart_font"], family="Arial")
+        ),
+        font=dict(color=theme["chart_font"], family="Arial")
+    )
+
+    fig.update_xaxes(
+        title=f"<b>{x_title}</b>" if x_title else None,
+        showgrid=True,
+        gridcolor=theme["chart_grid"],
+        tickfont=dict(size=12, color=theme["chart_axis"], family="Arial"),
+        title_font=dict(size=14, color=theme["chart_axis"], family="Arial"),
+        zeroline=False,
+        automargin=True
+    )
+
+    fig.update_yaxes(
+        title=f"<b>{y_title}</b>" if y_title else None,
+        showgrid=True,
+        gridcolor=theme["chart_grid"],
+        tickfont=dict(size=12, color=theme["chart_axis"], family="Arial"),
+        title_font=dict(size=14, color=theme["chart_axis"], family="Arial"),
+        zeroline=False,
+        automargin=True
+    )
+    return fig
+
+
+def make_eda_timeseries(ts, theme):
+    peak_date = ts.idxmax()
+    peak_value = ts.max()
+    low_date = ts.idxmin()
+    low_value = ts.min()
+    line_color = eda_line_color(theme)
+    fill_color = eda_fill_color(theme, 0.12)
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=ts.index,
+        y=ts.values,
+        mode="lines+markers",
+        name="Jumlah Sampah",
+        line=dict(color=line_color, width=3.0, shape="spline"),
+        marker=dict(size=6.4, color=theme["chart_bg"], line=dict(color=line_color, width=1.8)),
+        fill="tozeroy",
+        fillcolor=fill_color,
+        hovertemplate="<b>%{x|%b %Y}</b><br>%{y:,.0f} ton<extra></extra>"
+    ))
+
+    for label, date_value, val, ax, ay in [
+        ("Tertinggi", peak_date, peak_value, 44, -38),
+        ("Terendah", low_date, low_value, -44, 38)
+    ]:
+        fig.add_annotation(
+            x=date_value,
+            y=val,
+            text=f"<b>{label}</b><br>{format_integer(val)} ton",
+            showarrow=True,
+            arrowhead=2,
+            ax=ax,
+            ay=ay,
+            font=dict(size=12, color=theme["chart_font"], family="Arial"),
+            bgcolor=theme["annotation_bg"],
+            bordercolor=theme["annotation_border"],
+            borderwidth=1,
+            borderpad=4
+        )
+
+    fig = apply_eda_layout(fig, theme, "Pola Time Series Jumlah Sampah", x_title="Periode", height=430)
+    fig.update_xaxes(tickformat="%Y")
+    return fig
+
+
+def make_eda_moving_average(ts, theme):
+    rolling_mean = ts.rolling(window=12).mean()
+    line_color = eda_line_color(theme)
+    soft_color = eda_fill_color(theme, 0.34)
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=ts.index,
+        y=ts.values,
+        mode="lines+markers",
+        name="Aktual",
+        line=dict(color=soft_color, width=2.2),
+        marker=dict(size=5, color=theme["chart_bg"], line=dict(color=line_color, width=1.3)),
+        hovertemplate="<b>%{x|%b %Y}</b><br>Aktual: %{y:,.0f} ton<extra></extra>"
+    ))
+    fig.add_trace(go.Scatter(
+        x=rolling_mean.index,
+        y=rolling_mean.values,
+        mode="lines",
+        name="Moving Average 12 Bulan",
+        line=dict(color=line_color, width=3.8, shape="spline"),
+        hovertemplate="<b>%{x|%b %Y}</b><br>MA 12 bulan: %{y:,.0f} ton<extra></extra>"
+    ))
+
+    fig = apply_eda_layout(fig, theme, "Moving Average Jumlah Sampah", x_title="Periode", height=430)
+    fig.update_xaxes(tickformat="%Y")
+    return fig
+
+
+def make_eda_boxplot_year(ts, theme):
+    eda_df = build_eda_df(ts)
+    line_color = eda_line_color(theme)
+    fill_color = eda_fill_color(theme, 0.18)
+    fig = go.Figure()
+
+    for year, group in eda_df.groupby("tahun"):
+        fig.add_trace(go.Box(
+            y=group["jumlah_sampah"],
+            name=str(year),
+            boxmean=True,
+            fillcolor=fill_color,
+            marker=dict(color=line_color, size=5),
+            line=dict(color=line_color, width=1.8),
+            hovertemplate=f"<b>{year}</b><br>%{{y:,.0f}} ton<extra></extra>"
+        ))
+
+    fig = apply_eda_layout(fig, theme, "Sebaran Jumlah Sampah per Tahun", x_title="Tahun", height=430)
+    fig.update_layout(showlegend=False)
+    return fig
+
+
+def make_eda_avg_year(ts, theme):
+    eda_df = build_eda_df(ts)
+    avg_year = eda_df.groupby("tahun", as_index=False)["jumlah_sampah"].mean()
+    line_color = eda_line_color(theme)
+    fill_color = eda_fill_color(theme, 0.12)
+
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        x=avg_year["tahun"].astype(str),
+        y=avg_year["jumlah_sampah"],
+        name="Rata-rata",
+        marker=dict(color=fill_color, line=dict(color=line_color, width=2.0)),
+        hovertemplate="<b>%{x}</b><br>Rata-rata: %{y:,.0f} ton<extra></extra>",
+        text=[format_integer(v) for v in avg_year["jumlah_sampah"]],
+        textposition="outside",
+        textfont=dict(color=theme["chart_font"], size=12, family="Arial")
+    ))
+
+    fig = apply_eda_layout(fig, theme, "Rata-rata Jumlah Sampah per Tahun", x_title="Tahun", height=410)
+    fig.update_layout(showlegend=False, bargap=0.38, uniformtext_minsize=9, uniformtext_mode="hide")
+    fig.update_yaxes(rangemode="tozero")
+    return fig
+
+
+def make_eda_avg_month(ts, theme):
+    eda_df = build_eda_df(ts)
+    avg_month = eda_df.groupby(["bulan_num", "bulan"], as_index=False)["jumlah_sampah"].mean()
+    avg_month = avg_month.sort_values("bulan_num")
+    line_color = eda_line_color(theme)
+    fill_color = eda_fill_color(theme, 0.12)
+
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        x=avg_month["bulan"],
+        y=avg_month["jumlah_sampah"],
+        name="Rata-rata",
+        marker=dict(color=fill_color, line=dict(color=line_color, width=2.0)),
+        hovertemplate="<b>%{x}</b><br>Rata-rata: %{y:,.0f} ton<extra></extra>",
+        text=[format_integer(v) for v in avg_month["jumlah_sampah"]],
+        textposition="outside",
+        textfont=dict(color=theme["chart_font"], size=11, family="Arial")
+    ))
+
+    fig = apply_eda_layout(fig, theme, "Rata-rata Jumlah Sampah per Bulan", x_title="Bulan", height=420)
+    fig.update_layout(showlegend=False, bargap=0.34, uniformtext_minsize=9, uniformtext_mode="hide")
+    fig.update_xaxes(tickangle=-35)
+    fig.update_yaxes(rangemode="tozero")
+    return fig
+
+
+def make_eda_heatmap(ts, theme):
+    eda_df = build_eda_df(ts)
+    pivot = eda_df.pivot_table(
+        values="jumlah_sampah",
+        index="tahun",
+        columns="bulan_num",
+        aggfunc="mean"
+    ).reindex(columns=list(range(1, 13)))
+
+    month_labels = [BULAN_INDO[i] for i in range(1, 13)]
+    z_values = pivot.to_numpy(dtype=float)
+
+    line_color = eda_line_color(theme)
+    bg_color = theme.get("chart_bg", "#111915")
+    card_color = theme.get("card", "#222A24")
+
+    # Heatmap dibuat minimal-valid supaya aman di berbagai versi Plotly/Streamlit.
+    # Hindari texttemplate/xgap/ygap/marker.colorbar yang sebelumnya rawan error.
+    fig = go.Figure(data=go.Heatmap(
+        x=month_labels,
+        y=[str(y) for y in pivot.index],
+        z=z_values,
+        colorscale=[
+            [0.00, bg_color],
+            [0.50, card_color],
+            [1.00, line_color]
+        ],
+        hoverongaps=False,
+        showscale=True,
+        colorbar=dict(
+            title="Ton",
+            tickfont=dict(color=theme["chart_font"], size=11),
+            len=0.76,
+            thickness=12,
+            outlinewidth=0
+        ),
+        hovertemplate="<b>%{x} %{y}</b><br>Jumlah sampah: %{z:,.0f} ton<extra></extra>"
+    ))
+
+    # Angka di dalam cell pakai annotation, bukan texttemplate, agar kompatibel.
+    if pivot.size:
+        finite_values = z_values[np.isfinite(z_values)]
+        threshold = np.nanmedian(finite_values) if finite_values.size else np.nan
+        for row_idx, year in enumerate(pivot.index):
+            for col_idx, month in enumerate(month_labels):
+                value = z_values[row_idx, col_idx]
+                if np.isfinite(value):
+                    fig.add_annotation(
+                        x=month,
+                        y=str(year),
+                        text=format_integer(value),
+                        showarrow=False,
+                        font=dict(size=10, color=theme["chart_font"]),
+                        opacity=0.92
+                    )
+
+    fig = apply_eda_layout(fig, theme, "Heatmap Jumlah Sampah Tahun-Bulan", x_title="Bulan", y_title="Tahun", height=470)
+    fig.update_layout(showlegend=False)
+    fig.update_xaxes(tickangle=-35, showgrid=False)
+    fig.update_yaxes(autorange="reversed", showgrid=False)
+    return fig
+
+
+def make_eda_distribution(ts, theme):
+    line_color = eda_line_color(theme)
+    fill_color = eda_fill_color(theme, 0.12)
+
+    fig = go.Figure()
+    fig.add_trace(go.Histogram(
+        x=ts.values,
+        nbinsx=10,
+        name="Frekuensi",
+        marker=dict(color=fill_color, line=dict(color=line_color, width=2.0)),
+        opacity=1,
+        hovertemplate="Rentang jumlah sampah: %{x:,.0f} ton<br>Frekuensi: %{y}<extra></extra>"
+    ))
+
+    fig = apply_eda_layout(fig, theme, "Distribusi Frekuensi Jumlah Sampah", x_title="Jumlah sampah (ton)", y_title="Frekuensi", height=410)
+    fig.update_layout(showlegend=False, bargap=0.08)
+    fig.update_yaxes(rangemode="tozero")
+    return fig
+
+def make_eda_decomposition(ts, theme):
+    decomposition = seasonal_decompose(ts, model="additive", period=12, extrapolate_trend="freq")
+    line_color = eda_line_color(theme)
+    soft_color = eda_fill_color(theme, 0.36)
+
+    fig = make_subplots(
+        rows=4,
+        cols=1,
+        shared_xaxes=True,
+        vertical_spacing=0.05,
+        subplot_titles=("Observed", "Trend", "Seasonal", "Residual")
+    )
+
+    components_data = [
+        (decomposition.observed, "Observed", line_color, "lines"),
+        (decomposition.trend, "Trend", line_color, "lines"),
+        (decomposition.seasonal, "Seasonal", soft_color, "lines"),
+        (decomposition.resid, "Residual", line_color, "markers"),
+    ]
+
+    for row, (series, name, color, mode) in enumerate(components_data, start=1):
+        fig.add_trace(go.Scatter(
+            x=series.index,
+            y=series.values,
+            mode=mode,
+            name=name,
+            line=dict(color=color, width=2.4),
+            marker=dict(size=5, color=theme["chart_bg"], line=dict(color=line_color, width=1.2)),
+            hovertemplate=f"<b>%{{x|%b %Y}}</b><br>{name}: %{{y:,.0f}}<extra></extra>"
+        ), row=row, col=1)
+
+    fig.update_layout(
+        title=dict(
+            text="<b>Seasonal Decomposition Jumlah Sampah</b>",
+            x=0.5,
+            xanchor="center",
+            font=dict(size=20, color=theme["chart_font"], family="Arial")
+        ),
+        paper_bgcolor=theme["chart_bg"],
+        plot_bgcolor=theme["chart_bg"],
+        margin=dict(l=54, r=24, t=74, b=42),
+        height=600,
+        hovermode="x unified",
+        showlegend=False,
+        font=dict(color=theme["chart_font"], family="Arial")
+    )
+
+    fig.update_xaxes(
+        showgrid=True,
+        gridcolor=theme["chart_grid"],
+        tickformat="%Y",
+        tickfont=dict(size=11, color=theme["chart_axis"], family="Arial"),
+        zeroline=False,
+        automargin=True
+    )
+    fig.update_yaxes(
+        showgrid=True,
+        gridcolor=theme["chart_grid"],
+        tickfont=dict(size=11, color=theme["chart_axis"], family="Arial"),
+        zeroline=False,
+        automargin=True
+    )
+
+    for annotation in fig.layout.annotations:
+        annotation.font = dict(size=13, color=theme["chart_font"], family="Arial")
+
+    return fig
+
+
+def eda_metric_card(title, value, note, theme):
+    st.markdown(
+        f"""
+        <div class="eda-metric-card">
+            <div class="eda-metric-title">{title}</div>
+            <div class="eda-metric-value">{value}</div>
+            <div class="eda-metric-note">{note}</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+def render_eda_section(ts, theme):
+    st.markdown(
+        f"""
+        <style>
+        .eda-metric-card {{
+            background:
+                linear-gradient(145deg, rgba(255,255,255,0.030), rgba(255,255,255,0)),
+                {theme["card"]};
+            border: 1px solid {theme["border"]};
+            border-radius: 20px;
+            padding: 15px 16px;
+            min-height: 98px;
+            box-shadow: 0 10px 26px {theme["shadow"]};
+            position: relative;
+            overflow: hidden;
+        }}
+        .eda-metric-card::before {{
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            background:
+                radial-gradient(circle at 12% 10%, {theme["accent_soft"]}, transparent 34%),
+                radial-gradient(circle at 95% 8%, rgba(226, 177, 93, 0.08), transparent 30%);
+            pointer-events: none;
+        }}
+        .eda-metric-card > * {{
+            position: relative;
+            z-index: 2;
+        }}
+        .eda-metric-title {{
+            font-size: 12.5px;
+            font-weight: 850;
+            color: {theme["muted"]} !important;
+            margin-bottom: 7px;
+        }}
+        .eda-metric-value {{
+            font-size: 21px;
+            font-weight: 950;
+            color: {theme["text"]} !important;
+            line-height: 1.15;
+        }}
+        .eda-metric-note {{
+            font-size: 11.2px;
+            font-weight: 650;
+            color: {theme["muted"]} !important;
+            margin-top: 6px;
+        }}
+        .eda-select-gap {{
+            height: 20px;
+        }}
+
+        /* EDA dropdown stabil: klik judul sekali buka, klik lagi tutup */
+        div[data-testid="stExpander"] {{
+            margin-top: 10px !important;
+            margin-bottom: 18px !important;
+            border: none !important;
+        }}
+        div[data-testid="stExpander"] details {{
+            border: 1px solid {theme["border"]} !important;
+            border-radius: 18px !important;
+            background: {theme["card"]} !important;
+            overflow: hidden !important;
+            box-shadow: none !important;
+        }}
+        div[data-testid="stExpander"] summary {{
+            min-height: 56px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            padding: 0 18px !important;
+            font-size: 15.5px !important;
+            font-weight: 850 !important;
+            color: {theme["text"]} !important;
+            display: flex !important;
+            align-items: center !important;
+            background: linear-gradient(90deg, rgba(139, 203, 136, 0.20) 0%, rgba(139, 203, 136, 0.12) 64%, rgba(139, 203, 136, 0.08) 100%) !important;
+            transition: background 0.16s ease-in-out !important;
+        }}
+        div[data-testid="stExpander"] details[open] > summary {{
+            background: linear-gradient(90deg, rgba(139, 203, 136, 0.24) 0%, rgba(139, 203, 136, 0.16) 64%, rgba(139, 203, 136, 0.10) 100%) !important;
+        }}
+        div[data-testid="stExpander"] summary:hover {{
+            background: linear-gradient(90deg, rgba(139, 203, 136, 0.26) 0%, rgba(139, 203, 136, 0.17) 64%, rgba(139, 203, 136, 0.11) 100%) !important;
+        }}
+        div[data-testid="stExpander"] summary svg {{
+            color: {theme["accent"]} !important;
+            fill: {theme["accent"]} !important;
+            width: 17px !important;
+            height: 17px !important;
+        }}
+        div[data-testid="stExpander"] div[data-testid="stExpanderDetails"] {{
+            background: #080C12 !important;
+            border-top: none !important;
+            padding: 8px 0 10px 0 !important;
+        }}
+        div[data-testid="stExpander"] [role="radiogroup"] {{
+            width: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 6px !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }}
+        div[data-testid="stExpander"] [role="radiogroup"] > div {{
+            width: 100% !important;
+            min-width: 100% !important;
+            box-sizing: border-box !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: transparent !important;
+            overflow: hidden !important;
+        }}
+        div[data-testid="stExpander"] [role="radiogroup"] > div:hover {{
+            background: rgba(139, 203, 136, 0.08) !important;
+        }}
+        div[data-testid="stExpander"] [role="radiogroup"] > div:hover label::before {{
+            border-color: #FF4B4B !important;
+            background: radial-gradient(circle, #FF4B4B 0 42%, rgba(255,255,255,0.96) 43% 64%, transparent 65% 100%) !important;
+            box-shadow: 0 0 0 3px rgba(255, 75, 75, 0.13) !important;
+        }}
+        div[data-testid="stExpander"] [role="radiogroup"] > div:has(input:checked) {{
+            background: linear-gradient(90deg, rgba(139, 203, 136, 0.24) 0%, rgba(139, 203, 136, 0.16) 70%, rgba(139, 203, 136, 0.10) 100%) !important;
+            border-left: 3px solid rgba(165, 224, 161, 0.88) !important;
+        }}
+        div[data-testid="stExpander"] [role="radiogroup"] label {{
+            width: 100% !important;
+            min-width: 100% !important;
+            min-height: 50px !important;
+            box-sizing: border-box !important;
+            border-radius: 0 !important;
+            padding: 12px 24px !important;
+            margin: 0 !important;
+            color: {theme["text"]} !important;
+            font-size: 14.2px !important;
+            font-weight: 760 !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+            background: transparent !important;
+            cursor: pointer !important;
+            transition: background 0.14s ease-in-out !important;
+        }}
+        /* Hilangkan radio bawaan, ganti dengan bulatan custom yang lebih clean. */
+        div[data-testid="stExpander"] [role="radiogroup"] label > div:first-child {{
+            display: none !important;
+        }}
+        div[data-testid="stExpander"] [role="radiogroup"] label::before {{
+            content: "";
+            width: 14px;
+            height: 14px;
+            min-width: 14px;
+            border-radius: 50%;
+            border: 2px solid rgba(232, 239, 228, 0.32);
+            background: rgba(255,255,255,0.03);
+            box-sizing: border-box;
+            transition: all 0.14s ease-in-out;
+        }}
+        div[data-testid="stExpander"] [role="radiogroup"] > div:has(input:checked) label::before {{
+            border-color: {theme["accent"]};
+            background: radial-gradient(circle, {theme["accent"]} 0 42%, rgba(255,255,255,0.96) 43% 64%, transparent 65% 100%);
+            box-shadow: 0 0 0 3px rgba(139, 203, 136, 0.12);
+        }}
+        div[data-testid="stExpander"] [role="radiogroup"] p {{
+            color: {theme["text"]} !important;
+            font-weight: 760 !important;
+            line-height: 1.2 !important;
+            margin: 0 !important;
+        }}
+        div[data-testid="stExpander"] [role="radiogroup"] > div:has(input:checked) p {{
+            font-weight: 900 !important;
+        }}
+        @media screen and (max-width: 900px) {{
+            .eda-metric-card {{ padding: 11px 12px; min-height: 84px; }}
+            .eda-metric-title {{ font-size: 10.5px; }}
+            .eda-metric-value {{ font-size: 14.5px; }}
+            .eda-metric-note {{ font-size: 9.6px; }}
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+    eda_values = ts.dropna()
+    metric1, metric2, metric3, metric4 = st.columns(4, gap="large")
+    with metric1:
+        eda_metric_card("Jumlah Observasi", f"{format_integer(len(eda_values))} bulan", f"{format_periode(eda_values.index.min())} - {format_periode(eda_values.index.max())}", theme)
+    with metric2:
+        eda_metric_card("Rata-rata Bulanan", f"{format_angka(eda_values.mean())} ton", "nilai tengah umum periode data", theme)
+    with metric3:
+        eda_metric_card("Nilai Tertinggi", f"{format_angka(eda_values.max())} ton", format_periode(eda_values.idxmax()), theme)
+    with metric4:
+        eda_metric_card("Nilai Terendah", f"{format_angka(eda_values.min())} ton", format_periode(eda_values.idxmin()), theme)
+
+    st.markdown('<div class="eda-select-gap"></div>', unsafe_allow_html=True)
+    st.markdown('<div class="small-title">Pilih tampilan EDA</div>', unsafe_allow_html=True)
+
+    if "eda_choice" not in st.session_state or st.session_state.eda_choice not in EDA_OPTIONS:
+        st.session_state.eda_choice = EDA_OPTIONS[0]
+
+    current_eda_index = EDA_OPTIONS.index(st.session_state.eda_choice)
+    with st.expander(st.session_state.eda_choice, expanded=False):
+        selected_eda = st.radio(
+            "Pilih visualisasi EDA",
+            EDA_OPTIONS,
+            index=current_eda_index,
+            key="eda_choice_radio",
+            label_visibility="collapsed"
+        )
+        if selected_eda != st.session_state.eda_choice:
+            st.session_state.eda_choice = selected_eda
+            st.rerun()
+
+    eda_choice = st.session_state.eda_choice
+
+    if eda_choice == "Time Series Plot":
+        fig_eda = make_eda_timeseries(ts, theme)
+        insight_items = [
+            "Grafik ini dipakai untuk melihat perubahan jumlah sampah dari waktu ke waktu.",
+            "Puncak dan titik terendah diberi anotasi agar pola ekstrem lebih mudah dibaca.",
+            "Visual ini cocok untuk melihat perubahan umum sebelum masuk ke model prediksi."
+        ]
+    elif eda_choice == "Moving Average 12 Bulan":
+        fig_eda = make_eda_moving_average(ts, theme)
+        insight_items = [
+            "Moving average 12 bulan membantu membaca tren tahunan tanpa terlalu terganggu fluktuasi bulanan.",
+            "Garis aktual tetap ditampilkan agar perbedaan antara fluktuasi dan tren tetap terlihat.",
+            "Visual ini cocok untuk menjelaskan apakah jumlah sampah cenderung naik, turun, atau stabil."
+        ]
+    elif eda_choice == "Boxplot per Tahun":
+        fig_eda = make_eda_boxplot_year(ts, theme)
+        insight_items = [
+            "Boxplot membandingkan sebaran jumlah sampah antar tahun.",
+            "Visual ini membantu melihat median, variasi, dan kemungkinan nilai ekstrem pada tiap tahun.",
+            "Tahun dengan box lebih panjang berarti variasi bulanannya lebih besar."
+        ]
+    elif eda_choice == "Rata-rata per Tahun":
+        fig_eda = make_eda_avg_year(ts, theme)
+        insight_items = [
+            "Grafik ini merangkum rata-rata jumlah sampah untuk setiap tahun.",
+            "Visual ini cocok untuk melihat tahun mana yang secara umum tinggi atau rendah.",
+            "Angka di atas bar memudahkan pembacaan tanpa harus membuka tabel tambahan."
+        ]
+    elif eda_choice == "Rata-rata per Bulan":
+        fig_eda = make_eda_avg_month(ts, theme)
+        insight_items = [
+            "Grafik ini menunjukkan rata-rata jumlah sampah berdasarkan bulan kalender.",
+            "Visual ini membantu membaca indikasi pola musiman bulanan.",
+            "Bulan dengan rata-rata tinggi dapat menjadi perhatian untuk perencanaan kapasitas operasional."
+        ]
+    elif eda_choice == "Heatmap Tahun-Bulan":
+        fig_eda = make_eda_heatmap(ts, theme)
+        insight_items = [
+            "Heatmap menunjukkan pola jumlah sampah berdasarkan kombinasi tahun dan bulan.",
+            "Warna yang lebih pekat menandakan jumlah sampah yang lebih tinggi pada periode tersebut.",
+            "Visual ini membantu menemukan bulan dengan lonjakan, penurunan, atau pola tidak biasa."
+        ]
+    elif eda_choice == "Distribusi Jumlah Sampah":
+        fig_eda = make_eda_distribution(ts, theme)
+        insight_items = [
+            "Histogram menunjukkan sebaran nilai jumlah sampah dalam seluruh periode data.",
+            "Garis vertikal membantu membandingkan posisi rata-rata dan median.",
+            "Visual ini berguna untuk melihat apakah data terkonsentrasi pada rentang tertentu atau memiliki nilai ekstrem."
+        ]
+    else:
+        fig_eda = make_eda_decomposition(ts, theme)
+        insight_items = [
+            "Seasonal decomposition memecah data menjadi observed, trend, seasonal, dan residual.",
+            "Bagian trend membantu membaca arah jangka panjang.",
+            "Bagian seasonal membantu melihat pola musiman yang berulang setiap 12 bulan."
+        ]
+
+    st.plotly_chart(fig_eda, use_container_width=True, config={"displayModeBar": False, "responsive": True})
+    bullet_card(f"Insight EDA - {eda_choice}", insight_items)
+
+
+# ============================================================
 # SIDEBAR KIRI
 # ============================================================
 
@@ -2309,14 +4043,25 @@ with theme_col2:
         args=("Gelap",)
     )
 
-st.sidebar.markdown('<div class="data-input-title">📂 Input Data</div>', unsafe_allow_html=True)
+st.sidebar.markdown('''
+<div class="data-input-title">
+    <span class="modern-section-icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 8.2A2.2 2.2 0 0 1 6.2 6H10l2 2.2h5.8A2.2 2.2 0 0 1 20 10.4v6.4A2.2 2.2 0 0 1 17.8 19H6.2A2.2 2.2 0 0 1 4 16.8z"/>
+            <path d="M12 10.2v5.8"/>
+            <path d="M9.8 13.8 12 16l2.2-2.2"/>
+        </svg>
+    </span>
+    <span class="data-input-title-text">Input Data</span>
+</div>
+''', unsafe_allow_html=True)
 uploaded_file = st.sidebar.file_uploader(
     "Upload data sampah terbaru",
     type=["xlsx", "xls", "csv"],
     help="Format minimal: kolom tahun, bulan, dan jumlah_sampah."
 )
 st.sidebar.markdown(
-    '<div class="data-input-note">Format wajib: <b>tahun</b>, <b>bulan</b>, <b>jumlah_sampah</b>. Jika data diunggah, model otomatis dilatih ulang dan prediksi bisa dibuat sampai 24 bulan ke depan.</div>',
+    '<div class="data-input-note">Format wajib: <b>tahun</b>, <b>bulan</b>, <b>jumlah_sampah</b>.</div>',
     unsafe_allow_html=True
 )
 
@@ -2339,12 +4084,12 @@ periode_data = f"{format_periode(ts.index.min())} - {format_periode(ts.index.max
 
 if source_data_type == "upload":
     st.sidebar.markdown(
-        f'<div class="data-status success">✅ Data upload aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
+        f'<div class="data-status success"><span class="modern-status-dot success-dot"></span>Data upload aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
         unsafe_allow_html=True
     )
 else:
     st.sidebar.markdown(
-        f'<div class="data-status info">ℹ️ Data bawaan aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
+        f'<div class="data-status info"><span class="modern-status-dot info-dot"></span>Data bawaan aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
         unsafe_allow_html=True
     )
 
@@ -2357,8 +4102,12 @@ menu = st.sidebar.radio(
 st.sidebar.markdown(
     """
     <div class="sidebar-visual">
-        <div class="sidebar-emoji">♻️ 🗑️ 🍃</div>
-        <div class="sidebar-visual-title">Dashboard Sampah</div>
+        <div class="sidebar-icons">
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v3l4-5-4-5v3H7a5 5 0 0 0-4.6 3"/><path d="M17 17H7v-3l-4 5 4 5v-3h10a5 5 0 0 0 4.6-3"/></svg></span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M6 7l1 13h10l1-13"/><path d="M9 7V4h6v3"/></svg></span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4c-7.5 1-12 4.7-13.5 10.8"/><path d="M20 4c.2 7.4-4.5 13.1-11.8 12.8"/><path d="M4 20c2.6-5.9 7.1-9.5 13-11"/></svg></span>
+        </div>
+        <div class="sidebar-visual-title">dashboard sampah</div>
         <div class="sidebar-visual-subtitle">
             Prediksi jumlah sampah, estimasi anggaran, volume sampah, dan kebutuhan muatan truk compactor.
         </div>
@@ -2404,7 +4153,7 @@ if menu == "Simulasi Pengelolaan":
 
     with input1:
         forecast_steps = st.slider(
-            "🗓️ Simulasi untuk berapa bulan ke depan?",
+            "Simulasi untuk berapa bulan ke depan?",
             min_value=1,
             max_value=24,
             value=12,
@@ -2413,7 +4162,7 @@ if menu == "Simulasi Pengelolaan":
 
     with input2:
         biaya_per_ton = st.number_input(
-            "💰 Biaya penanganan per ton",
+            "Biaya penanganan per ton",
             min_value=0,
             value=308482,
             step=1000
@@ -2421,14 +4170,14 @@ if menu == "Simulasi Pengelolaan":
 
     with input3:
         kapasitas_truk_compactor_m3 = st.selectbox(
-            "🚛 Kapasitas truk compactor (m³)",
+            "Kapasitas truk compactor (m³)",
             options=[6, 12],
             index=1
         )
 
     with input4:
         hari_operasional_angkut_per_minggu = st.number_input(
-            "📆 Hari operasional angkut per minggu",
+            "Hari operasional angkut per minggu",
             min_value=1,
             max_value=7,
             value=4,
@@ -2502,19 +4251,19 @@ if menu == "Simulasi Pengelolaan":
         config={"displayModeBar": False, "responsive": True}
     )
 
-    st.markdown('<div class="small-title table-title-mobile-tight">📋 Tabel Simulasi Kebutuhan Operasional</div>', unsafe_allow_html=True)
+    st.markdown('<div class="small-title table-title-mobile-tight">Tabel Simulasi Kebutuhan Operasional</div>', unsafe_allow_html=True)
     show_table(prepare_display_table(simulation_df))
 
     bullet_card(
-        "📝 Catatan simulasi",
+        "Catatan simulasi",
         [
-            f"Model prediksi yang aktif adalah <b>{forecast_model_label}</b> dan dipilih otomatis berdasarkan data terbaru.",
-            f"Biaya penanganan yang digunakan adalah <b>{format_rupiah(biaya_per_ton)} per ton</b>.",
-            f"Kapasitas truk compactor digunakan sebesar <b>{kapasitas_truk_compactor_m3} m³</b> per muatan.",
-            f"Prediksi sampah dalam ton dikonversi menjadi volume menggunakan densitas <b>{format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³</b>.",
-            f"Hari operasional angkut digunakan sebesar <b>{hari_operasional_angkut_per_minggu} hari per minggu</b>.",
-            "Kebutuhan muatan truk dan hari operasional angkut dibulatkan ke atas agar estimasi tidak kurang dari kebutuhan lapangan.",
-            "Dashboard ini berfungsi sebagai simulasi awal untuk membantu perencanaan operasional."
+            f"Model prediksi yang digunakan adalah <b>{forecast_model_label}</b>, dipilih otomatis berdasarkan data historis terbaru.",
+            f"Asumsi biaya penanganan adalah <b>{format_rupiah(biaya_per_ton)} per ton</b>.",
+            f"Kapasitas truk compactor yang digunakan adalah <b>{kapasitas_truk_compactor_m3} m³</b> per muatan.",
+            f"Prediksi sampah dalam satuan ton dikonversi menjadi volume memakai densitas <b>{format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³</b>.",
+            f"Frekuensi hari angkut diasumsikan <b>{hari_operasional_angkut_per_minggu} hari per minggu</b>.",
+            "Kebutuhan muatan truk dan hari angkut dibulatkan ke atas agar estimasi lebih aman untuk kebutuhan lapangan.",
+            "Dashboard ini digunakan sebagai simulasi awal untuk mendukung perencanaan operasional pengelolaan sampah."
         ]
     )
 
@@ -2526,7 +4275,7 @@ if menu == "Simulasi Pengelolaan":
 elif menu == "Ringkasan Data & Model":
     st.markdown('<div class="section-title">Ringkasan Data & Model</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="section-desc">Halaman ini menampilkan ringkasan data dan evaluasi model secara singkat. Detail teori, EDA, dan pembentukan model dijelaskan pada laporan.</div>',
+        '<div class="section-desc">Halaman ini menampilkan ringkasan data, EDA interaktif, dan evaluasi model secara singkat. Pilih visualisasi EDA yang ingin dilihat agar dashboard tetap fokus dan tidak terlalu penuh.</div>',
         unsafe_allow_html=True
     )
 
@@ -2563,6 +4312,8 @@ elif menu == "Ringkasan Data & Model":
                 "Detail teori, EDA, parameter model, dan evaluasi lengkap dijelaskan pada laporan."
             ]
         )
+
+    render_eda_section(ts, theme)
 
     st.markdown('<div class="small-title">Evaluasi Model</div>', unsafe_allow_html=True)
     show_table(prepare_eval_display(eval_df))
