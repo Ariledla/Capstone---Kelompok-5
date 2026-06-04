@@ -807,15 +807,16 @@ def apply_theme(mode):
                 {cfg["card"]};
             border: 1px solid {cfg["border"]};
             border-radius: 22px;
-            padding: 18px 22px 20px 22px;
-            height: 150px;
-            min-height: 150px;
+            padding: 15px 22px 21px 22px;
+            height: 140px;
+            min-height: 140px;
             box-shadow: 0 12px 30px {cfg["shadow"]};
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: stretch;
-            gap: 8px;
+            gap: 6px;
+            transform: translateY(-2px);
             margin-bottom: 22px;
             box-sizing: border-box;
             overflow: hidden;
@@ -840,8 +841,8 @@ def apply_theme(mode):
             display: flex;
             align-items: center;
             gap: 10px;
-            height: 30px;
-            min-height: 30px;
+            height: 29px;
+            min-height: 29px;
             width: 100%;
         }}
 
@@ -884,12 +885,12 @@ def apply_theme(mode):
             position: relative;
             z-index: 2;
             color: {cfg["text"]} !important;
-            font-size: clamp(24px, 1.52vw, 32px);
+            font-size: clamp(23px, 1.42vw, 31px);
             font-weight: 950;
             line-height: 1.06;
             letter-spacing: -0.6px;
             margin: 0;
-            min-height: 34px;
+            min-height: 32px;
             display: flex;
             align-items: center;
             overflow-wrap: normal;
@@ -898,13 +899,13 @@ def apply_theme(mode):
         }}
 
         .kpi-value-long {{
-            font-size: clamp(20px, 1.25vw, 27px);
+            font-size: clamp(18px, 1.05vw, 24px);
             line-height: 1.06;
             letter-spacing: -0.45px;
         }}
 
         .kpi-value-period {{
-            font-size: clamp(23px, 1.42vw, 30px);
+            font-size: clamp(22px, 1.30vw, 28px);
             line-height: 1.12;
             white-space: normal;
             word-break: normal;
@@ -915,12 +916,12 @@ def apply_theme(mode):
             position: relative;
             z-index: 2;
             color: {cfg["muted"]} !important;
-            font-size: 12px;
+            font-size: 11.8px;
             font-weight: 760;
-            line-height: 1.18;
+            line-height: 1.15;
             margin: 0;
             opacity: 0.95;
-            min-height: 14px;
+            min-height: 13px;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
@@ -1912,20 +1913,225 @@ def apply_theme(mode):
 
 
 
-        /* FINAL OVERRIDE: jangan tampilkan hamburger native Streamlit */
+        /* FINAL OVERRIDE: native sidebar toggle dibuat seperti tombol web, bukan hamburger */
         [data-testid="stSidebarCollapsedControl"],
-        [data-testid="collapsedControl"],
-        [data-testid="stSidebarNav"],
+        [data-testid="collapsedControl"] {{
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }}
+
+        [data-testid="stSidebarCollapsedControl"]:not(:has(button)),
+        [data-testid="collapsedControl"]:not(:has(button)),
+        [data-testid="stSidebarCollapsedControl"] button,
+        [data-testid="collapsedControl"] button,
         button[title="Open sidebar"],
         button[aria-label="Open sidebar"],
-        button[title="Close sidebar"],
-        button[aria-label="Close sidebar"],
+        button[title*="sidebar" i],
+        button[aria-label*="sidebar" i],
         button[kind="headerNoPadding"],
         button[data-testid="baseButton-headerNoPadding"],
-        button[data-testid="stBaseButton-headerNoPadding"] {{
+        button[data-testid="stBaseButton-headerNoPadding"],
+        button[data-testid*="header" i] {{
+            position: fixed !important;
+            top: 20px !important;
+            left: 22px !important;
+            width: 58px !important;
+            height: 46px !important;
+            min-width: 58px !important;
+            min-height: 46px !important;
+            max-width: 58px !important;
+            max-height: 46px !important;
+            border-radius: 16px !important;
+            border: 1px solid rgba(139, 203, 136, 0.44) !important;
+            background: rgba(18, 30, 23, 0.88) !important;
+            box-shadow: 0 12px 30px rgba(0,0,0,.22) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            color: transparent !important;
+            cursor: pointer !important;
+            overflow: hidden !important;
+            z-index: 2147483646 !important;
+            transition: background .16s ease, border-color .16s ease, transform .16s ease, box-shadow .16s ease !important;
+        }}
+
+        [data-testid="stSidebarCollapsedControl"]:not(:has(button)):hover,
+        [data-testid="collapsedControl"]:not(:has(button)):hover,
+        [data-testid="stSidebarCollapsedControl"] button:hover,
+        [data-testid="collapsedControl"] button:hover,
+        button[title="Open sidebar"]:hover,
+        button[aria-label="Open sidebar"]:hover,
+        button[title*="sidebar" i]:hover,
+        button[aria-label*="sidebar" i]:hover,
+        button[kind="headerNoPadding"]:hover,
+        button[data-testid="baseButton-headerNoPadding"]:hover,
+        button[data-testid="stBaseButton-headerNoPadding"]:hover,
+        button[data-testid*="header" i]:hover {{
+            background: rgba(47, 125, 82, 0.96) !important;
+            border-color: rgba(139, 203, 136, 0.86) !important;
+            transform: translateY(-1px) !important;
+        }}
+
+        [data-testid="stSidebarCollapsedControl"]:not(:has(button)) > *,
+        [data-testid="collapsedControl"]:not(:has(button)) > *,
+        [data-testid="stSidebarCollapsedControl"] button > *,
+        [data-testid="collapsedControl"] button > *,
+        button[title="Open sidebar"] > *,
+        button[aria-label="Open sidebar"] > *,
+        button[title*="sidebar" i] > *,
+        button[aria-label*="sidebar" i] > *,
+        button[kind="headerNoPadding"] > *,
+        button[data-testid="baseButton-headerNoPadding"] > *,
+        button[data-testid="stBaseButton-headerNoPadding"] > *,
+        button[data-testid*="header" i] > * {{
+            display: none !important;
             opacity: 0 !important;
             visibility: hidden !important;
-            pointer-events: none !important;
+        }}
+
+        [data-testid="stSidebarCollapsedControl"]:not(:has(button))::before,
+        [data-testid="collapsedControl"]:not(:has(button))::before,
+        [data-testid="stSidebarCollapsedControl"] button::before,
+        [data-testid="collapsedControl"] button::before,
+        button[title="Open sidebar"]::before,
+        button[aria-label="Open sidebar"]::before,
+        button[title*="sidebar" i]::before,
+        button[aria-label*="sidebar" i]::before,
+        button[kind="headerNoPadding"]::before,
+        button[data-testid="baseButton-headerNoPadding"]::before,
+        button[data-testid="stBaseButton-headerNoPadding"]::before,
+        button[data-testid*="header" i]::before {{
+            content: ">>";
+            color: #F5F7F2 !important;
+            font-size: 20px !important;
+            font-weight: 650 !important;
+            letter-spacing: -2px !important;
+            line-height: 1 !important;
+            transform: translateX(-1px) !important;
+        }}
+
+        button[title="Close sidebar"],
+        button[aria-label="Close sidebar"] {{
+            position: fixed !important;
+            top: 22px !important;
+            left: 246px !important;
+            width: 44px !important;
+            height: 40px !important;
+            min-width: 44px !important;
+            min-height: 40px !important;
+            max-width: 44px !important;
+            max-height: 40px !important;
+            border-radius: 14px !important;
+            border: 1px solid rgba(139, 203, 136, 0.36) !important;
+            background: rgba(18, 30, 23, 0.55) !important;
+            box-shadow: 0 10px 24px rgba(0,0,0,.18) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            color: transparent !important;
+            cursor: pointer !important;
+            overflow: hidden !important;
+            z-index: 2147483646 !important;
+        }}
+
+        button[title="Close sidebar"]:hover,
+        button[aria-label="Close sidebar"]:hover {{
+            background: rgba(47, 125, 82, 0.92) !important;
+            border-color: rgba(139, 203, 136, 0.82) !important;
+            transform: translateY(-1px) !important;
+        }}
+
+        button[title="Close sidebar"] > *,
+        button[aria-label="Close sidebar"] > * {{
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }}
+
+        button[title="Close sidebar"]::before,
+        button[aria-label="Close sidebar"]::before {{
+            content: "<<";
+            color: #F5F7F2 !important;
+            font-size: 20px !important;
+            font-weight: 650 !important;
+            letter-spacing: -2px !important;
+            line-height: 1 !important;
+            transform: translateX(-1px) !important;
+        }}
+
+
+        body.sidebar-is-open button[data-testid*="header" i],
+        body.sidebar-is-open button[kind="headerNoPadding"],
+        body.sidebar-is-open button[data-testid="baseButton-headerNoPadding"],
+        body.sidebar-is-open button[data-testid="stBaseButton-headerNoPadding"] {{
+            top: 22px !important;
+            left: 246px !important;
+            width: 44px !important;
+            height: 40px !important;
+            min-width: 44px !important;
+            min-height: 40px !important;
+            max-width: 44px !important;
+            max-height: 40px !important;
+            border-radius: 14px !important;
+            background: rgba(18, 30, 23, 0.55) !important;
+            border-color: rgba(139, 203, 136, 0.36) !important;
+        }}
+
+        body.sidebar-is-open button[data-testid*="header" i]::before,
+        body.sidebar-is-open button[kind="headerNoPadding"]::before,
+        body.sidebar-is-open button[data-testid="baseButton-headerNoPadding"]::before,
+        body.sidebar-is-open button[data-testid="stBaseButton-headerNoPadding"]::before {{
+            content: "<<" !important;
+        }}
+
+        body.sidebar-is-closed [data-testid="stAppViewContainer"],
+        body.sidebar-is-closed [data-testid="stMain"],
+        body.sidebar-is-closed section.main,
+        body.sidebar-is-closed .main {{
+            margin-left: 0 !important;
+            padding-left: 0 !important;
+            width: 100vw !important;
+        }}
+
+        body.sidebar-is-closed .block-container,
+        body.sidebar-is-closed [data-testid="stMainBlockContainer"] {{
+            max-width: min(1640px, calc(100vw - 96px)) !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }}
+
+        @media screen and (max-width: 900px) {{
+            [data-testid="stSidebarCollapsedControl"] button,
+            [data-testid="collapsedControl"] button,
+            button[title="Open sidebar"],
+            button[aria-label="Open sidebar"],
+            button[kind="headerNoPadding"],
+            button[data-testid="baseButton-headerNoPadding"],
+            button[data-testid="stBaseButton-headerNoPadding"] {{
+                top: 11px !important;
+                left: 11px !important;
+                width: 48px !important;
+                height: 42px !important;
+                min-width: 48px !important;
+                min-height: 42px !important;
+                border-radius: 14px !important;
+            }}
+
+            button[title="Close sidebar"],
+            button[aria-label="Close sidebar"] {{
+                top: 13px !important;
+                left: 230px !important;
+                width: 42px !important;
+                height: 38px !important;
+            }}
         }}
         }}
         </style>
@@ -1939,7 +2145,7 @@ def apply_theme(mode):
 theme = apply_theme(st.session_state.theme_mode)
 
 
-def inject_mobile_sidebar_button():
+def inject_sidebar_state_helper():
     components.html(
         """
         <script>
@@ -1947,165 +2153,15 @@ def inject_mobile_sidebar_button():
           const doc = window.parent.document;
           const win = window.parent;
 
-          function ensureStyle() {
-            let style = doc.getElementById('custom-sidebar-toggle-style');
-            if (!style) {
-              style = doc.createElement('style');
-              style.id = 'custom-sidebar-toggle-style';
-              doc.head.appendChild(style);
-            }
-
-            style.textContent = `
-              /* Matikan tombol native Streamlit supaya tidak muncul ikon garis tiga */
-              [data-testid="stSidebarCollapsedControl"],
-              [data-testid="collapsedControl"],
-              [data-testid="stSidebarNav"],
-              button[title="Open sidebar"],
-              button[aria-label="Open sidebar"],
-              button[title="Close sidebar"],
-              button[aria-label="Close sidebar"],
-              button[kind="headerNoPadding"],
-              button[data-testid="baseButton-headerNoPadding"],
-              button[data-testid="stBaseButton-headerNoPadding"] {
-                opacity: 0 !important;
-                visibility: hidden !important;
-                pointer-events: none !important;
-                width: 0 !important;
-                min-width: 0 !important;
-                max-width: 0 !important;
-                height: 0 !important;
-                min-height: 0 !important;
-                max-height: 0 !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                overflow: hidden !important;
-                position: fixed !important;
-                left: -9999px !important;
-                top: -9999px !important;
-              }
-
-              #custom-sidebar-open-button,
-              #custom-sidebar-close-button {
-                position: fixed;
-                z-index: 2147483647;
-                display: none;
-                align-items: center;
-                justify-content: center;
-                border: 1px solid rgba(137, 168, 143, .55);
-                background: rgba(18, 30, 23, .96);
-                color: #F8FAF7;
-                box-shadow: 0 8px 22px rgba(0,0,0,.24);
-                cursor: pointer;
-                transition: all .16s ease-in-out;
-                font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-                font-size: 18px;
-                font-weight: 700;
-                line-height: 1;
-                letter-spacing: 0;
-              }
-
-              #custom-sidebar-open-button {
-                top: 18px;
-                left: 18px;
-                width: 46px;
-                height: 42px;
-                border-radius: 13px;
-              }
-
-              #custom-sidebar-close-button {
-                top: 22px;
-                left: 248px;
-                width: 42px;
-                height: 38px;
-                border-radius: 12px;
-                background: rgba(18, 30, 23, .64);
-                border-color: rgba(137, 168, 143, .38);
-              }
-
-              #custom-sidebar-open-button:hover,
-              #custom-sidebar-close-button:hover {
-                transform: translateY(-1px);
-                background: rgba(47, 125, 82, .98);
-                border-color: rgba(139, 203, 136, .80);
-              }
-
-              body.sidebar-is-open #custom-sidebar-open-button {
-                display: none !important;
-              }
-
-              body.sidebar-is-open #custom-sidebar-close-button {
-                display: flex !important;
-              }
-
-              body.sidebar-is-closed #custom-sidebar-open-button {
-                display: flex !important;
-              }
-
-              body.sidebar-is-closed #custom-sidebar-close-button {
-                display: none !important;
-              }
-
-              body.sidebar-is-closed [data-testid="stAppViewContainer"],
-              body.sidebar-is-closed [data-testid="stMain"],
-              body.sidebar-is-closed section.main,
-              body.sidebar-is-closed .main {
-                margin-left: 0 !important;
-                padding-left: 0 !important;
-              }
-
-              body.sidebar-is-closed .block-container,
-              body.sidebar-is-closed [data-testid="stMainBlockContainer"] {
-                max-width: 1420px !important;
-                margin-left: auto !important;
-                margin-right: auto !important;
-              }
-
-              @media screen and (max-width: 900px) {
-                #custom-sidebar-open-button {
-                  top: 10px;
-                  left: 10px;
-                  width: 44px;
-                  height: 40px;
-                  border-radius: 12px;
-                  font-size: 18px;
-                }
-
-                #custom-sidebar-close-button {
-                  top: 12px;
-                  left: 230px;
-                  width: 40px;
-                  height: 38px;
-                  border-radius: 12px;
-                  font-size: 18px;
-                }
-              }
-            `;
-          }
-
-          function findNativeSidebarButton() {
-            const selectors = [
-              'button[aria-label="Close sidebar"]',
-              'button[title="Close sidebar"]',
-              '[data-testid="stSidebarCollapsedControl"] button',
-              '[data-testid="stSidebarCollapsedControl"]',
-              '[data-testid="collapsedControl"] button',
-              '[data-testid="collapsedControl"]',
-              'button[aria-label="Open sidebar"]',
-              'button[title="Open sidebar"]',
-              'button[kind="headerNoPadding"]',
-              'button[data-testid="baseButton-headerNoPadding"]',
-              'button[data-testid="stBaseButton-headerNoPadding"]'
-            ];
-
-            for (const selector of selectors) {
-              const el = doc.querySelector(selector);
-              if (el) return el;
-            }
-
-            const buttons = Array.from(doc.querySelectorAll('button'));
-            return buttons.find((btn) => {
-              const text = `${btn.getAttribute('aria-label') || ''} ${btn.getAttribute('title') || ''} ${btn.textContent || ''}`.toLowerCase();
-              return text.includes('sidebar') || text.includes('menu') || text.includes('collapse') || text.includes('expand');
+          function removeOldCustomButtons() {
+            [
+              'custom-mobile-sidebar-button',
+              'custom-sidebar-open-button',
+              'custom-sidebar-close-button',
+              'custom-sidebar-toggle-style'
+            ].forEach((id) => {
+              const el = doc.getElementById(id);
+              if (el) el.remove();
             });
           }
 
@@ -2117,56 +2173,28 @@ def inject_mobile_sidebar_button():
             const style = win.getComputedStyle(sidebar);
             const hiddenByStyle = style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0';
             const visibleWidth = rect.width > 120;
-            const visiblePosition = rect.right > 120 && rect.left < Math.min(40, win.innerWidth);
+            const visiblePosition = rect.right > 120 && rect.left < 80;
 
             return !hiddenByStyle && visibleWidth && visiblePosition;
           }
 
-          function toggleSidebar() {
-            const native = findNativeSidebarButton();
-            if (native) native.click();
-            setTimeout(makeButton, 120);
-            setTimeout(makeButton, 420);
-          }
-
-          function makeButton() {
-            ensureStyle();
-
-            let openButton = doc.getElementById('custom-sidebar-open-button');
-            if (!openButton) {
-              openButton = doc.createElement('button');
-              openButton.id = 'custom-sidebar-open-button';
-              openButton.innerHTML = '&gt;&gt;';
-              openButton.setAttribute('aria-label', 'Buka sidebar');
-              openButton.onclick = toggleSidebar;
-              doc.body.appendChild(openButton);
-            }
-
-            let closeButton = doc.getElementById('custom-sidebar-close-button');
-            if (!closeButton) {
-              closeButton = doc.createElement('button');
-              closeButton.id = 'custom-sidebar-close-button';
-              closeButton.innerHTML = '&lt;&lt;';
-              closeButton.setAttribute('aria-label', 'Tutup sidebar');
-              closeButton.onclick = toggleSidebar;
-              doc.body.appendChild(closeButton);
-            }
-
+          function syncSidebarClass() {
+            removeOldCustomButtons();
             const open = sidebarIsOpen();
             doc.body.classList.toggle('sidebar-is-open', open);
             doc.body.classList.toggle('sidebar-is-closed', !open);
           }
 
-          makeButton();
-          win.addEventListener('resize', makeButton);
-          setInterval(makeButton, 300);
+          syncSidebarClass();
+          win.addEventListener('resize', syncSidebarClass);
+          setInterval(syncSidebarClass, 350);
         })();
         </script>
         """,
         height=0,
     )
 
-inject_mobile_sidebar_button()
+inject_sidebar_state_helper()
 
 
 # UI COMPONENTS
@@ -3090,7 +3118,11 @@ def render_eda_section(ts, theme):
             margin-top: 6px;
         }}
         .eda-select-gap {{
-            height: 24px;
+            height: 34px;
+        }}
+        div[data-baseweb="select"] {{
+            margin-top: 8px !important;
+            margin-bottom: 18px !important;
         }}
         .eda-closed-note {{
             background: {theme["card"]};
