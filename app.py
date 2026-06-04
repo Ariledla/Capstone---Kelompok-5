@@ -2496,46 +2496,60 @@ st.markdown(
         transform: none !important;
     }
 
-    /* Tombol custom. */
+    /* Tombol custom: kecil, modern, tidak nabrak elemen bawah. */
     #custom-sidebar-toggle-v19 {
         position: fixed !important;
-        top: 16px !important;
-        left: 246px !important;
-        width: 48px !important;
-        height: 40px !important;
-        border-radius: 14px !important;
-        border: 1px solid rgba(139,203,136,.54) !important;
-        background: rgba(18,30,23,.88) !important;
+        top: 8px !important;
+        left: 258px !important;
+        width: 36px !important;
+        height: 34px !important;
+        border-radius: 12px !important;
+        border: 1px solid rgba(139,203,136,.36) !important;
+        background: rgba(15,27,20,.64) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
         color: #F5F7F2 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         z-index: 2147483647 !important;
-        box-shadow: 0 12px 28px rgba(0,0,0,.24) !important;
+        box-shadow: 0 10px 24px rgba(0,0,0,.20) !important;
         cursor: pointer !important;
         user-select: none !important;
-        font-size: 26px !important;
-        font-weight: 900 !important;
-        letter-spacing: -5px !important;
-        line-height: 1 !important;
-        padding: 0 5px 0 0 !important;
-        transition: left .22s ease, background .15s ease, border-color .15s ease, transform .15s ease, opacity .15s ease !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        transition: left .22s ease, background .15s ease, border-color .15s ease, transform .15s ease, opacity .15s ease, box-shadow .15s ease !important;
+    }
+
+    #custom-sidebar-toggle-v19 svg {
+        width: 19px !important;
+        height: 19px !important;
+        display: block !important;
+        stroke: currentColor !important;
+        fill: none !important;
+        stroke-width: 2.55 !important;
+        stroke-linecap: round !important;
+        stroke-linejoin: round !important;
+        margin: 0 !important;
+        transform: translateX(0) !important;
     }
 
     #custom-sidebar-toggle-v19:hover {
-        background: rgba(47,125,82,.96) !important;
-        border-color: rgba(139,203,136,.92) !important;
+        background: rgba(47,125,82,.94) !important;
+        border-color: rgba(139,203,136,.78) !important;
         transform: translateY(-1px) !important;
         opacity: 1 !important;
+        box-shadow: 0 14px 30px rgba(0,0,0,.28) !important;
     }
 
     body.sidebar-custom-closed #custom-sidebar-toggle-v19 {
-        left: 18px !important;
+        left: 16px !important;
+        top: 8px !important;
         opacity: 1 !important;
     }
 
     body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v19 {
-        opacity: .38 !important;
+        opacity: .42 !important;
     }
 
     body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v19:hover {
@@ -2550,11 +2564,12 @@ st.markdown(
 
     @media screen and (max-width: 900px) {
         #custom-sidebar-toggle-v19 {
-            left: 250px !important;
-            top: 12px !important;
+            left: 258px !important;
+            top: 8px !important;
         }
         body.sidebar-custom-closed #custom-sidebar-toggle-v19 {
             left: 12px !important;
+            top: 8px !important;
         }
         body.sidebar-custom-closed .block-container,
         body.sidebar-custom-closed [data-testid="stMainBlockContainer"] {
@@ -2581,12 +2596,19 @@ def inject_custom_sidebar_toggle():
                 return localStorage.getItem(STORAGE_KEY) === "1";
             }
 
+            function chevronSvg(direction) {
+                const d = direction === "right"
+                    ? '<path d="M7 5l6 7-6 7"/><path d="M12 5l6 7-6 7"/>'
+                    : '<path d="M17 5l-6 7 6 7"/><path d="M12 5l-6 7 6 7"/>';
+                return '<svg viewBox="0 0 24 24" aria-hidden="true">' + d + '</svg>';
+            }
+
             function setClosed(closed) {
                 localStorage.setItem(STORAGE_KEY, closed ? "1" : "0");
                 doc.body.classList.toggle("sidebar-custom-closed", closed);
                 const btn = doc.getElementById(BTN_ID);
                 if (btn) {
-                    btn.textContent = closed ? "››" : "‹‹";
+                    btn.innerHTML = chevronSvg(closed ? "right" : "left");
                     btn.title = closed ? "Buka sidebar" : "Tutup sidebar";
                     btn.setAttribute("aria-label", closed ? "Buka sidebar" : "Tutup sidebar");
                 }
