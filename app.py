@@ -694,6 +694,26 @@ def apply_theme(mode):
             z-index: 2;
         }}
 
+        .sidebar-icons {{
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 2;
+            font-size: 34px;
+            line-height: 1;
+        }}
+
+        .sidebar-icons span {{
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.16));
+        }}
+
         .sidebar-visual-title {{
             font-size: 18px;
             font-weight: 850;
@@ -967,6 +987,35 @@ def apply_theme(mode):
             color: {cfg["muted"]} !important;
         }}
 
+        [data-testid="stFileUploader"] section > div {{
+            width: 100% !important;
+        }}
+
+        [data-testid="stFileUploader"] section button,
+        [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
+        [data-testid="stFileUploader"] button[kind="secondary"] {{
+            width: 100% !important;
+            min-height: 50px !important;
+            border-radius: 13px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 10px !important;
+            font-weight: 850 !important;
+            font-size: 15px !important;
+            background: {cfg["input_btn"]} !important;
+            color: {cfg["text"]} !important;
+            border: 1px solid {cfg["border"]} !important;
+        }}
+
+        [data-testid="stFileUploader"] section button:hover,
+        [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"]:hover,
+        [data-testid="stFileUploader"] button[kind="secondary"]:hover {{
+            background: {cfg["accent_hover"]} !important;
+            color: white !important;
+            border-color: {cfg["accent_hover"]} !important;
+        }}
+
         div[data-baseweb="select"] > div {{
             background: {cfg["card"]} !important;
             border: 1px solid {cfg["border"]} !important;
@@ -997,8 +1046,19 @@ def apply_theme(mode):
         }}
 
         /* Hilangkan scrollbar ganda pada panel opsi select */
+        div[data-baseweb="popover"],
+        div[data-baseweb="popover"] > div,
+        div[data-baseweb="popover"] > div > div {{
+            border: none !important;
+            outline: none !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }}
+
         div[data-baseweb="popover"] ul,
         div[role="listbox"] {{
+            border: none !important;
+            outline: none !important;
             scrollbar-width: none !important;
             -ms-overflow-style: none !important;
         }}
@@ -1687,6 +1747,17 @@ def apply_theme(mode):
             .sidebar-emoji {{
                 font-size: 30px !important;
                 margin-bottom: 6px !important;
+            }}
+
+            .sidebar-icons {{
+                gap: 10px !important;
+                margin-bottom: 8px !important;
+                font-size: 24px !important;
+            }}
+
+            .sidebar-icons span {{
+                width: 28px !important;
+                height: 28px !important;
             }}
 
             .sidebar-visual-title {{
@@ -3606,6 +3677,17 @@ def render_eda_section(ts, theme):
         /* Panel opsi EDA: cukup satu scrollbar halaman, tidak perlu scrollbar dalam dropdown */
         div[data-baseweb="popover"] {{
             z-index: 999999 !important;
+            border: none !important;
+            outline: none !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }}
+        div[data-baseweb="popover"] > div,
+        div[data-baseweb="popover"] > div > div {{
+            border: none !important;
+            outline: none !important;
+            background: transparent !important;
+            box-shadow: none !important;
         }}
         div[data-baseweb="popover"] ul,
         div[role="listbox"] {{
@@ -3614,7 +3696,7 @@ def render_eda_section(ts, theme):
             border-radius: 16px !important;
             padding: 8px 8px !important;
             background: #080C12 !important;
-            border: 1px solid {theme["border"]} !important;
+            border: none !important;
             box-shadow: 0 18px 42px rgba(0,0,0,0.28) !important;
             scrollbar-width: none !important;
             -ms-overflow-style: none !important;
@@ -3819,8 +3901,12 @@ menu = st.sidebar.radio(
 st.sidebar.markdown(
     """
     <div class="sidebar-visual">
-        <div class="sidebar-emoji">◇</div>
-        <div class="sidebar-visual-title">Dashboard Sampah</div>
+        <div class="sidebar-icons">
+            <span>♻️</span>
+            <span>🗑️</span>
+            <span>🍃</span>
+        </div>
+        <div class="sidebar-visual-title">dashboard sampah</div>
         <div class="sidebar-visual-subtitle">
             Prediksi jumlah sampah, estimasi anggaran, volume sampah, dan kebutuhan muatan truk compactor.
         </div>
