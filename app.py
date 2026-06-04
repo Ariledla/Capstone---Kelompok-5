@@ -574,7 +574,14 @@ def apply_theme(mode):
             margin-top: -2.25rem !important;
             padding-left: 1.25rem !important;
             padding-right: 1.25rem !important;
-            padding-bottom: 260px !important;
+            padding-bottom: 18px !important;
+            overflow-y: hidden !important;
+        }}
+
+        [data-testid="stSidebar"],
+        [data-testid="stSidebarContent"],
+        section[data-testid="stSidebar"] {{
+            overflow-y: hidden !important;
         }}
 
         [data-testid="stSidebar"] * {{
@@ -614,10 +621,10 @@ def apply_theme(mode):
         }}
 
         .modern-section-icon {{
-            width: 28px;
-            height: 28px;
-            min-width: 28px;
-            border-radius: 10px;
+            width: 26px;
+            height: 26px;
+            min-width: 26px;
+            border-radius: 9px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -730,27 +737,27 @@ def apply_theme(mode):
         .sidebar-visual {{
             background: {cfg["sidebar_visual"]};
             border: 1px solid rgba(255,255,255,0.18);
-            border-radius: 22px;
-            padding: 17px 16px;
-            margin: 0 !important;
-            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
-            position: fixed !important;
-            left: 20px !important;
-            bottom: 24px !important;
-            width: 264px !important;
-            max-width: 264px !important;
+            border-radius: 20px;
+            padding: 13px 14px;
+            margin: 18px 0 0 0 !important;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.16);
+            position: relative !important;
+            left: auto !important;
+            bottom: auto !important;
+            width: 100% !important;
+            max-width: 100% !important;
             box-sizing: border-box !important;
             overflow: hidden;
-            z-index: 20;
+            z-index: 2;
         }}
 
         .sidebar-visual::before {{
             content: "";
             position: absolute;
-            width: 95px;
-            height: 95px;
-            right: -25px;
-            top: -28px;
+            width: 78px;
+            height: 78px;
+            right: -22px;
+            top: -24px;
             background: rgba(255, 255, 255, 0.14);
             border-radius: 50%;
         }}
@@ -766,8 +773,8 @@ def apply_theme(mode):
         .sidebar-icons {{
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 13px;
+            gap: 8px;
+            margin-bottom: 10px;
             position: relative;
             z-index: 2;
             line-height: 1;
@@ -777,9 +784,9 @@ def apply_theme(mode):
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 42px;
-            height: 42px;
-            border-radius: 15px;
+            width: 34px;
+            height: 34px;
+            border-radius: 12px;
             background: rgba(255,255,255,0.15);
             border: 1px solid rgba(255,255,255,0.22);
             backdrop-filter: blur(8px);
@@ -788,14 +795,14 @@ def apply_theme(mode):
         }}
 
         .sidebar-icons svg {{
-            width: 22px;
-            height: 22px;
+            width: 18px;
+            height: 18px;
             display: block;
             stroke: currentColor;
         }}
 
         .sidebar-visual-title {{
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 850;
             position: relative;
             z-index: 2;
@@ -803,23 +810,23 @@ def apply_theme(mode):
         }}
 
         .sidebar-visual-subtitle {{
-            font-size: 12.5px;
+            font-size: 11.2px;
             color: white !important;
-            margin-top: 5px;
-            line-height: 1.45;
+            margin-top: 4px;
+            line-height: 1.38;
             position: relative;
             z-index: 2;
             font-weight: 500;
         }}
 
         .team-name {{
-            margin-top: 10px;
-            padding: 8px 10px;
-            border-radius: 14px;
+            margin-top: 9px;
+            padding: 7px 9px;
+            border-radius: 13px;
             background: rgba(255, 255, 255, 0.16);
             border: 1px solid rgba(255, 255, 255, 0.24);
-            font-size: 12.5px;
-            font-weight: 750;
+            font-size: 11.2px;
+            font-weight: 760;
             position: relative;
             z-index: 2;
             color: white !important;
@@ -927,18 +934,18 @@ def apply_theme(mode):
                 linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0.000)),
                 {cfg["card"]};
             border: 1px solid {cfg["border"]};
-            border-radius: 22px;
-            padding: 15px 22px 21px 22px;
-            height: 140px;
-            min-height: 140px;
-            box-shadow: 0 12px 30px {cfg["shadow"]};
+            border-radius: 20px;
+            padding: 13px 18px 17px 18px;
+            height: 126px;
+            min-height: 126px;
+            box-shadow: 0 10px 26px {cfg["shadow"]};
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: stretch;
-            gap: 6px;
-            transform: translateY(-2px);
-            margin-bottom: 22px;
+            gap: 5px;
+            transform: translateY(-1px);
+            margin-bottom: 18px;
             box-sizing: border-box;
             overflow: hidden;
             position: relative;
@@ -961,17 +968,17 @@ def apply_theme(mode):
             z-index: 2;
             display: flex;
             align-items: center;
-            gap: 10px;
-            height: 29px;
-            min-height: 29px;
+            gap: 9px;
+            height: 27px;
+            min-height: 27px;
             width: 100%;
         }}
 
         .kpi-icon {{
-            width: 28px;
-            height: 28px;
-            min-width: 28px;
-            border-radius: 10px;
+            width: 26px;
+            height: 26px;
+            min-width: 26px;
+            border-radius: 9px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -983,16 +990,16 @@ def apply_theme(mode):
         }}
 
         .kpi-icon svg {{
-            width: 17px;
-            height: 17px;
+            width: 15.5px;
+            height: 15.5px;
             display: block;
         }}
 
         .kpi-label {{
             color: {cfg["muted"]} !important;
-            font-size: 13.3px;
+            font-size: 12.4px;
             font-weight: 900;
-            line-height: 1.18;
+            line-height: 1.15;
             letter-spacing: -0.1px;
             margin: 0;
             max-width: 100%;
@@ -1006,12 +1013,12 @@ def apply_theme(mode):
             position: relative;
             z-index: 2;
             color: {cfg["text"]} !important;
-            font-size: clamp(23px, 1.42vw, 31px);
+            font-size: clamp(18px, 1.15vw, 27px);
             font-weight: 950;
             line-height: 1.06;
-            letter-spacing: -0.6px;
+            letter-spacing: -0.45px;
             margin: 0;
-            min-height: 32px;
+            min-height: 28px;
             display: flex;
             align-items: center;
             overflow-wrap: normal;
@@ -1020,14 +1027,14 @@ def apply_theme(mode):
         }}
 
         .kpi-value-long {{
-            font-size: clamp(18px, 1.05vw, 24px);
+            font-size: clamp(15px, 0.95vw, 22px);
             line-height: 1.06;
             letter-spacing: -0.45px;
         }}
 
         .kpi-value-period {{
-            font-size: clamp(22px, 1.30vw, 28px);
-            line-height: 1.12;
+            font-size: clamp(17px, 1.05vw, 24px);
+            line-height: 1.10;
             white-space: normal;
             word-break: normal;
             overflow-wrap: normal;
@@ -1037,9 +1044,9 @@ def apply_theme(mode):
             position: relative;
             z-index: 2;
             color: {cfg["muted"]} !important;
-            font-size: 11.8px;
+            font-size: 10.8px;
             font-weight: 760;
-            line-height: 1.15;
+            line-height: 1.12;
             margin: 0;
             opacity: 0.95;
             min-height: 13px;
@@ -1047,6 +1054,24 @@ def apply_theme(mode):
             white-space: nowrap;
             text-overflow: ellipsis;
         }}
+
+        body:not(.sidebar-custom-closed) .kpi-card {
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+        }
+
+        body:not(.sidebar-custom-closed) .kpi-value {
+            font-size: clamp(17px, 1.05vw, 25px) !important;
+        }
+
+        body:not(.sidebar-custom-closed) .kpi-value-long {
+            font-size: clamp(14px, 0.88vw, 20px) !important;
+        }
+
+        body:not(.sidebar-custom-closed) .kpi-value-period {
+            font-size: clamp(16px, 0.98vw, 22px) !important;
+            white-space: normal !important;
+        }
 
         .mobile-kpi-label-row {{
             display: flex;
@@ -3788,7 +3813,7 @@ def render_eda_section(ts, theme):
     )
 
     eda_values = ts.dropna()
-    metric1, metric2, metric3, metric4 = st.columns(4, gap="large")
+    metric1, metric2, metric3, metric4 = st.columns(4, gap="medium")
     with metric1:
         eda_metric_card("Jumlah Observasi", f"{format_integer(len(eda_values))} bulan", f"{format_periode(eda_values.index.min())} - {format_periode(eda_values.index.max())}", theme, "calendar")
     with metric2:
@@ -3998,7 +4023,7 @@ if menu == "Simulasi Pengelolaan":
         unsafe_allow_html=True
     )
 
-    input1, input2, input3, input4 = st.columns(4, gap="large")
+    input1, input2, input3, input4 = st.columns(4, gap="medium")
 
     with input1:
         forecast_steps = st.slider(
@@ -4065,7 +4090,7 @@ if menu == "Simulasi Pengelolaan":
         {"label": "📆 Hari Angkut/Minggu", "value": f"{hari_operasional_angkut_per_minggu} hari/minggu", "note": "parameter jadwal angkut"},
     ])
 
-    row1_col1, row1_col2, row1_col3, row1_col4 = st.columns(4, gap="large")
+    row1_col1, row1_col2, row1_col3, row1_col4 = st.columns(4, gap="medium")
 
     with row1_col1:
         kpi_card("🗓️ Periode Simulasi", f"{start_period} - {end_period}", f"{forecast_steps} bulan ke depan")
@@ -4079,7 +4104,7 @@ if menu == "Simulasi Pengelolaan":
     with row1_col4:
         kpi_card("📦 Total Estimasi Volume", f"{format_angka(total_volume_sampah)} m³", f"Densitas {format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³")
 
-    row2_col1, row2_col2, row2_col3, row2_col4 = st.columns(4, gap="large")
+    row2_col1, row2_col2, row2_col3, row2_col4 = st.columns(4, gap="medium")
 
     with row2_col1:
         kpi_card("📈 Beban Tertinggi", highest_row["Periode"], f"{format_angka(highest_row['Prediksi Sampah (Ton)'])} ton")
@@ -4130,7 +4155,7 @@ elif menu == "Ringkasan Data & Model":
 
     eval_df, comparison_df, test_actual, test_forecast, eval_model_label, eval_model_selection_df = evaluate_sarima(ts)
 
-    left, right = st.columns(2, gap="large")
+    left, right = st.columns(2, gap="medium")
 
     with left:
         bullet_card(
