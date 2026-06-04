@@ -2316,7 +2316,7 @@ uploaded_file = st.sidebar.file_uploader(
     help="Format minimal: kolom tahun, bulan, dan jumlah_sampah."
 )
 st.sidebar.markdown(
-    '<div class="data-input-note">Format wajib: <b>tahun</b>, <b>bulan</b>, <b>jumlah_sampah</b>. Jika data diunggah, model otomatis dilatih ulang dan prediksi bisa dibuat sampai 24 bulan ke depan.</div>',
+    '<div class="data-input-note">Format wajib: <b>tahun</b>, <b>bulan</b>, <b>jumlah_sampah</b>.</div>',
     unsafe_allow_html=True
 )
 
