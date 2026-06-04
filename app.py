@@ -16,7 +16,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 # ============================================================
 
 st.set_page_config(
-    page_title="Simulasi Sampah Kota Bandung",
+    page_title="Simulassi Sampah Kota Bandung",
     page_icon="♻️",
     layout="wide",
     initial_sidebar_state="auto"
