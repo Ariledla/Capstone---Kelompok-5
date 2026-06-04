@@ -16,7 +16,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 # ============================================================
 
 st.set_page_config(
-    page_title="Simulassi Sampah Kota Bandung",
+    page_title="Simulasi Sampah Kota Bandung",
     page_icon="♻️",
     layout="wide",
     initial_sidebar_state="auto"
@@ -54,7 +54,7 @@ BULAN_INDO = {
     12: "Desember",
 }
 
-MENU_OPTIONS = ["Simulasi Pengelolaan", "Ringkasan Data & Model"]
+MENU_OPTIONS = ["Simulasia Pengelolaan", "Ringkasan Data & Model"]
 
 # Konstanta simulasi operasional
 # Densitas digunakan untuk mengonversi prediksi ton menjadi volume m³.
