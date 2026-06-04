@@ -789,145 +789,51 @@ def apply_theme(mode):
         }}
 
         .kpi-card {{
-            background:
-                linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0.000)),
-                {cfg["card"]};
+            background: {cfg["card"]};
             border: 1px solid {cfg["border"]};
-            border-radius: 22px;
-            padding: 20px 22px 18px 22px;
-            height: 138px;
-            min-height: 138px;
-            box-shadow: 0 12px 30px {cfg["shadow"]};
+            border-radius: 20px;
+            padding: 17px 18px;
+            min-height: 104px;
+            box-shadow: 0 8px 24px {cfg["shadow"]};
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            align-items: stretch;
-            gap: 8px;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 7px;
             margin-bottom: 22px;
             box-sizing: border-box;
             overflow: hidden;
-            position: relative;
-            width: 100%;
-        }}
-
-        .kpi-card::before {{
-            content: "";
-            position: absolute;
-            inset: 0;
-            border-radius: 22px;
-            background:
-                radial-gradient(circle at 16% 8%, {cfg["accent_soft"]}, transparent 34%),
-                radial-gradient(circle at 95% 12%, rgba(226, 177, 93, 0.10), transparent 32%);
-            pointer-events: none;
-        }}
-
-        .kpi-header {{
-            position: relative;
-            z-index: 2;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            height: 34px;
-            min-height: 34px;
-            width: 100%;
-        }}
-
-        .kpi-icon {{
-            width: 28px;
-            height: 28px;
-            min-width: 28px;
-            border-radius: 10px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: {cfg["accent"]} !important;
-            background:
-                linear-gradient(135deg, {cfg["accent_soft"]}, rgba(226, 177, 93, 0.12));
-            border: 1px solid {cfg["border"]};
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
-        }}
-
-        .kpi-icon svg {{
-            width: 17px;
-            height: 17px;
-            display: block;
         }}
 
         .kpi-label {{
             color: {cfg["muted"]} !important;
-            font-size: 13.8px;
+            font-size: 13px;
             font-weight: 900;
-            line-height: 1.22;
+            line-height: 1.15;
             letter-spacing: -0.1px;
             margin: 0;
-            max-width: 100%;
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
         }}
 
         .kpi-value {{
-            position: relative;
-            z-index: 2;
             color: {cfg["text"]} !important;
-            font-size: clamp(25px, 1.62vw, 34px);
-            font-weight: 950;
-            line-height: 1.08;
-            letter-spacing: -0.6px;
-            margin: 0;
-            min-height: 42px;
-            display: flex;
-            align-items: center;
-            overflow-wrap: anywhere;
+            font-size: 22px;
+            font-weight: 900;
+            line-height: 1.16;
+            letter-spacing: -0.4px;
             word-break: normal;
-        }}
-
-        .kpi-value-long {{
-            font-size: clamp(22px, 1.42vw, 30px);
-            line-height: 1.10;
+            overflow-wrap: anywhere;
+            margin: 0;
         }}
 
         .kpi-note {{
-            position: relative;
-            z-index: 2;
             color: {cfg["muted"]} !important;
-            font-size: 12.2px;
-            font-weight: 760;
-            line-height: 1.25;
+            font-size: 11.5px;
+            font-weight: 650;
+            line-height: 1.35;
             margin: 0;
             opacity: 0.95;
-            min-height: 16px;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
         }}
 
-        .mobile-kpi-label-row {{
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            min-width: 0;
-        }}
-
-        .mobile-kpi-icon {{
-            width: 20px;
-            height: 20px;
-            min-width: 20px;
-            border-radius: 8px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: {cfg["accent"]} !important;
-            background: {cfg["accent_soft"]};
-            border: 1px solid {cfg["border"]};
-        }}
-
-        .mobile-kpi-icon svg {{
-            width: 12px;
-            height: 12px;
-            display: block;
-        }}
         [data-testid="stFileUploader"] section {{
             background: {cfg["card"]} !important;
             border: 1px dashed {cfg["border"]} !important;
@@ -1967,73 +1873,14 @@ inject_mobile_sidebar_button()
 # UI COMPONENTS
 # ============================================================
 
-def clean_kpi_label(label):
-    label = str(label)
-    emoji_tokens = [
-        "🗓️", "♻️", "💰", "📦", "📈", "📉", "🚛", "🚚", "📆", "📋", "📝", "📂", "✅", "ℹ️",
-        "🗓", "☀️", "🌙"
-    ]
-    for token in emoji_tokens:
-        label = label.replace(token, "")
-    return " ".join(label.split())
-
-
-def resolve_kpi_icon(label):
-    text = clean_kpi_label(label).lower()
-    if "periode" in text or "bulan" in text:
-        return "calendar"
-    if "sampah" in text:
-        return "waste"
-    if "anggaran" in text or "biaya" in text or "rupiah" in text:
-        return "money"
-    if "volume" in text or "densitas" in text:
-        return "cube"
-    if "tertinggi" in text:
-        return "trend_up"
-    if "terendah" in text:
-        return "trend_down"
-    if "hari angkut" in text or "maksimum" in text or "maks/hari" in text:
-        return "route"
-    if "muatan" in text or "truk" in text:
-        return "truck"
-    return "dashboard"
-
-
-def kpi_svg(icon_name):
-    if icon_name == "calendar":
-        return '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M8 3.5v4M16 3.5v4M4.8 10h14.4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M8 14h2.2M13.8 14H16M8 17h2.2" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>'
-    if icon_name == "waste":
-        return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.3 7.4 10 3.8c.9-1.2 2.7-1.2 3.6.1l1.1 1.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.8 5.4h3.8l-1.1-3.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M17.7 10.1 20 14.2c.7 1.3-.2 2.9-1.7 2.9h-2" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.4 13.9 14.5 17l3.6.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 18.7H6.4c-1.5 0-2.4-1.6-1.7-2.9l1-1.7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.7 14.1H5.1l1.5 3.3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-    if icon_name == "money":
-        return '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="7" width="16" height="11" rx="2.4" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M7 10.8h2.2M14.8 14.2H17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><circle cx="12" cy="12.5" r="2.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M7.3 6.8l9.2-2.3c1.2-.3 2.3.4 2.6 1.5l.2.8" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>'
-    if icon_name == "cube":
-        return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5 20 8v8.2l-8 4.3-8-4.3V8l8-4.5Z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M4.4 8.2 12 12.6l7.6-4.4M12 20.2v-7.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-    if icon_name == "trend_up":
-        return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 17.5h15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M6 15.5l4.2-4.2 3.2 3.1 5.2-6" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.3 8.3h3.4v3.4" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-    if icon_name == "trend_down":
-        return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 17.5h15" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M6 8.2l4.2 4.1 3.2-3.1 5.2 6" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M15.3 15.3h3.4v-3.4" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-    if icon_name == "truck":
-        return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.8 8h10.4v8.2H3.8z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M14.2 10.2h3.6l2.4 2.8v3.2h-6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7.2" cy="17" r="1.7" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="17.2" cy="17" r="1.7" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M5.4 11h5.8" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>'
-    if icon_name == "route":
-        return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="6.5" r="2.2" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="17" cy="17.5" r="2.2" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M9.2 6.5h4.6c2 0 3.2 1 3.2 2.7s-1.2 2.7-3.2 2.7H10c-2 0-3.2 1-3.2 2.7s1.2 2.9 3.2 2.9h4.8" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-    return '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="7" height="6" rx="2" fill="none" stroke="currentColor" stroke-width="1.9"/><rect x="13" y="5" width="7" height="6" rx="2" fill="none" stroke="currentColor" stroke-width="1.9"/><rect x="4" y="13" width="7" height="6" rx="2" fill="none" stroke="currentColor" stroke-width="1.9"/><rect x="13" y="13" width="7" height="6" rx="2" fill="none" stroke="currentColor" stroke-width="1.9"/></svg>'
-
-
 def kpi_card(label, value, note=None):
-    clean_label = clean_kpi_label(label)
-    icon_html = kpi_svg(resolve_kpi_icon(label))
-    note_html = note if note else "&nbsp;"
-    value_class = "kpi-value kpi-value-long" if len(str(value)) > 23 else "kpi-value"
-
+    note_html = f'<div class="kpi-note">{note}</div>' if note else ""
     st.markdown(
         f"""
         <div class="kpi-card">
-            <div class="kpi-header">
-                <div class="kpi-icon">{icon_html}</div>
-                <div class="kpi-label">{clean_label}</div>
-            </div>
-            <div class="{value_class}">{value}</div>
-            <div class="kpi-note">{note_html}</div>
+            <div class="kpi-label">{label}</div>
+            <div class="kpi-value">{value}</div>
+            {note_html}
         </div>
         """,
         unsafe_allow_html=True
@@ -2043,15 +1890,10 @@ def kpi_card(label, value, note=None):
 def mobile_kpi_summary(items):
     html_items = ""
     for item in items:
-        clean_label = clean_kpi_label(item["label"])
-        icon_html = kpi_svg(resolve_kpi_icon(item["label"]))
         note_html = f'<div class="mobile-kpi-note">{item.get("note", "")}</div>' if item.get("note") else ""
         html_items += (
             f'<div class="mobile-kpi-item">'
-            f'<div class="mobile-kpi-label-row">'
-            f'<div class="mobile-kpi-icon">{icon_html}</div>'
-            f'<div class="mobile-kpi-label">{clean_label}</div>'
-            f'</div>'
+            f'<div class="mobile-kpi-label">{item["label"]}</div>'
             f'<div class="mobile-kpi-value">{item["value"]}</div>'
             f'{note_html}'
             f'</div>'
@@ -2474,7 +2316,7 @@ uploaded_file = st.sidebar.file_uploader(
     help="Format minimal: kolom tahun, bulan, dan jumlah_sampah."
 )
 st.sidebar.markdown(
-    '<div class="data-input-note">Format wajib: <b>tahun</b>, <b>bulan</b>, <b>jumlah_sampah</b>.</div>',
+    '<div class="data-input-note">Format wajib: <b>tahun</b>, <b>bulan</b>, <b>jumlah_sampah</b>. Jika data diunggah, model otomatis dilatih ulang dan prediksi bisa dibuat sampai 24 bulan ke depan.</div>',
     unsafe_allow_html=True
 )
 
@@ -2515,7 +2357,7 @@ menu = st.sidebar.radio(
 st.sidebar.markdown(
     """
     <div class="sidebar-visual">
-        <div class="sidebar-emoji">◇</div>
+        <div class="sidebar-emoji">♻️ 🗑️ 🍃</div>
         <div class="sidebar-visual-title">Dashboard Sampah</div>
         <div class="sidebar-visual-subtitle">
             Prediksi jumlah sampah, estimasi anggaran, volume sampah, dan kebutuhan muatan truk compactor.
@@ -2562,7 +2404,7 @@ if menu == "Simulasi Pengelolaan":
 
     with input1:
         forecast_steps = st.slider(
-            "Simulasi untuk berapa bulan ke depan?",
+            "🗓️ Simulasi untuk berapa bulan ke depan?",
             min_value=1,
             max_value=24,
             value=12,
@@ -2571,7 +2413,7 @@ if menu == "Simulasi Pengelolaan":
 
     with input2:
         biaya_per_ton = st.number_input(
-            "Biaya penanganan per ton",
+            "💰 Biaya penanganan per ton",
             min_value=0,
             value=308482,
             step=1000
@@ -2579,14 +2421,14 @@ if menu == "Simulasi Pengelolaan":
 
     with input3:
         kapasitas_truk_compactor_m3 = st.selectbox(
-            "Kapasitas truk compactor (m³)",
+            "🚛 Kapasitas truk compactor (m³)",
             options=[6, 12],
             index=1
         )
 
     with input4:
         hari_operasional_angkut_per_minggu = st.number_input(
-            "Hari operasional angkut per minggu",
+            "📆 Hari operasional angkut per minggu",
             min_value=1,
             max_value=7,
             value=4,
@@ -2660,11 +2502,11 @@ if menu == "Simulasi Pengelolaan":
         config={"displayModeBar": False, "responsive": True}
     )
 
-    st.markdown('<div class="small-title table-title-mobile-tight">Tabel Simulasi Kebutuhan Operasional</div>', unsafe_allow_html=True)
+    st.markdown('<div class="small-title table-title-mobile-tight">📋 Tabel Simulasi Kebutuhan Operasional</div>', unsafe_allow_html=True)
     show_table(prepare_display_table(simulation_df))
 
     bullet_card(
-        "Catatan simulasi",
+        "📝 Catatan simulasi",
         [
             f"Model prediksi yang aktif adalah <b>{forecast_model_label}</b> dan dipilih otomatis berdasarkan data terbaru.",
             f"Biaya penanganan yang digunakan adalah <b>{format_rupiah(biaya_per_ton)} per ton</b>.",
