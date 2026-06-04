@@ -514,8 +514,19 @@ def apply_theme(mode):
             color: {cfg["text"]} !important;
         }}
 
-        header, footer, #MainMenu {{
-            visibility: hidden;
+        footer, #MainMenu,
+        [data-testid="stToolbar"],
+        [data-testid="stDecoration"],
+        [data-testid="stStatusWidget"] {{
+            display: none !important;
+        }}
+
+        header,
+        [data-testid="stHeader"] {{
+            visibility: visible !important;
+            background: transparent !important;
+            height: 0 !important;
+            min-height: 0 !important;
         }}
 
         .mobile-kpi-summary {{
@@ -796,15 +807,15 @@ def apply_theme(mode):
                 {cfg["card"]};
             border: 1px solid {cfg["border"]};
             border-radius: 22px;
-            padding: 18px 22px 24px 22px;
-            height: 138px;
-            min-height: 138px;
+            padding: 18px 22px 20px 22px;
+            height: 150px;
+            min-height: 150px;
             box-shadow: 0 12px 30px {cfg["shadow"]};
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
+            justify-content: center;
             align-items: stretch;
-            gap: 13px;
+            gap: 8px;
             margin-bottom: 22px;
             box-sizing: border-box;
             overflow: hidden;
@@ -829,8 +840,8 @@ def apply_theme(mode):
             display: flex;
             align-items: center;
             gap: 10px;
-            height: 34px;
-            min-height: 34px;
+            height: 30px;
+            min-height: 30px;
             width: 100%;
         }}
 
@@ -857,9 +868,9 @@ def apply_theme(mode):
 
         .kpi-label {{
             color: {cfg["muted"]} !important;
-            font-size: 13.8px;
+            font-size: 13.3px;
             font-weight: 900;
-            line-height: 1.22;
+            line-height: 1.18;
             letter-spacing: -0.1px;
             margin: 0;
             max-width: 100%;
@@ -873,33 +884,43 @@ def apply_theme(mode):
             position: relative;
             z-index: 2;
             color: {cfg["text"]} !important;
-            font-size: clamp(25px, 1.62vw, 34px);
+            font-size: clamp(24px, 1.52vw, 32px);
             font-weight: 950;
-            line-height: 1.08;
+            line-height: 1.06;
             letter-spacing: -0.6px;
             margin: 0;
-            min-height: 38px;
+            min-height: 34px;
             display: flex;
             align-items: center;
-            overflow-wrap: anywhere;
-            word-break: normal;
+            overflow-wrap: normal;
+            word-break: keep-all;
+            white-space: nowrap;
         }}
 
         .kpi-value-long {{
-            font-size: clamp(22px, 1.42vw, 30px);
-            line-height: 1.10;
+            font-size: clamp(20px, 1.25vw, 27px);
+            line-height: 1.06;
+            letter-spacing: -0.45px;
+        }}
+
+        .kpi-value-period {{
+            font-size: clamp(23px, 1.42vw, 30px);
+            line-height: 1.12;
+            white-space: normal;
+            word-break: normal;
+            overflow-wrap: normal;
         }}
 
         .kpi-note {{
             position: relative;
             z-index: 2;
             color: {cfg["muted"]} !important;
-            font-size: 12.2px;
+            font-size: 12px;
             font-weight: 760;
-            line-height: 1.25;
+            line-height: 1.18;
             margin: 0;
             opacity: 0.95;
-            min-height: 16px;
+            min-height: 14px;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
@@ -1907,7 +1928,92 @@ def inject_mobile_sidebar_button():
         <script>
         (function() {
           const doc = window.parent.document;
-          const isMobile = () => true;
+          const win = window.parent;
+
+          function ensureStyle() {
+            let style = doc.getElementById('custom-sidebar-toggle-style');
+            if (!style) {
+              style = doc.createElement('style');
+              style.id = 'custom-sidebar-toggle-style';
+              doc.head.appendChild(style);
+            }
+            style.textContent = `
+              #custom-sidebar-open-button {
+                position: fixed;
+                top: 24px;
+                left: 24px;
+                z-index: 2147483647;
+                width: 56px;
+                height: 46px;
+                align-items: center;
+                justify-content: center;
+                border-radius: 15px;
+                border: 1px solid rgba(137, 168, 143, .55);
+                background: rgba(18, 30, 23, .96);
+                color: #F8FAF7;
+                font-size: 23px;
+                font-weight: 950;
+                line-height: 1;
+                letter-spacing: -4px;
+                padding-right: 4px;
+                box-shadow: 0 8px 22px rgba(0,0,0,.24);
+                cursor: pointer;
+                transition: all .16s ease-in-out;
+              }
+              #custom-sidebar-open-button:hover {
+                transform: translateY(-1px);
+                background: rgba(47, 125, 82, .98);
+                border-color: rgba(139, 203, 136, .80);
+              }
+              body.sidebar-is-open #custom-sidebar-open-button {
+                display: none !important;
+              }
+              body.sidebar-is-closed #custom-sidebar-open-button {
+                display: flex !important;
+              }
+              body.sidebar-is-closed [data-testid="stSidebar"] {
+                width: 0 !important;
+                min-width: 0 !important;
+                max-width: 0 !important;
+                border-right: none !important;
+                overflow: hidden !important;
+              }
+              body.sidebar-is-closed [data-testid="stSidebarContent"] {
+                width: 0 !important;
+                min-width: 0 !important;
+                max-width: 0 !important;
+                overflow: hidden !important;
+              }
+              body.sidebar-is-closed [data-testid="stAppViewContainer"] {
+                padding-left: 0 !important;
+                margin-left: 0 !important;
+              }
+              body.sidebar-is-closed [data-testid="stMain"],
+              body.sidebar-is-closed section.main,
+              body.sidebar-is-closed .main {
+                margin-left: 0 !important;
+                padding-left: 0 !important;
+                width: 100vw !important;
+                max-width: 100vw !important;
+              }
+              body.sidebar-is-closed .block-container {
+                max-width: 1420px !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+              }
+              @media screen and (max-width: 900px) {
+                #custom-sidebar-open-button {
+                  top: 10px;
+                  left: 10px;
+                  width: 44px;
+                  height: 42px;
+                  border-radius: 13px;
+                  font-size: 21px;
+                }
+              }
+            `;
+          }
+
           function findNativeSidebarButton() {
             return doc.querySelector('[data-testid="stSidebarCollapsedControl"] button') ||
                    doc.querySelector('[data-testid="stSidebarCollapsedControl"]') ||
@@ -1919,43 +2025,39 @@ def inject_mobile_sidebar_button():
                    doc.querySelector('button[data-testid="baseButton-headerNoPadding"]') ||
                    doc.querySelector('button[data-testid="stBaseButton-headerNoPadding"]');
           }
+
+          function sidebarIsOpen() {
+            const sidebar = doc.querySelector('[data-testid="stSidebar"]');
+            if (!sidebar) return false;
+            const rect = sidebar.getBoundingClientRect();
+            const style = win.getComputedStyle(sidebar);
+            const visuallyOpen = rect.width > 80 && rect.right > 80 && rect.left < 20;
+            return visuallyOpen && style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
+          }
+
           function makeButton() {
-            let b = doc.getElementById('custom-mobile-sidebar-button');
+            ensureStyle();
+            let b = doc.getElementById('custom-sidebar-open-button');
             if (!b) {
               b = doc.createElement('button');
-              b.id = 'custom-mobile-sidebar-button';
-              b.innerHTML = '☰';
-              b.setAttribute('aria-label', 'Buka menu');
+              b.id = 'custom-sidebar-open-button';
+              b.innerHTML = '&raquo;&raquo;';
+              b.setAttribute('aria-label', 'Buka sidebar');
               b.onclick = function() {
                 const native = findNativeSidebarButton();
                 if (native) native.click();
               };
               doc.body.appendChild(b);
             }
-            b.style.cssText = `
-              display: flex;
-              position: fixed;
-              top: 10px;
-              left: 10px;
-              z-index: 2147483647;
-              width: 42px;
-              height: 42px;
-              align-items: center;
-              justify-content: center;
-              border-radius: 13px;
-              border: 1px solid rgba(120,145,125,.55);
-              background: rgba(20,32,25,.96);
-              color: #F8FAF7;
-              font-size: 23px;
-              font-weight: 900;
-              line-height: 1;
-              box-shadow: 0 8px 22px rgba(0,0,0,.24);
-              cursor: pointer;
-            `;
+
+            const open = sidebarIsOpen();
+            doc.body.classList.toggle('sidebar-is-open', open);
+            doc.body.classList.toggle('sidebar-is-closed', !open);
           }
+
           makeButton();
-          window.parent.addEventListener('resize', makeButton);
-          setInterval(makeButton, 900);
+          win.addEventListener('resize', makeButton);
+          setInterval(makeButton, 350);
         })();
         </script>
         """,
@@ -2025,7 +2127,14 @@ def kpi_card(label, value, note=None):
     clean_label = clean_kpi_label(label)
     icon_html = kpi_svg(resolve_kpi_icon(label))
     note_html = note if note else "&nbsp;"
-    value_class = "kpi-value kpi-value-long" if len(str(value)) > 23 else "kpi-value"
+    value_text = str(value)
+    label_text = clean_label.lower()
+    extra_classes = []
+    if "periode" in label_text:
+        extra_classes.append("kpi-value-period")
+    if len(value_text) > 15 or value_text.startswith("Rp"):
+        extra_classes.append("kpi-value-long")
+    value_class = "kpi-value" + (" " + " ".join(extra_classes) if extra_classes else "")
 
     st.markdown(
         f"""
@@ -2450,6 +2559,7 @@ def make_eval_chart(actual, predicted, theme):
 # ============================================================
 
 EDA_OPTIONS = [
+    "Tutup / sembunyikan visualisasi EDA",
     "Time Series Plot",
     "Moving Average 12 Bulan",
     "Boxplot per Tahun",
@@ -2878,6 +2988,20 @@ def render_eda_section(ts, theme):
             color: {theme["muted"]} !important;
             margin-top: 6px;
         }}
+        .eda-select-gap {{
+            height: 24px;
+        }}
+        .eda-closed-note {{
+            background: {theme["card"]};
+            border: 1px solid {theme["border"]};
+            border-radius: 18px;
+            padding: 16px 18px;
+            margin-top: 14px;
+            color: {theme["muted"]} !important;
+            font-size: 13.5px;
+            font-weight: 650;
+            box-shadow: 0 8px 22px {theme["shadow"]};
+        }}
         @media screen and (max-width: 900px) {{
             .eda-control-panel {{ padding: 14px; border-radius: 17px; }}
             .eda-title {{ font-size: 16px; }}
@@ -2910,12 +3034,21 @@ def render_eda_section(ts, theme):
     with metric4:
         eda_metric_card("Nilai Terendah", f"{format_angka(eda_values.min())} ton", format_periode(eda_values.idxmin()), theme)
 
+    st.markdown('<div class="eda-select-gap"></div>', unsafe_allow_html=True)
+
     eda_choice = st.selectbox(
         "Pilih tampilan EDA",
         EDA_OPTIONS,
         index=0,
         key="eda_choice"
     )
+
+    if eda_choice == "Tutup / sembunyikan visualisasi EDA":
+        st.markdown(
+            '<div class="eda-closed-note">Visualisasi EDA sedang ditutup. Pilih salah satu grafik di dropdown untuk menampilkan analisis.</div>',
+            unsafe_allow_html=True
+        )
+        return
 
     if eda_choice == "Time Series Plot":
         fig_eda = make_eda_timeseries(ts, theme)
