@@ -3785,51 +3785,68 @@ def render_eda_section(ts, theme):
             margin: 0 !important;
         }}
 
-        /* Balik ke rasa desain lama: radio tetap bulat bawaan,
-           tetapi area hover/aktif melebar penuh dari kiri sampai kanan panel. */
+        /* EDA option list clean: tanpa bulatan merah/putih, full-row highlight dari kiri sampai kanan. */
+        div[data-testid="stExpander"] div[data-testid="stExpanderDetails"] {{
+            background: #080C12 !important;
+            border-top: none !important;
+            padding: 8px 0 10px 0 !important;
+        }}
+        div[data-testid="stExpander"] [role="radiogroup"] {{
+            width: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }}
         div[data-testid="stExpander"] [role="radiogroup"] > div {{
             width: 100% !important;
             min-width: 100% !important;
             box-sizing: border-box !important;
-            border-radius: 11px !important;
+            border-radius: 0 !important;
             margin: 0 !important;
             padding: 0 !important;
             background: transparent !important;
         }}
-        div[data-testid="stExpander"] [role="radiogroup"] > div:hover {{
-            background: rgba(139, 203, 136, 0.10) !important;
-        }}
-        div[data-testid="stExpander"] [role="radiogroup"] > div:has(input:checked) {{
-            background: rgba(139, 203, 136, 0.16) !important;
-        }}
         div[data-testid="stExpander"] [role="radiogroup"] label {{
             width: 100% !important;
             min-width: 100% !important;
-            min-height: 42px !important;
+            min-height: 46px !important;
             box-sizing: border-box !important;
-            border-radius: 11px !important;
-            padding: 7px 14px !important;
+            border-radius: 0 !important;
+            padding: 10px 24px !important;
             margin: 0 !important;
             color: {theme["text"]} !important;
-            font-size: 14px !important;
-            font-weight: 750 !important;
+            font-size: 14.2px !important;
+            font-weight: 760 !important;
             display: flex !important;
             align-items: center !important;
-            gap: 10px !important;
             background: transparent !important;
+            cursor: pointer !important;
+            transition: background 0.14s ease-in-out !important;
         }}
-        div[data-testid="stExpander"] [role="radiogroup"] label > div {{
-            width: auto !important;
-            flex: 0 0 auto !important;
+        /* Hilangkan bulatan radio bawaan yang kelihatan merah/aneh. */
+        div[data-testid="stExpander"] [role="radiogroup"] label > div:first-child {{
+            display: none !important;
         }}
-        div[data-testid="stExpander"] [role="radiogroup"] label:hover,
-        div[data-testid="stExpander"] [role="radiogroup"] label[data-checked="true"],
-        div[data-testid="stExpander"] [role="radiogroup"] label:has(input:checked) {{
-            background: transparent !important;
+        div[data-testid="stExpander"] [role="radiogroup"] label:hover {{
+            background: rgba(139, 203, 136, 0.10) !important;
+        }}
+        div[data-testid="stExpander"] [role="radiogroup"] label:has(input:checked),
+        div[data-testid="stExpander"] [role="radiogroup"] > div:has(input:checked) label {{
+            background: rgba(139, 203, 136, 0.16) !important;
+            border-left: 3px solid {theme["accent"]} !important;
+            padding-left: 21px !important;
         }}
         div[data-testid="stExpander"] [role="radiogroup"] p {{
             color: {theme["text"]} !important;
-            font-weight: 750 !important;
+            font-weight: 760 !important;
+            line-height: 1.2 !important;
+            margin: 0 !important;
+        }}
+        div[data-testid="stExpander"] [role="radiogroup"] label:has(input:checked) p,
+        div[data-testid="stExpander"] [role="radiogroup"] > div:has(input:checked) p {{
+            font-weight: 900 !important;
         }}
         @media screen and (max-width: 900px) {{
             .eda-metric-card {{ padding: 11px 12px; min-height: 84px; }}
