@@ -21,7 +21,7 @@ st.set_page_config(
     page_title="Simulasi Sampah Kota Bandung",
     page_icon="♻️",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="auto"
 )
 
 FILE_NAME = "jumlah_capaian_penanganan_sampah_di_kota_bandung.xlsx"
@@ -375,12 +375,12 @@ def prepare_display_table(output):
     ]
 
     display = display.rename(columns={
-        "Prediksi Sampah (Ton)": "Prediksi<br>Sampah (Ton)",
-        "Estimasi Anggaran": "Estimasi<br>Anggaran",
-        "Estimasi Volume Sampah (m³)": "Estimasi<br>Volume (m³)",
-        "Estimasi Hari Operasional Angkut": "Hari<br>Operasional<br>Angkut",
-        "Estimasi Kebutuhan Muatan Truk": "Kebutuhan<br>Muatan<br>Truk",
-        "Muatan Truk per Hari Angkut": "Muatan<br>Truk/Hari"
+        "Prediksi Sampah (Ton)": "♻️ Prediksi Sampah (Ton)",
+        "Estimasi Anggaran": "💰 Estimasi Anggaran",
+        "Estimasi Volume Sampah (m³)": "📦 Estimasi Volume Sampah (m³)",
+        "Estimasi Hari Operasional Angkut": "📆 Estimasi Hari Operasional Angkut",
+        "Estimasi Kebutuhan Muatan Truk": "🚛 Estimasi Kebutuhan Muatan Truk",
+        "Muatan Truk per Hari Angkut": "🚚 Muatan Truk per Hari Angkut"
     })
 
     return display
@@ -539,29 +539,21 @@ def apply_theme(mode):
 
         .block-container {{
             max-width: 1420px !important;
-            padding-top: 0rem !important;
-            padding-left: 0.72rem !important;
-            padding-right: 0.72rem !important;
+            padding-top: 4rem !important;
+            padding-left: 0.95rem !important;
+            padding-right: 0.95rem !important;
             padding-bottom: 1.5rem !important;
-        }}
-
-        [data-testid="stMainBlockContainer"] {{
-            padding-top: 0rem !important;
-        }}
-
-        main .block-container {{
-            padding-top: 0rem !important;
         }}
 
         [data-testid="stSidebar"] {{
             background: {cfg["sidebar_bg"]} !important;
             border-right: 1px solid {cfg["border"]};
-            width: 226px !important;
-            min-width: 226px !important;
+            width: 304px !important;
+            min-width: 304px !important;
         }}
 
         [data-testid="stSidebarContent"] {{
-            width: 226px !important;
+            width: 304px !important;
             padding-top: 0rem !important;
         }}
 
@@ -571,25 +563,10 @@ def apply_theme(mode):
 
         [data-testid="stSidebarUserContent"] {{
             padding-top: 0rem !important;
-            margin-top: -2.55rem !important;
-            padding-left: 1.05rem !important;
-            padding-right: 1.05rem !important;
-            padding-bottom: 10px !important;
-            overflow-y: hidden !important;
-        }}
-
-        [data-testid="stSidebar"],
-        [data-testid="stSidebarContent"],
-        section[data-testid="stSidebar"],
-        [data-testid="stSidebarUserContent"] {{
-            overflow-y: hidden !important;
-            scrollbar-width: none !important;
-        }}
-
-        [data-testid="stSidebar"]::-webkit-scrollbar,
-        [data-testid="stSidebarContent"]::-webkit-scrollbar,
-        [data-testid="stSidebarUserContent"]::-webkit-scrollbar {{
-            display: none !important;
+            margin-top: -2.25rem !important;
+            padding-left: 1.25rem !important;
+            padding-right: 1.25rem !important;
+            padding-bottom: 260px !important;
         }}
 
         [data-testid="stSidebar"] * {{
@@ -604,49 +581,11 @@ def apply_theme(mode):
         }}
 
         .data-input-title {{
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            width: 100%;
-            margin-top: 18px;
-            margin-bottom: 10px;
-            padding: 9px 11px;
-            border-radius: 15px;
-            border: 1px solid {cfg["border"]};
-            background:
-                linear-gradient(145deg, rgba(255,255,255,0.030), rgba(255,255,255,0)),
-                {cfg["card"]};
-            box-shadow: 0 8px 20px {cfg["shadow"]};
-            box-sizing: border-box;
-        }}
-
-        .data-input-title-text {{
             font-size: 13px;
             font-weight: 900;
+            margin-top: 18px;
+            margin-bottom: 8px;
             color: {cfg["text"]} !important;
-            letter-spacing: 0.01em;
-            line-height: 1.1;
-        }}
-
-        .modern-section-icon {{
-            width: 26px;
-            height: 26px;
-            min-width: 26px;
-            border-radius: 9px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background:
-                linear-gradient(135deg, {cfg["accent_soft"]}, rgba(226, 177, 93, 0.11));
-            border: 1px solid {cfg["border"]};
-            color: {cfg["accent"]} !important;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
-        }}
-
-        .modern-section-icon svg {{
-            width: 16px;
-            height: 16px;
-            display: block;
         }}
 
         .data-input-note {{
@@ -660,44 +599,21 @@ def apply_theme(mode):
 
         .data-status {{
             border: 1px solid {cfg["border"]};
-            border-radius: 13px;
+            border-radius: 14px;
             background: {cfg["card"]};
             color: {cfg["text"]} !important;
-            font-size: 11.2px;
+            font-size: 12px;
             font-weight: 850;
-            line-height: 1.25;
-            padding: 8px 10px;
-            margin: 6px 0 12px 0;
-            box-shadow: 0 7px 16px {cfg["shadow"]};
+            line-height: 1.35;
+            padding: 10px 11px;
+            margin: 8px 0 18px 0;
+            box-shadow: 0 8px 18px {cfg["shadow"]};
         }}
 
         .data-status span {{
             color: {cfg["muted"]} !important;
-            font-size: 9.8px;
+            font-size: 10.8px;
             font-weight: 650;
-        }}
-
-        .modern-status-dot {{
-            width: 14px;
-            height: 14px;
-            border-radius: 5px;
-            display: inline-flex;
-            vertical-align: -2px;
-            margin-right: 6px;
-            border: 1px solid {cfg["border"]};
-            background: {cfg["accent_soft"]};
-            position: relative;
-        }}
-
-        .modern-status-dot::after {{
-            content: "";
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: {cfg["accent"]};
-            position: absolute;
-            left: 4px;
-            top: 4px;
         }}
 
         .data-status.success {{
@@ -706,20 +622,19 @@ def apply_theme(mode):
         }}
 
         [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] {{
-            gap: 0.42rem !important;
+            gap: 0.55rem !important;
         }}
 
         [data-testid="stSidebar"] .stButton > button {{
             width: 100% !important;
-            height: 34px !important;
-            min-height: 34px !important;
-            border-radius: 12px !important;
+            height: 42px !important;
+            border-radius: 14px !important;
             border: 1px solid {cfg["border"]} !important;
             background: {cfg["card"]} !important;
             color: {cfg["text"]} !important;
             font-weight: 850 !important;
-            font-size: 12px !important;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.08) !important;
+            font-size: 13px !important;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.08) !important;
             transition: all 0.16s ease-in-out !important;
             cursor: pointer !important;
         }}
@@ -746,27 +661,27 @@ def apply_theme(mode):
         .sidebar-visual {{
             background: {cfg["sidebar_visual"]};
             border: 1px solid rgba(255,255,255,0.18);
-            border-radius: 18px;
-            padding: 10px 12px;
-            margin: 12px 0 0 0 !important;
-            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
-            position: relative !important;
-            left: auto !important;
-            bottom: auto !important;
-            width: 100% !important;
-            max-width: 100% !important;
+            border-radius: 22px;
+            padding: 17px 16px;
+            margin: 0 !important;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
+            position: fixed !important;
+            left: 20px !important;
+            bottom: 24px !important;
+            width: 264px !important;
+            max-width: 264px !important;
             box-sizing: border-box !important;
             overflow: hidden;
-            z-index: 2;
+            z-index: 20;
         }}
 
         .sidebar-visual::before {{
             content: "";
             position: absolute;
-            width: 62px;
-            height: 62px;
-            right: -18px;
-            top: -20px;
+            width: 95px;
+            height: 95px;
+            right: -25px;
+            top: -28px;
             background: rgba(255, 255, 255, 0.14);
             border-radius: 50%;
         }}
@@ -779,39 +694,8 @@ def apply_theme(mode):
             z-index: 2;
         }}
 
-        .sidebar-icons {{
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            margin-bottom: 8px;
-            position: relative;
-            z-index: 2;
-            line-height: 1;
-        }}
-
-        .sidebar-icons span {{
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px;
-            height: 30px;
-            border-radius: 11px;
-            background: rgba(255,255,255,0.15);
-            border: 1px solid rgba(255,255,255,0.22);
-            backdrop-filter: blur(8px);
-            color: white !important;
-            box-shadow: 0 10px 22px rgba(0,0,0,0.16);
-        }}
-
-        .sidebar-icons svg {{
-            width: 16px;
-            height: 16px;
-            display: block;
-            stroke: currentColor;
-        }}
-
         .sidebar-visual-title {{
-            font-size: 14.3px;
+            font-size: 18px;
             font-weight: 850;
             position: relative;
             z-index: 2;
@@ -819,23 +703,23 @@ def apply_theme(mode):
         }}
 
         .sidebar-visual-subtitle {{
-            font-size: 10.4px;
+            font-size: 12.5px;
             color: white !important;
-            margin-top: 3px;
-            line-height: 1.30;
+            margin-top: 5px;
+            line-height: 1.45;
             position: relative;
             z-index: 2;
             font-weight: 500;
         }}
 
         .team-name {{
-            margin-top: 7px;
-            padding: 6px 8px;
-            border-radius: 12px;
+            margin-top: 10px;
+            padding: 8px 10px;
+            border-radius: 14px;
             background: rgba(255, 255, 255, 0.16);
             border: 1px solid rgba(255, 255, 255, 0.24);
-            font-size: 10.4px;
-            font-weight: 760;
+            font-size: 12.5px;
+            font-weight: 750;
             position: relative;
             z-index: 2;
             color: white !important;
@@ -849,10 +733,9 @@ def apply_theme(mode):
         .hero {{
             background: {cfg["hero"]};
             color: white !important;
-            padding: 24px 31px;
+            padding: 25px 31px;
             border-radius: 24px;
-            margin-top: -14px !important;
-            margin-bottom: 24px;
+            margin-bottom: 26px;
             box-shadow: 0 18px 42px rgba(31, 41, 51, 0.18);
         }}
 
@@ -897,33 +780,13 @@ def apply_theme(mode):
         }}
 
         .info-card {{
-            background:
-                linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0)),
-                {cfg["card"]};
+            background: {cfg["card"]};
             border: 1px solid {cfg["border"]};
-            border-radius: 22px;
-            padding: 22px 24px;
-            margin-bottom: 22px;
+            border-radius: 20px;
+            padding: 19px 22px;
+            margin-bottom: 20px;
             min-height: auto;
-            box-shadow: 0 12px 30px {cfg["shadow"]};
-            position: relative;
-            overflow: hidden;
-        }}
-
-        .info-card::before {{
-            content: "";
-            position: absolute;
-            inset: 0;
-            border-radius: 22px;
-            background:
-                radial-gradient(circle at 6% 12%, {cfg["accent_soft"]}, transparent 32%),
-                radial-gradient(circle at 96% 8%, rgba(226, 177, 93, 0.09), transparent 30%);
-            pointer-events: none;
-        }}
-
-        .info-card > * {{
-            position: relative;
-            z-index: 2;
+            box-shadow: 0 8px 26px {cfg["shadow"]};
         }}
 
         .text-muted {{
@@ -943,18 +806,18 @@ def apply_theme(mode):
                 linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0.000)),
                 {cfg["card"]};
             border: 1px solid {cfg["border"]};
-            border-radius: 20px;
-            padding: 12px 15px 15px 15px;
-            height: 120px;
-            min-height: 120px;
-            box-shadow: 0 10px 26px {cfg["shadow"]};
+            border-radius: 22px;
+            padding: 15px 22px 21px 22px;
+            height: 140px;
+            min-height: 140px;
+            box-shadow: 0 12px 30px {cfg["shadow"]};
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: stretch;
-            gap: 5px;
-            transform: translateY(-1px);
-            margin-bottom: 14px;
+            gap: 6px;
+            transform: translateY(-2px);
+            margin-bottom: 22px;
             box-sizing: border-box;
             overflow: hidden;
             position: relative;
@@ -977,17 +840,17 @@ def apply_theme(mode):
             z-index: 2;
             display: flex;
             align-items: center;
-            gap: 9px;
-            height: 27px;
-            min-height: 27px;
+            gap: 10px;
+            height: 29px;
+            min-height: 29px;
             width: 100%;
         }}
 
         .kpi-icon {{
-            width: 26px;
-            height: 26px;
-            min-width: 26px;
-            border-radius: 9px;
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            border-radius: 10px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -999,16 +862,16 @@ def apply_theme(mode):
         }}
 
         .kpi-icon svg {{
-            width: 15.5px;
-            height: 15.5px;
+            width: 17px;
+            height: 17px;
             display: block;
         }}
 
         .kpi-label {{
             color: {cfg["muted"]} !important;
-            font-size: 12.4px;
+            font-size: 13.3px;
             font-weight: 900;
-            line-height: 1.15;
+            line-height: 1.18;
             letter-spacing: -0.1px;
             margin: 0;
             max-width: 100%;
@@ -1022,12 +885,12 @@ def apply_theme(mode):
             position: relative;
             z-index: 2;
             color: {cfg["text"]} !important;
-            font-size: clamp(18px, 1.15vw, 27px);
+            font-size: clamp(23px, 1.42vw, 31px);
             font-weight: 950;
             line-height: 1.06;
-            letter-spacing: -0.45px;
+            letter-spacing: -0.6px;
             margin: 0;
-            min-height: 28px;
+            min-height: 32px;
             display: flex;
             align-items: center;
             overflow-wrap: normal;
@@ -1036,14 +899,14 @@ def apply_theme(mode):
         }}
 
         .kpi-value-long {{
-            font-size: clamp(15px, 0.95vw, 22px);
+            font-size: clamp(18px, 1.05vw, 24px);
             line-height: 1.06;
             letter-spacing: -0.45px;
         }}
 
         .kpi-value-period {{
-            font-size: clamp(17px, 1.05vw, 24px);
-            line-height: 1.10;
+            font-size: clamp(22px, 1.30vw, 28px);
+            line-height: 1.12;
             white-space: normal;
             word-break: normal;
             overflow-wrap: normal;
@@ -1053,33 +916,15 @@ def apply_theme(mode):
             position: relative;
             z-index: 2;
             color: {cfg["muted"]} !important;
-            font-size: 10.8px;
+            font-size: 11.8px;
             font-weight: 760;
-            line-height: 1.12;
+            line-height: 1.15;
             margin: 0;
             opacity: 0.95;
             min-height: 13px;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
-        }}
-
-        body:not(.sidebar-custom-closed) .kpi-card {{
-            padding-left: 16px !important;
-            padding-right: 16px !important;
-        }}
-
-        body:not(.sidebar-custom-closed) .kpi-value {{
-            font-size: clamp(17px, 1.05vw, 25px) !important;
-        }}
-
-        body:not(.sidebar-custom-closed) .kpi-value-long {{
-            font-size: clamp(14px, 0.88vw, 20px) !important;
-        }}
-
-        body:not(.sidebar-custom-closed) .kpi-value-period {{
-            font-size: clamp(16px, 0.98vw, 22px) !important;
-            white-space: normal !important;
         }}
 
         .mobile-kpi-label-row {{
@@ -1110,76 +955,16 @@ def apply_theme(mode):
         [data-testid="stFileUploader"] section {{
             background: {cfg["card"]} !important;
             border: 1px dashed {cfg["border"]} !important;
-            border-radius: 13px !important;
-            padding: 8px !important;
-            min-height: 118px !important;
+            border-radius: 14px !important;
+            padding: 10px !important;
         }}
 
         [data-testid="stFileUploader"] section:hover {{
             border-color: {cfg["accent"]} !important;
         }}
 
-        [data-testid="stFileUploader"] section {{
-            text-align: center !important;
-        }}
-
-        [data-testid="stFileUploader"] section small,
-        [data-testid="stFileUploader"] section p,
-        [data-testid="stFileUploader"] section span {{
-            text-align: center !important;
-        }}
-
-        [data-testid="stFileUploader"] section small {{
-            display: block !important;
-            width: 100% !important;
-            margin-left: auto !important;
-            margin-right: auto !important;
-        }}
-
         [data-testid="stFileUploader"] small {{
             color: {cfg["muted"]} !important;
-        }}
-
-        [data-testid="stFileUploader"] section > div {{
-            width: 100% !important;
-        }}
-
-
-        [data-testid="stFileUploader"] section div,
-        [data-testid="stFileUploader"] section label {{
-            text-align: center !important;
-            justify-content: center !important;
-        }}
-
-        [data-testid="stFileUploader"] section [data-testid="stMarkdownContainer"] {{
-            width: 100% !important;
-            text-align: center !important;
-        }}
-
-        [data-testid="stFileUploader"] section button,
-        [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
-        [data-testid="stFileUploader"] button[kind="secondary"] {{
-            width: 100% !important;
-            min-height: 38px !important;
-            height: 38px !important;
-            border-radius: 12px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            gap: 10px !important;
-            font-weight: 850 !important;
-            font-size: 13.5px !important;
-            background: {cfg["input_btn"]} !important;
-            color: {cfg["text"]} !important;
-            border: 1px solid {cfg["border"]} !important;
-        }}
-
-        [data-testid="stFileUploader"] section button:hover,
-        [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"]:hover,
-        [data-testid="stFileUploader"] button[kind="secondary"]:hover {{
-            background: {cfg["accent_hover"]} !important;
-            color: white !important;
-            border-color: {cfg["accent_hover"]} !important;
         }}
 
         div[data-baseweb="select"] > div {{
@@ -1201,39 +986,6 @@ def apply_theme(mode):
             color: {cfg["accent"]} !important;
             fill: {cfg["accent"]} !important;
             opacity: 1 !important;
-            transition: transform 0.18s ease-in-out !important;
-            transform-origin: center !important;
-        }}
-
-        /* Dropdown EDA/select: saat opsi terbuka, chevron kanan berubah arah ke atas */
-        div[data-baseweb="select"] [aria-expanded="true"] svg,
-        div[data-baseweb="select"]:has([aria-expanded="true"]) svg {{
-            transform: rotate(180deg) !important;
-        }}
-
-        /* Hilangkan scrollbar ganda pada panel opsi select */
-        div[data-baseweb="popover"],
-        div[data-baseweb="popover"] > div,
-        div[data-baseweb="popover"] > div > div {{
-            border: none !important;
-            outline: none !important;
-            background: transparent !important;
-            box-shadow: none !important;
-        }}
-
-        div[data-baseweb="popover"] ul,
-        div[role="listbox"] {{
-            border: none !important;
-            outline: none !important;
-            scrollbar-width: none !important;
-            -ms-overflow-style: none !important;
-        }}
-
-        div[data-baseweb="popover"] ul::-webkit-scrollbar,
-        div[role="listbox"]::-webkit-scrollbar {{
-            display: none !important;
-            width: 0 !important;
-            height: 0 !important;
         }}
 
         [data-testid="stNumberInput"] {{
@@ -1321,79 +1073,25 @@ def apply_theme(mode):
             transform: translateX(2px);
         }}
 
-
-        [data-testid="stSidebar"] [data-testid="stFileUploader"] label p {{
-            font-size: 16px !important;
-            line-height: 1.25 !important;
-            margin-bottom: 6px !important;
-            letter-spacing: 0.01em !important;
-        }}
-
-        [data-testid="stSidebar"] [data-testid="stFileUploader"] small,
-        [data-testid="stSidebar"] [data-testid="stFileUploader"] section small {{
-            font-size: 11px !important;
-            line-height: 1.25 !important;
-            margin-top: 2px !important;
-        }}
-
-        [data-testid="stSidebar"] [data-testid="stFileUploader"] {{
-            margin-bottom: 6px !important;
-        }}
-
-        [data-testid="stSidebar"] .stRadio > label p {{
-            font-size: 15px !important;
-            line-height: 1.2 !important;
-            margin-bottom: 4px !important;
-        }}
-
-        [data-testid="stSidebar"] [role="radiogroup"] {{
-            gap: 2px !important;
-        }}
-
-        [data-testid="stSidebar"] [role="radiogroup"] label {{
-            min-height: 34px !important;
-            padding-top: 3px !important;
-            padding-bottom: 3px !important;
-        }}
-
-        [data-testid="stSidebar"] [role="radiogroup"] label p {{
-            font-size: 13.2px !important;
-            line-height: 1.2 !important;
-        }}
-
-        
-        [data-testid="stSidebar"] .theme-label {{
-            font-size: 14px !important;
-            margin-bottom: 5px !important;
-        }}
-
-        [data-testid="stSidebar"] hr {{
-            margin: 8px 0 !important;
-        }}
-
-        [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] p {{
-            margin-bottom: 0.35rem !important;
-        }}
-
         .custom-table-wrapper {{
             width: 100%;
-            overflow-x: hidden !important;
+            overflow-x: auto;
             border: none !important;
             border-radius: 18px;
             background: transparent !important;
             margin-bottom: 24px;
             box-shadow: none !important;
+            overflow: visible;
         }}
 
         table.custom-table {{
             width: 100%;
-            table-layout: fixed !important;
             border-collapse: separate;
             border-spacing: 0;
             background: transparent !important;
             color: {cfg["text"]} !important;
-            font-size: 11.2px;
-            line-height: 1.16;
+            font-size: 13px;
+            line-height: 1.2;
             margin: 0 !important;
             border: none !important;
             border-radius: 18px;
@@ -1403,26 +1101,16 @@ def apply_theme(mode):
         table.custom-table thead tr th {{
             background: {cfg["card2"]} !important;
             color: {cfg["text"]} !important;
-            font-weight: 900;
-            padding: 8px 8px;
-            height: 38px;
+            font-weight: 850;
+            padding: 11px 14px;
+            height: 42px;
             border-top: 1px solid {cfg["border"]};
             border-bottom: 1px solid {cfg["border"]};
             border-right: 1px solid {cfg["border"]};
             text-align: left;
-            white-space: normal;
-            overflow-wrap: anywhere;
-            word-break: normal;
+            white-space: nowrap;
             vertical-align: middle;
         }}
-
-        table.custom-table thead tr th:nth-child(1) {{ width: 10.5%; }}
-        table.custom-table thead tr th:nth-child(2) {{ width: 12%; }}
-        table.custom-table thead tr th:nth-child(3) {{ width: 13.5%; }}
-        table.custom-table thead tr th:nth-child(4) {{ width: 14%; }}
-        table.custom-table thead tr th:nth-child(5) {{ width: 15%; }}
-        table.custom-table thead tr th:nth-child(6) {{ width: 16%; }}
-        table.custom-table thead tr th:nth-child(7) {{ width: 14%; }}
 
         table.custom-table thead tr th:first-child {{
             border-left: 1px solid {cfg["border"]};
@@ -1437,14 +1125,12 @@ def apply_theme(mode):
         table.custom-table tbody tr th {{
             background: {cfg["card"]} !important;
             color: {cfg["text"]} !important;
-            padding: 8px 8px;
-            height: 36px;
+            padding: 11px 14px;
+            height: 42px;
             border-right: 1px solid {cfg["border"]};
             border-bottom: 1px solid {cfg["border"]};
-            font-weight: 700;
-            white-space: normal;
-            overflow-wrap: anywhere;
-            word-break: normal;
+            font-weight: 650;
+            white-space: nowrap;
             vertical-align: middle;
         }}
 
@@ -1455,9 +1141,9 @@ def apply_theme(mode):
 
         table.custom-table tbody tr:last-child td,
         table.custom-table tbody tr:last-child th {{
-            height: 36px !important;
-            padding-top: 8px !important;
-            padding-bottom: 8px !important;
+            height: 42px !important;
+            padding-top: 11px !important;
+            padding-bottom: 11px !important;
         }}
 
         table.custom-table tbody tr:last-child td:first-child,
@@ -1494,12 +1180,6 @@ def apply_theme(mode):
             display: none;
         }}
 
-
-        div[data-testid="stExpander"] [role="radiogroup"] label:hover::before,
-        div[data-testid="stExpander"] [role="radiogroup"] > div:hover label::before,
-        div[data-testid="stExpander"] [role="radiogroup"] > div:hover div + div::before {{
-            border-color: #FF4B4B !important;
-        }}
         @media screen and (max-width: 900px) {{
             .block-container {{
                 padding-top: 0.7rem !important;
@@ -1987,17 +1667,6 @@ def apply_theme(mode):
                 margin-bottom: 6px !important;
             }}
 
-            .sidebar-icons {{
-                gap: 10px !important;
-                margin-bottom: 8px !important;
-                font-size: 24px !important;
-            }}
-
-            .sidebar-icons span {{
-                width: 28px !important;
-                height: 28px !important;
-            }}
-
             .sidebar-visual-title {{
                 font-size: 15px !important;
             }}
@@ -2476,731 +2145,432 @@ def apply_theme(mode):
 theme = apply_theme(st.session_state.theme_mode)
 
 
-# ============================================================
-# CLEAN SIDEBAR FINAL — v35
-# Fix: radio bulat sempurna + bottom card lebih proporsional.
-# ============================================================
-
-st.markdown(
-    """
-    <style>
-    /* ---------- SIDEBAR FRAME ---------- */
-    [data-testid="stSidebar"],
-    [data-testid="stSidebarContent"],
-    section[data-testid="stSidebar"] {
-        width: 226px !important;
-        min-width: 226px !important;
-        max-width: 226px !important;
-        flex: 0 0 226px !important;
-        overflow-x: hidden !important;
-        overflow-y: hidden !important;
-    }
-
-    [data-testid="stSidebarUserContent"] {
-        width: 226px !important;
-        max-width: 226px !important;
-        padding-left: 15px !important;
-        padding-right: 15px !important;
-        padding-top: 0 !important;
-        padding-bottom: 205px !important;
-        margin-top: -40px !important;
-        overflow-x: hidden !important;
-        overflow-y: hidden !important;
-        box-sizing: border-box !important;
-    }
-
-    [data-testid="stSidebar"] *,
-    [data-testid="stSidebar"] *::before,
-    [data-testid="stSidebar"] *::after {
-        box-sizing: border-box !important;
-    }
-
-    [data-testid="stSidebar"] .element-container {
-        width: 196px !important;
-        max-width: 196px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        margin-bottom: 3px !important;
-    }
-
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
-        gap: 0 !important;
-    }
-
-    [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] p {
-        margin: 0 0 4px 0 !important;
-    }
-
-    /* ---------- TOGGLE BUTTON ---------- */
-    #custom-sidebar-toggle-v35 {
-        left: 184px !important;
-        top: 4px !important;
-        width: 32px !important;
-        height: 29px !important;
-        border-radius: 11px !important;
-        z-index: 2147483647 !important;
-    }
-
-    body.sidebar-custom-closed #custom-sidebar-toggle-v35 {
-        left: 2px !important;
-    }
-
-    /* ---------- PILIH TAMPILAN ---------- */
-    [data-testid="stSidebar"] .theme-label {
-        width: 196px !important;
-        max-width: 196px !important;
-        margin: 0 auto 6px auto !important;
-        font-size: 11.8px !important;
-        line-height: 1.1 !important;
-        font-weight: 850 !important;
-        white-space: nowrap !important;
-    }
-
-    [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] {
-        width: 196px !important;
-        max-width: 196px !important;
-        min-width: 196px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        margin-bottom: 10px !important;
-        gap: 6px !important;
-        display: flex !important;
-        flex-wrap: nowrap !important;
-        overflow: hidden !important;
-    }
-
-    [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] [data-testid="column"] {
-        width: 95px !important;
-        min-width: 95px !important;
-        max-width: 95px !important;
-        flex: 0 0 95px !important;
-        padding: 0 !important;
-    }
-
-    [data-testid="stSidebar"] .stButton > button {
-        width: 95px !important;
-        max-width: 95px !important;
-        height: 30px !important;
-        min-height: 30px !important;
-        border-radius: 11px !important;
-        font-size: 10.8px !important;
-        padding: 0 !important;
-    }
-
-    /* ---------- INPUT DATA HEADER ---------- */
-    .data-input-title {
-        width: 196px !important;
-        max-width: 196px !important;
-        margin: 9px auto 6px auto !important;
-        padding: 6px 7px !important;
-        border-radius: 11px !important;
-        gap: 6px !important;
-    }
-
-    .modern-section-icon {
-        width: 19px !important;
-        height: 19px !important;
-        min-width: 19px !important;
-        border-radius: 7px !important;
-    }
-
-    .modern-section-icon svg {
-        width: 11px !important;
-        height: 11px !important;
-    }
-
-    .data-input-title-text {
-        font-size: 10.1px !important;
-        line-height: 1.05 !important;
-        white-space: nowrap !important;
-    }
-
-    /* ---------- FILE UPLOADER ---------- */
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] {
-        width: 196px !important;
-        max-width: 196px !important;
-        margin: 0 auto 4px auto !important;
-    }
-
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] > label {
-        width: 196px !important;
-        max-width: 196px !important;
-        display: block !important;
-        padding-right: 22px !important;
-        margin: 0 0 4px 0 !important;
-    }
-
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] label p {
-        font-size: 10.2px !important;
-        line-height: 1.12 !important;
-        max-width: 142px !important;
-        white-space: normal !important;
-        letter-spacing: 0 !important;
-        margin: 0 !important;
-    }
-
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] [data-testid="stTooltipIcon"] {
-        transform: scale(0.68) !important;
-        transform-origin: center !important;
-    }
-
-    [data-testid="stFileUploader"] section {
-        width: 196px !important;
-        max-width: 196px !important;
-        min-height: 74px !important;
-        padding: 6px !important;
-        border-radius: 10px !important;
-        overflow: hidden !important;
-        text-align: center !important;
-    }
-
-    [data-testid="stFileUploader"] section button,
-    [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
-    [data-testid="stFileUploader"] button[kind="secondary"] {
-        width: 100px !important;
-        min-width: 100px !important;
-        max-width: 100px !important;
-        height: 28px !important;
-        min-height: 28px !important;
-        border-radius: 9px !important;
-        font-size: 10px !important;
-        padding: 0 7px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-    }
-
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] section small,
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] section p,
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] section span {
-        font-size: 8.2px !important;
-        line-height: 1.1 !important;
-        white-space: nowrap !important;
-        text-align: center !important;
-    }
-
-    /* ---------- FORMAT TEXT ---------- */
-    [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] strong,
-    [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] b {
-        font-size: 8.8px !important;
-        line-height: 1.1 !important;
-        white-space: normal !important;
-    }
-
-    /* ---------- DATA STATUS ---------- */
-    .data-status {
-        width: 196px !important;
-        max-width: 196px !important;
-        padding: 5px 6px !important;
-        margin: 5px auto 10px auto !important;
-        border-radius: 10px !important;
-        font-size: 8.8px !important;
-        line-height: 1.08 !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-    }
-
-    .data-status span {
-        font-size: 7.6px !important;
-        line-height: 1.05 !important;
-        white-space: nowrap !important;
-    }
-
-    .modern-status-dot {
-        width: 10px !important;
-        height: 10px !important;
-        min-width: 10px !important;
-        border-radius: 999px !important;
-        margin-right: 4px !important;
-        vertical-align: -1px !important;
-        aspect-ratio: 1 / 1 !important;
-    }
-
-    .modern-status-dot::after {
-        width: 3.6px !important;
-        height: 3.6px !important;
-        border-radius: 999px !important;
-        left: 3px !important;
-        top: 3px !important;
-    }
-
-    /* ---------- RADIO MENU: BULAT SEMPURNA + SEJAJAR ---------- */
-    [data-testid="stSidebar"] .stRadio > label {
-        width: 196px !important;
-        max-width: 196px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-    }
-
-    [data-testid="stSidebar"] .stRadio > label p {
-        font-size: 10.8px !important;
-        line-height: 1.05 !important;
-        margin: 0 0 4px 0 !important;
-        white-space: nowrap !important;
-    }
-
-    [data-testid="stSidebar"] [role="radiogroup"] {
-        width: 196px !important;
-        max-width: 196px !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        gap: 1px !important;
-    }
-
-    [data-testid="stSidebar"] [role="radiogroup"] label {
-        width: 196px !important;
-        max-width: 196px !important;
-        height: 26px !important;
-        min-height: 26px !important;
-        padding: 0 5px !important;
-        margin: 0 !important;
-        border-radius: 9px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: flex-start !important;
-        gap: 7px !important;
-    }
-
-    [data-testid="stSidebar"] [role="radiogroup"] label > div:first-child {
-        transform: none !important;
-        width: 13px !important;
-        min-width: 13px !important;
-        max-width: 13px !important;
-        height: 13px !important;
-        min-height: 13px !important;
-        max-height: 13px !important;
-        aspect-ratio: 1 / 1 !important;
-        margin: 0 2px 0 0 !important;
-        padding: 0 !important;
-        border-radius: 999px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        overflow: visible !important;
-    }
-
-    [data-testid="stSidebar"] [role="radiogroup"] label > div:first-child * {
-        width: 13px !important;
-        min-width: 13px !important;
-        max-width: 13px !important;
-        height: 13px !important;
-        min-height: 13px !important;
-        max-height: 13px !important;
-        aspect-ratio: 1 / 1 !important;
-        border-radius: 999px !important;
-    }
-
-    [data-testid="stSidebar"] [role="radiogroup"] label > div:last-child,
-    [data-testid="stSidebar"] [role="radiogroup"] label [data-testid="stMarkdownContainer"] {
-        height: 26px !important;
-        display: flex !important;
-        align-items: center !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-
-    [data-testid="stSidebar"] [role="radiogroup"] label p {
-        font-size: 9.8px !important;
-        line-height: 1 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        white-space: nowrap !important;
-    }
-
-    /* ---------- BOTTOM DASHBOARD CARD: PROPORSIONAL ---------- */
-    .sidebar-visual {
-        position: fixed !important;
-        left: 15px !important;
-        bottom: 10px !important;
-        width: 196px !important;
-        max-width: 196px !important;
-        min-height: 165px !important;
-        max-height: 178px !important;
-        border-radius: 15px !important;
-        padding: 9px 10px !important;
-        margin: 0 !important;
-        overflow: hidden !important;
-        z-index: 20 !important;
-    }
-
-    .sidebar-visual::before {
-        width: 48px !important;
-        height: 48px !important;
-        right: -15px !important;
-        top: -17px !important;
-    }
-
-    .sidebar-icons {
-        gap: 6px !important;
-        margin-bottom: 8px !important;
-    }
-
-    .sidebar-icons span {
-        width: 25px !important;
-        height: 25px !important;
-        border-radius: 9px !important;
-    }
-
-    .sidebar-icons svg {
-        width: 13px !important;
-        height: 13px !important;
-    }
-
-    .sidebar-visual-title {
-        font-size: 12.4px !important;
-        line-height: 1.08 !important;
-        margin: 0 !important;
-        white-space: nowrap !important;
-    }
-
-    .sidebar-visual-subtitle {
-        font-size: 8.6px !important;
-        line-height: 1.22 !important;
-        margin-top: 5px !important;
-        max-width: 172px !important;
-    }
-
-    .team-name {
-        margin-top: 8px !important;
-        padding: 5px 6px !important;
-        min-height: 24px !important;
-        border-radius: 9px !important;
-        font-size: 8.2px !important;
-        line-height: 1.1 !important;
-        white-space: nowrap !important;
-    }
-
-    @media screen and (max-height: 760px) {
-        [data-testid="stSidebarUserContent"] {
-            padding-bottom: 168px !important;
-        }
-
-        .sidebar-visual {
-            min-height: 148px !important;
-            max-height: 158px !important;
-            padding: 7px 9px !important;
-        }
-
-        .sidebar-icons span {
-            width: 21px !important;
-            height: 21px !important;
-        }
-
-        .sidebar-visual-title {
-            font-size: 11px !important;
-        }
-
-        .sidebar-visual-subtitle {
-            font-size: 7.5px !important;
-            line-height: 1.14 !important;
-            margin-top: 4px !important;
-        }
-
-        .team-name {
-            font-size: 7.4px !important;
-            padding: 4px 5px !important;
-            margin-top: 5px !important;
-        }
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# ============================================================
-# CUSTOM SIDEBAR TOGGLE — STABLE VERSION
-# Tidak memakai tombol native Streamlit. Tombol custom selalu terlihat:
-# << untuk menutup sidebar, >> untuk membuka kembali.
-# ============================================================
-
-st.markdown(
-    """
-    <style>
-    /* Matikan tombol native Streamlit agar tidak numpuk dengan tombol custom. */
-    [data-testid="stSidebarCollapsedControl"],
-    [data-testid="collapsedControl"],
-    [data-testid="stSidebarCollapseButton"],
-    [data-testid="stSidebarCollapseButton"] button,
-    button[title="Open sidebar"],
-    button[aria-label="Open sidebar"],
-    button[title="Close sidebar"],
-    button[aria-label="Close sidebar"],
-    button[title="Collapse sidebar"],
-    button[aria-label="Collapse sidebar"],
-    button[title="Expand sidebar"],
-    button[aria-label="Expand sidebar"],
-    button[data-testid="stBaseButton-headerNoPadding"],
-    button[data-testid="baseButton-headerNoPadding"],
-    button[kind="headerNoPadding"] {
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
-    }
-
-    /* Layout normal saat sidebar terbuka. */
-    section[data-testid="stSidebar"],
-    [data-testid="stSidebar"] {
-        width: 226px !important;
-        min-width: 226px !important;
-        flex: 0 0 226px !important;
-        transform: translateX(0) !important;
-        transition: width .22s ease, min-width .22s ease, flex-basis .22s ease, transform .22s ease, opacity .16s ease !important;
-        overflow: hidden !important;
-        z-index: 999 !important;
-    }
-
-    [data-testid="stSidebarContent"] {
-        width: 226px !important;
-        min-width: 226px !important;
-        transition: opacity .12s ease !important;
-    }
-
-    [data-testid="stMain"],
-    [data-testid="stAppViewContainer"],
-    section.main,
-    .main {
-        overflow-x: hidden !important;
-        transition: margin .22s ease, padding .22s ease, width .22s ease !important;
-    }
-
-    .block-container,
-    [data-testid="stMainBlockContainer"] {
-        margin-left: auto !important;
-        margin-right: auto !important;
-        transition: max-width .22s ease, padding .22s ease, transform .22s ease !important;
-    }
-
-    /* Saat sidebar ditutup: sidebar benar-benar tidak mengambil ruang,
-       sehingga konten utama bergerak ke tengah dan tidak ketutup. */
-    body.sidebar-custom-closed section[data-testid="stSidebar"],
-    body.sidebar-custom-closed [data-testid="stSidebar"] {
-        width: 0 !important;
-        min-width: 0 !important;
-        max-width: 0 !important;
-        flex: 0 0 0 !important;
-        transform: translateX(-330px) !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
-        border-right: 0 !important;
-    }
-
-    body.sidebar-custom-closed [data-testid="stSidebarContent"],
-    body.sidebar-custom-closed [data-testid="stSidebarUserContent"] {
-        opacity: 0 !important;
-        width: 0 !important;
-        min-width: 0 !important;
-        max-width: 0 !important;
-        overflow: hidden !important;
-        pointer-events: none !important;
-    }
-
-    body.sidebar-custom-closed [data-testid="stMain"],
-    body.sidebar-custom-closed [data-testid="stAppViewContainer"],
-    body.sidebar-custom-closed section.main,
-    body.sidebar-custom-closed .main {
-        margin-left: 0 !important;
-        padding-left: 0 !important;
-        width: 100vw !important;
-        max-width: 100vw !important;
-        transform: none !important;
-    }
-
-    body.sidebar-custom-closed .block-container,
-    body.sidebar-custom-closed [data-testid="stMainBlockContainer"] {
-        width: min(1500px, calc(100vw - 90px)) !important;
-        max-width: min(1500px, calc(100vw - 90px)) !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-        transform: none !important;
-    }
-
-    /* Tombol custom: ikon panel-web kecil, lebih halus, dan tidak menabrak hero. */
-    #custom-sidebar-toggle-v35 {
-        position: fixed !important;
-        top: 5px !important;
-        left: 190px !important;
-        width: 36px !important;
-        height: 32px !important;
-        border-radius: 11px !important;
-        border: 1px solid rgba(139,203,136,.28) !important;
-        background: rgba(15,27,20,.54) !important;
-        backdrop-filter: blur(12px) !important;
-        -webkit-backdrop-filter: blur(12px) !important;
-        color: #F5F7F2 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        z-index: 2147483647 !important;
-        box-shadow: 0 10px 22px rgba(0,0,0,.18) !important;
-        cursor: pointer !important;
-        user-select: none !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        text-align: center !important;
-        transition: left .22s ease, background .15s ease, border-color .15s ease, transform .15s ease, opacity .15s ease, box-shadow .15s ease !important;
-    }
-
-    #custom-sidebar-toggle-v35 svg {
-        width: 21px !important;
-        height: 21px !important;
-        display: block !important;
-        stroke: currentColor !important;
-        fill: none !important;
-        stroke-width: 2.35 !important;
-        stroke-linecap: round !important;
-        stroke-linejoin: round !important;
-        margin: 0 !important;
-    }
-
-    #custom-sidebar-toggle-v35:hover {
-        background: rgba(47,125,82,.92) !important;
-        border-color: rgba(139,203,136,.76) !important;
-        transform: translateY(-1px) !important;
-        opacity: 1 !important;
-        box-shadow: 0 14px 28px rgba(0,0,0,.26) !important;
-    }
-
-    body.sidebar-custom-closed #custom-sidebar-toggle-v35 {
-        left: 2px !important;
-        top: 5px !important;
-        opacity: 1 !important;
-    }
-
-    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v35 {
-        opacity: .48 !important;
-    }
-
-    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v35:hover {
-        opacity: 1 !important;
-    }
-
-    [data-testid="stHeader"] {
-        background: transparent !important;
-        height: 0 !important;
-        min-height: 0 !important;
-    }
-
-    @media screen and (max-width: 900px) {
-        #custom-sidebar-toggle-v35 {
-            left: 190px !important;
-            top: 5px !important;
-        }
-        body.sidebar-custom-closed #custom-sidebar-toggle-v35 {
-            left: 2px !important;
-            top: 5px !important;
-        }
-        body.sidebar-custom-closed .block-container,
-        body.sidebar-custom-closed [data-testid="stMainBlockContainer"] {
-            width: calc(100vw - 28px) !important;
-            max-width: calc(100vw - 28px) !important;
-        }
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-
-def inject_custom_sidebar_toggle():
+def inject_sidebar_state_helper():
     components.html(
         """
         <script>
         (function() {
-            const doc = window.parent.document;
-            const STORAGE_KEY = "bandung_sidebar_custom_closed_v35";
-            const BTN_ID = "custom-sidebar-toggle-v35";
+          const doc = window.parent.document;
+          const win = window.parent;
 
-            function isClosed() {
-                return localStorage.getItem(STORAGE_KEY) === "1";
+          const BUTTON_ID = 'app-sidebar-toggle-btn';
+          const STYLE_ID = 'app-sidebar-toggle-style-v6';
+          const OLD_IDS = [
+            'custom-mobile-sidebar-button',
+            'custom-sidebar-open-button',
+            'custom-sidebar-close-button',
+            'custom-sidebar-toggle-style',
+            'app-sidebar-toggle-style-v2',
+            'app-sidebar-toggle-style-v3',
+            'app-sidebar-toggle-style-v4',
+            'app-sidebar-toggle-style-v5'
+          ];
+
+          function cleanupOldButtons() {
+            OLD_IDS.forEach((id) => {
+              const old = doc.getElementById(id);
+              if (old) old.remove();
+            });
+          }
+
+          function injectStyle() {
+            let style = doc.getElementById(STYLE_ID);
+            if (!style) {
+              style = doc.createElement('style');
+              style.id = STYLE_ID;
+              doc.head.appendChild(style);
             }
+            style.textContent = `
+              /* Native Streamlit sidebar button tetap ada untuk diklik via JS, tapi disembunyikan total secara visual */
+              [data-testid="stSidebarCollapsedControl"],
+              [data-testid="collapsedControl"],
+              [data-testid="stSidebarCollapsedControl"] button,
+              [data-testid="collapsedControl"] button,
+              button[title="Open sidebar"],
+              button[aria-label="Open sidebar"],
+              button[title="Close sidebar"],
+              button[aria-label="Close sidebar"],
+              button[title*="sidebar" i]:not(#${BUTTON_ID}),
+              button[aria-label*="sidebar" i]:not(#${BUTTON_ID}),
+              button[kind="headerNoPadding"],
+              button[data-testid="baseButton-headerNoPadding"],
+              button[data-testid="stBaseButton-headerNoPadding"],
+              button[data-testid*="header" i]:not(#${BUTTON_ID}) {
+                opacity: 0 !important;
+                visibility: hidden !important;
+                color: transparent !important;
+                background: transparent !important;
+                border: 0 !important;
+                box-shadow: none !important;
+                pointer-events: none !important;
+                width: 1px !important;
+                height: 1px !important;
+                min-width: 1px !important;
+                min-height: 1px !important;
+                max-width: 1px !important;
+                max-height: 1px !important;
+                overflow: hidden !important;
+                z-index: -1 !important;
+              }
 
-            function panelSvg(direction) {
-                const arrow = direction === "right"
-                    ? '<path d="M7.2 6.8l5.2 5.2-5.2 5.2"/><path d="M12.2 6.8l5.2 5.2-5.2 5.2"/>'
-                    : '<path d="M16.8 6.8L11.6 12l5.2 5.2"/><path d="M11.8 6.8L6.6 12l5.2 5.2"/>';
-                return '<svg viewBox="0 0 24 24" aria-hidden="true">' + arrow + '</svg>';
-            }
+              [data-testid="stSidebarCollapsedControl"] *,
+              [data-testid="collapsedControl"] *,
+              button[title*="sidebar" i]:not(#${BUTTON_ID}) *,
+              button[aria-label*="sidebar" i]:not(#${BUTTON_ID}) *,
+              button[kind="headerNoPadding"] *,
+              button[data-testid*="header" i]:not(#${BUTTON_ID}) * {
+                opacity: 0 !important;
+                visibility: hidden !important;
+              }
 
-            function setClosed(closed) {
-                localStorage.setItem(STORAGE_KEY, closed ? "1" : "0");
-                doc.body.classList.toggle("sidebar-custom-closed", closed);
-                const btn = doc.getElementById(BTN_ID);
-                if (btn) {
-                    btn.innerHTML = panelSvg(closed ? "right" : "left");
-                    btn.title = closed ? "Buka sidebar" : "Tutup sidebar";
-                    btn.setAttribute("aria-label", closed ? "Buka sidebar" : "Tutup sidebar");
+              #${BUTTON_ID} {
+                position: fixed !important;
+                top: 18px !important;
+                left: 22px !important;
+                width: 58px !important;
+                height: 46px !important;
+                min-width: 58px !important;
+                min-height: 46px !important;
+                border-radius: 16px !important;
+                border: 1px solid rgba(139,203,136,.54) !important;
+                background: rgba(18,30,23,.88) !important;
+                color: #F5F7F2 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                z-index: 2147483647 !important;
+                box-shadow: 0 12px 28px rgba(0,0,0,.24) !important;
+                cursor: pointer !important;
+                transition: opacity .15s ease, background .15s ease, border-color .15s ease, transform .15s ease, left .18s ease, width .18s ease, height .18s ease !important;
+                outline: none !important;
+                overflow: hidden !important;
+              }
+
+              #${BUTTON_ID}:hover {
+                background: rgba(47,125,82,.96) !important;
+                border-color: rgba(139,203,136,.90) !important;
+                transform: translateY(-1px) !important;
+              }
+
+              #${BUTTON_ID} svg {
+                width: 25px !important;
+                height: 25px !important;
+                display: block !important;
+                stroke: currentColor !important;
+                fill: none !important;
+                margin: 0 auto !important;
+                transform: translateX(0px) !important;
+              }
+
+              body.sidebar-is-open #${BUTTON_ID} {
+                top: 22px !important;
+                left: 248px !important;
+                width: 46px !important;
+                height: 40px !important;
+                min-width: 46px !important;
+                min-height: 40px !important;
+                border-radius: 14px !important;
+                opacity: .18 !important;
+                background: rgba(18,30,23,.44) !important;
+                border-color: rgba(139,203,136,.34) !important;
+              }
+
+              body.sidebar-is-open.sidebar-hover #${BUTTON_ID},
+              body.sidebar-is-open #${BUTTON_ID}:hover {
+                opacity: 1 !important;
+                background: rgba(47,125,82,.94) !important;
+                border-color: rgba(139,203,136,.86) !important;
+              }
+
+              body.sidebar-is-closed #${BUTTON_ID} {
+                opacity: 1 !important;
+                top: 18px !important;
+                left: 22px !important;
+                width: 58px !important;
+                height: 46px !important;
+              }
+
+              body.sidebar-is-closed [data-testid="stAppViewContainer"],
+              body.sidebar-is-closed [data-testid="stMain"],
+              body.sidebar-is-closed section.main,
+              body.sidebar-is-closed .main {
+                margin-left: 0 !important;
+                padding-left: 0 !important;
+                width: 100vw !important;
+                max-width: 100vw !important;
+                left: 0 !important;
+                right: 0 !important;
+                transform: none !important;
+              }
+
+              body.sidebar-is-closed .block-container,
+              body.sidebar-is-closed [data-testid="stMainBlockContainer"] {
+                width: min(1500px, calc(100vw - 160px)) !important;
+                max-width: min(1500px, calc(100vw - 160px)) !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                position: relative !important;
+                will-change: transform !important;
+              }
+
+              @media screen and (max-width: 900px) {
+                #${BUTTON_ID} {
+                  top: 11px !important;
+                  left: 11px !important;
+                  width: 48px !important;
+                  height: 42px !important;
+                  border-radius: 14px !important;
                 }
-            }
-
-            function removeOldButtons() {
-                ["custom-sidebar-toggle-v19", "custom-sidebar-toggle-v20", "custom-sidebar-toggle-v21", "custom-sidebar-toggle-v22", "custom-sidebar-toggle-v23", "custom-sidebar-toggle-v30", "custom-sidebar-toggle-v31", "custom-sidebar-toggle-v32", "custom-sidebar-toggle-v33", "custom-sidebar-toggle-v34", "app-sidebar-toggle-btn",
-                 "custom-mobile-sidebar-button", "custom-sidebar-open-button", "custom-sidebar-close-button"].forEach(function(id) {
-                    const old = doc.getElementById(id);
-                    if (old) old.remove();
-                });
-            }
-
-            function ensureButton() {
-                let btn = doc.getElementById(BTN_ID);
-                if (!btn) {
-                    btn = doc.createElement("button");
-                    btn.id = BTN_ID;
-                    btn.type = "button";
-                    btn.setAttribute("data-sidebar-toggle-bound", "1");
-                    btn.addEventListener("click", function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setClosed(!isClosed());
-                    }, true);
-                    doc.body.appendChild(btn);
+                body.sidebar-is-open #${BUTTON_ID} {
+                  top: 13px !important;
+                  left: 232px !important;
+                  width: 40px !important;
+                  height: 36px !important;
+                  opacity: .84 !important;
                 }
-                return btn;
+                body.sidebar-is-closed .block-container,
+                body.sidebar-is-closed [data-testid="stMainBlockContainer"] {
+                  width: calc(100vw - 22px) !important;
+                  max-width: calc(100vw - 22px) !important;
+                  padding-left: 0 !important;
+                  padding-right: 0 !important;
+                }
+              }
+            `;
+          }
+
+          function svgChevron(direction) {
+            const isLeft = direction === 'left';
+            /* viewBox 32 biar dua chevron benar-benar tengah di kotak */
+            const d1 = isLeft ? 'M15.5 8 9 16l6.5 8' : 'M16.5 8 23 16l-6.5 8';
+            const d2 = isLeft ? 'M23 8 16.5 16 23 24' : 'M9 8l6.5 8L9 24';
+            return `
+              <svg viewBox="0 0 32 32" aria-hidden="true">
+                <path d="${d1}" stroke-width="3.25" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="${d2}" stroke-width="3.25" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            `;
+          }
+
+          function getSidebar() {
+            return doc.querySelector('section[data-testid="stSidebar"], [data-testid="stSidebar"]');
+          }
+
+          function sidebarIsOpen() {
+            const sidebar = getSidebar();
+            if (!sidebar) return false;
+
+            const rect = sidebar.getBoundingClientRect();
+            const style = win.getComputedStyle(sidebar);
+            const hiddenByStyle = style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0';
+            const hasRealText = /Pilih Tampilan|Input Data|Menu Utama|Dashboard Sampah|Upload data/i.test(sidebar.innerText || '');
+            const inViewport = rect.width > 140 && rect.right > 160 && rect.left < 90;
+
+            return !hiddenByStyle && inViewport && hasRealText;
+          }
+
+          function nativeButtonByLabel(words) {
+            const candidates = Array.from(doc.querySelectorAll('button, [role="button"], [data-testid="stSidebarCollapsedControl"], [data-testid="collapsedControl"]'))
+              .filter((el) => el.id !== BUTTON_ID);
+
+            for (const el of candidates) {
+              const raw = [
+                el.getAttribute('aria-label'),
+                el.getAttribute('title'),
+                el.getAttribute('data-testid'),
+                el.textContent
+              ].filter(Boolean).join(' ').toLowerCase();
+
+              if (words.some((w) => raw.includes(w))) return el;
+            }
+            return null;
+          }
+
+          function findNativeOpenButton() {
+            return doc.querySelector('[data-testid="stSidebarCollapsedControl"] button') ||
+                   doc.querySelector('[data-testid="stSidebarCollapsedControl"]') ||
+                   doc.querySelector('[data-testid="collapsedControl"] button') ||
+                   doc.querySelector('[data-testid="collapsedControl"]') ||
+                   doc.querySelector('button[aria-label="Open sidebar"]') ||
+                   doc.querySelector('button[title="Open sidebar"]') ||
+                   nativeButtonByLabel(['open sidebar', 'expand sidebar', 'show sidebar', 'sidebarcollapsedcontrol', 'headernopadding']);
+          }
+
+          function findNativeCloseButton() {
+            return doc.querySelector('button[aria-label="Close sidebar"]') ||
+                   doc.querySelector('button[title="Close sidebar"]') ||
+                   nativeButtonByLabel(['close sidebar', 'collapse sidebar', 'hide sidebar']);
+          }
+
+          function fireClick(el) {
+            if (!el) return false;
+            try {
+              el.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, cancelable: true, view: win }));
+              el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, view: win }));
+              el.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, view: win }));
+              el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: win }));
+              return true;
+            } catch(e) {
+              try { el.click(); return true; } catch(err) { return false; }
+            }
+          }
+
+          function clickNativeToggle(open) {
+            const target = open ? findNativeCloseButton() : findNativeOpenButton();
+            if (target && fireClick(target)) {
+              setTimeout(syncState, 120);
+              setTimeout(syncState, 420);
+              setTimeout(syncState, 900);
+              return;
             }
 
-            removeOldButtons();
-            ensureButton();
-            setClosed(isClosed());
+            const all = Array.from(doc.querySelectorAll('button, [role="button"], [data-testid="stSidebarCollapsedControl"], [data-testid="collapsedControl"]'))
+              .filter((el) => el.id !== BUTTON_ID);
+            const fallback = all.find((el) => {
+              const raw = [el.getAttribute('aria-label'), el.getAttribute('title'), el.getAttribute('data-testid')]
+                .filter(Boolean).join(' ').toLowerCase();
+              return raw.includes('sidebar') || raw.includes('headernopadding') || raw.includes('collapsedcontrol');
+            });
+            if (fallback) {
+              fireClick(fallback);
+              setTimeout(syncState, 120);
+              setTimeout(syncState, 420);
+              setTimeout(syncState, 900);
+            }
+          }
 
-            // Event delegation cadangan supaya klik tetap jalan walaupun DOM Streamlit rerender.
-            doc.addEventListener("click", function(e) {
-                const btn = e.target.closest && e.target.closest("#" + BTN_ID);
-                if (!btn) return;
+          function getMainContainer() {
+            return doc.querySelector('[data-testid="stMain"], section.main, .main');
+          }
+
+          function getBlockContainer() {
+            return doc.querySelector('.block-container, [data-testid="stMainBlockContainer"]');
+          }
+
+          function centerClosedContent(block) {
+            if (!block) return;
+            block.style.setProperty('transform', 'translateX(0px)', 'important');
+            block.style.setProperty('position', 'relative', 'important');
+
+            win.requestAnimationFrame(function() {
+              const rect = block.getBoundingClientRect();
+              const desiredLeft = Math.max(28, (win.innerWidth - rect.width) / 2);
+              const delta = Math.round(desiredLeft - rect.left);
+              block.style.setProperty('transform', `translateX(${delta}px)`, 'important');
+            });
+          }
+
+          function applyContentLayout(open) {
+            const main = getMainContainer();
+            const block = getBlockContainer();
+
+            if (!main || !block) return;
+
+            if (open) {
+              main.style.removeProperty('margin-left');
+              main.style.removeProperty('padding-left');
+              main.style.removeProperty('width');
+              main.style.removeProperty('max-width');
+              main.style.removeProperty('left');
+              main.style.removeProperty('right');
+              main.style.removeProperty('transform');
+
+              block.style.removeProperty('width');
+              block.style.removeProperty('max-width');
+              block.style.removeProperty('margin-left');
+              block.style.removeProperty('margin-right');
+              block.style.removeProperty('padding-left');
+              block.style.removeProperty('padding-right');
+              block.style.removeProperty('transform');
+              block.style.removeProperty('position');
+            } else {
+              main.style.setProperty('margin-left', '0px', 'important');
+              main.style.setProperty('padding-left', '0px', 'important');
+              main.style.setProperty('left', '0px', 'important');
+              main.style.setProperty('right', '0px', 'important');
+              main.style.setProperty('transform', 'none', 'important');
+              main.style.setProperty('width', '100vw', 'important');
+              main.style.setProperty('max-width', '100vw', 'important');
+
+              block.style.setProperty('width', 'min(1500px, calc(100vw - 160px))', 'important');
+              block.style.setProperty('max-width', 'min(1500px, calc(100vw - 160px))', 'important');
+              block.style.setProperty('margin-left', 'auto', 'important');
+              block.style.setProperty('margin-right', 'auto', 'important');
+              block.style.setProperty('padding-left', '0px', 'important');
+              block.style.setProperty('padding-right', '0px', 'important');
+              centerClosedContent(block);
+              setTimeout(function() { centerClosedContent(block); }, 160);
+              setTimeout(function() { centerClosedContent(block); }, 520);
+            }
+          }
+
+          function ensureButton() {
+            let btn = doc.getElementById(BUTTON_ID);
+            if (!btn) {
+              btn = doc.createElement('button');
+              btn.id = BUTTON_ID;
+              btn.type = 'button';
+              btn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                setClosed(!isClosed());
-            }, true);
+                clickNativeToggle(sidebarIsOpen());
+              });
+              btn.addEventListener('mouseenter', function() {
+                doc.body.classList.add('sidebar-button-hover');
+              });
+              btn.addEventListener('mouseleave', function() {
+                doc.body.classList.remove('sidebar-button-hover');
+              });
+              doc.body.appendChild(btn);
+            }
+            return btn;
+          }
 
-            // Pastikan tombol tidak hilang setelah rerun Streamlit.
-            setInterval(function() {
-                removeOldButtons();
-                ensureButton();
-                setClosed(isClosed());
-            }, 700);
+          let sidebarHoverBound = false;
+          function bindSidebarHover() {
+            const sidebar = getSidebar();
+            if (!sidebar || sidebarHoverBound) return;
+            sidebarHoverBound = true;
+            sidebar.addEventListener('mouseenter', function() {
+              doc.body.classList.add('sidebar-hover');
+            });
+            sidebar.addEventListener('mouseleave', function() {
+              doc.body.classList.remove('sidebar-hover');
+            });
+          }
+
+          function syncState() {
+            cleanupOldButtons();
+            injectStyle();
+            bindSidebarHover();
+
+            const open = sidebarIsOpen();
+            doc.body.classList.toggle('sidebar-is-open', open);
+            doc.body.classList.toggle('sidebar-is-closed', !open);
+
+            const btn = ensureButton();
+            btn.setAttribute('aria-label', open ? 'Tutup sidebar' : 'Buka sidebar');
+            btn.title = open ? 'Tutup sidebar' : 'Buka sidebar';
+            btn.innerHTML = svgChevron(open ? 'left' : 'right');
+            applyContentLayout(open);
+          }
+
+          syncState();
+          win.addEventListener('resize', syncState);
+          win.addEventListener('click', function() { setTimeout(syncState, 120); }, true);
+          setInterval(syncState, 500);
         })();
         </script>
         """,
         height=0,
     )
 
+# inject_sidebar_state_helper()  # disabled: custom in-page sidebar is used instead
 
-inject_custom_sidebar_toggle()
 
 
 # UI COMPONENTS
@@ -3717,26 +3087,7 @@ def build_eda_df(ts):
     return eda_df
 
 
-def hex_to_rgba(hex_color, alpha=0.18):
-    """Ubah warna hex menjadi rgba agar grafik tidak terlihat terlalu blok/penuh."""
-    if not isinstance(hex_color, str) or not hex_color.startswith("#") or len(hex_color) != 7:
-        return f"rgba(139, 203, 136, {alpha})"
-    r = int(hex_color[1:3], 16)
-    g = int(hex_color[3:5], 16)
-    b = int(hex_color[5:7], 16)
-    return f"rgba({r}, {g}, {b}, {alpha})"
-
-
-def eda_line_color(theme):
-    return theme.get("chart_hist", theme.get("accent", "#67F0C1"))
-
-
-def eda_fill_color(theme, alpha=0.16):
-    base = theme.get("chart_hist", theme.get("accent", "#67F0C1"))
-    return hex_to_rgba(base, alpha)
-
-
-def apply_eda_layout(fig, theme, title, height=430, x_title=None, y_title="Jumlah sampah (ton)"):
+def apply_eda_layout(fig, theme, title, height=460, x_title=None, y_title="Jumlah sampah (ton)"):
     fig.update_layout(
         title=dict(
             text=f"<b>{title}</b>",
@@ -3746,13 +3097,13 @@ def apply_eda_layout(fig, theme, title, height=430, x_title=None, y_title="Jumla
         ),
         paper_bgcolor=theme["chart_bg"],
         plot_bgcolor=theme["chart_bg"],
-        margin=dict(l=54, r=24, t=72, b=52),
+        margin=dict(l=56, r=24, t=84, b=56),
         height=height,
         hovermode="x unified",
         legend=dict(
             orientation="h",
             yanchor="bottom",
-            y=1.04,
+            y=1.05,
             xanchor="right",
             x=1,
             bgcolor=theme["chart_legend_bg"],
@@ -3790,8 +3141,6 @@ def make_eda_timeseries(ts, theme):
     peak_value = ts.max()
     low_date = ts.idxmin()
     low_value = ts.min()
-    line_color = eda_line_color(theme)
-    fill_color = eda_fill_color(theme, 0.12)
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(
@@ -3799,41 +3148,50 @@ def make_eda_timeseries(ts, theme):
         y=ts.values,
         mode="lines+markers",
         name="Jumlah Sampah",
-        line=dict(color=line_color, width=3.0, shape="spline"),
-        marker=dict(size=6.4, color=theme["chart_bg"], line=dict(color=line_color, width=1.8)),
+        line=dict(color=theme["chart_hist"], width=3.2, shape="spline"),
+        marker=dict(size=6.5, color=theme["chart_hist"], line=dict(color=theme["chart_bg"], width=1.2)),
         fill="tozeroy",
-        fillcolor=fill_color,
+        fillcolor=theme["chart_hist_fill"],
         hovertemplate="<b>%{x|%b %Y}</b><br>%{y:,.0f} ton<extra></extra>"
     ))
 
-    for label, date_value, val, ax, ay in [
-        ("Tertinggi", peak_date, peak_value, 44, -38),
-        ("Terendah", low_date, low_value, -44, 38)
-    ]:
-        fig.add_annotation(
-            x=date_value,
-            y=val,
-            text=f"<b>{label}</b><br>{format_integer(val)} ton",
-            showarrow=True,
-            arrowhead=2,
-            ax=ax,
-            ay=ay,
-            font=dict(size=12, color=theme["chart_font"], family="Arial"),
-            bgcolor=theme["annotation_bg"],
-            bordercolor=theme["annotation_border"],
-            borderwidth=1,
-            borderpad=4
-        )
+    fig.add_annotation(
+        x=peak_date,
+        y=peak_value,
+        text=f"<b>Tertinggi</b><br>{format_integer(peak_value)} ton",
+        showarrow=True,
+        arrowhead=2,
+        ax=44,
+        ay=-42,
+        font=dict(size=12, color=theme["chart_font"], family="Arial"),
+        bgcolor=theme["annotation_bg"],
+        bordercolor=theme["annotation_border"],
+        borderwidth=1,
+        borderpad=4
+    )
 
-    fig = apply_eda_layout(fig, theme, "Pola Time Series Jumlah Sampah", x_title="Periode", height=430)
+    fig.add_annotation(
+        x=low_date,
+        y=low_value,
+        text=f"<b>Terendah</b><br>{format_integer(low_value)} ton",
+        showarrow=True,
+        arrowhead=2,
+        ax=-44,
+        ay=42,
+        font=dict(size=12, color=theme["chart_font"], family="Arial"),
+        bgcolor=theme["annotation_bg"],
+        bordercolor=theme["annotation_border"],
+        borderwidth=1,
+        borderpad=4
+    )
+
+    fig = apply_eda_layout(fig, theme, "Pola Time Series Jumlah Sampah", x_title="Periode")
     fig.update_xaxes(tickformat="%Y")
     return fig
 
 
 def make_eda_moving_average(ts, theme):
     rolling_mean = ts.rolling(window=12).mean()
-    line_color = eda_line_color(theme)
-    soft_color = eda_fill_color(theme, 0.34)
 
     fig = go.Figure()
     fig.add_trace(go.Scatter(
@@ -3841,8 +3199,9 @@ def make_eda_moving_average(ts, theme):
         y=ts.values,
         mode="lines+markers",
         name="Aktual",
-        line=dict(color=soft_color, width=2.2),
-        marker=dict(size=5, color=theme["chart_bg"], line=dict(color=line_color, width=1.3)),
+        line=dict(color=theme["chart_hist"], width=2.3),
+        marker=dict(size=5, color=theme["chart_hist"], line=dict(color=theme["chart_bg"], width=1)),
+        opacity=0.72,
         hovertemplate="<b>%{x|%b %Y}</b><br>Aktual: %{y:,.0f} ton<extra></extra>"
     ))
     fig.add_trace(go.Scatter(
@@ -3850,19 +3209,17 @@ def make_eda_moving_average(ts, theme):
         y=rolling_mean.values,
         mode="lines",
         name="Moving Average 12 Bulan",
-        line=dict(color=line_color, width=3.8, shape="spline"),
+        line=dict(color=theme["chart_pred"], width=4.2, shape="spline"),
         hovertemplate="<b>%{x|%b %Y}</b><br>MA 12 bulan: %{y:,.0f} ton<extra></extra>"
     ))
 
-    fig = apply_eda_layout(fig, theme, "Moving Average Jumlah Sampah", x_title="Periode", height=430)
+    fig = apply_eda_layout(fig, theme, "Moving Average Jumlah Sampah", x_title="Periode")
     fig.update_xaxes(tickformat="%Y")
     return fig
 
 
 def make_eda_boxplot_year(ts, theme):
     eda_df = build_eda_df(ts)
-    line_color = eda_line_color(theme)
-    fill_color = eda_fill_color(theme, 0.18)
     fig = go.Figure()
 
     for year, group in eda_df.groupby("tahun"):
@@ -3870,13 +3227,13 @@ def make_eda_boxplot_year(ts, theme):
             y=group["jumlah_sampah"],
             name=str(year),
             boxmean=True,
-            fillcolor=fill_color,
-            marker=dict(color=line_color, size=5),
-            line=dict(color=line_color, width=1.8),
+            fillcolor=theme["chart_hist_fill"],
+            marker=dict(color=theme["chart_hist"], size=5),
+            line=dict(color=theme["chart_hist"], width=1.8),
             hovertemplate=f"<b>{year}</b><br>%{{y:,.0f}} ton<extra></extra>"
         ))
 
-    fig = apply_eda_layout(fig, theme, "Sebaran Jumlah Sampah per Tahun", x_title="Tahun", height=430)
+    fig = apply_eda_layout(fig, theme, "Sebaran Jumlah Sampah per Tahun", x_title="Tahun")
     fig.update_layout(showlegend=False)
     return fig
 
@@ -3884,24 +3241,23 @@ def make_eda_boxplot_year(ts, theme):
 def make_eda_avg_year(ts, theme):
     eda_df = build_eda_df(ts)
     avg_year = eda_df.groupby("tahun", as_index=False)["jumlah_sampah"].mean()
-    line_color = eda_line_color(theme)
-    fill_color = eda_fill_color(theme, 0.12)
 
     fig = go.Figure()
     fig.add_trace(go.Bar(
         x=avg_year["tahun"].astype(str),
         y=avg_year["jumlah_sampah"],
         name="Rata-rata",
-        marker=dict(color=fill_color, line=dict(color=line_color, width=2.0)),
+        marker=dict(
+            color=theme["chart_hist"],
+            line=dict(color=theme["chart_legend_border"], width=1.2)
+        ),
         hovertemplate="<b>%{x}</b><br>Rata-rata: %{y:,.0f} ton<extra></extra>",
         text=[format_integer(v) for v in avg_year["jumlah_sampah"]],
-        textposition="outside",
-        textfont=dict(color=theme["chart_font"], size=12, family="Arial")
+        textposition="outside"
     ))
 
-    fig = apply_eda_layout(fig, theme, "Rata-rata Jumlah Sampah per Tahun", x_title="Tahun", height=410)
-    fig.update_layout(showlegend=False, bargap=0.38, uniformtext_minsize=9, uniformtext_mode="hide")
-    fig.update_yaxes(rangemode="tozero")
+    fig = apply_eda_layout(fig, theme, "Rata-rata Jumlah Sampah per Tahun", x_title="Tahun", height=430)
+    fig.update_layout(showlegend=False)
     return fig
 
 
@@ -3909,25 +3265,24 @@ def make_eda_avg_month(ts, theme):
     eda_df = build_eda_df(ts)
     avg_month = eda_df.groupby(["bulan_num", "bulan"], as_index=False)["jumlah_sampah"].mean()
     avg_month = avg_month.sort_values("bulan_num")
-    line_color = eda_line_color(theme)
-    fill_color = eda_fill_color(theme, 0.12)
 
     fig = go.Figure()
     fig.add_trace(go.Bar(
         x=avg_month["bulan"],
         y=avg_month["jumlah_sampah"],
         name="Rata-rata",
-        marker=dict(color=fill_color, line=dict(color=line_color, width=2.0)),
+        marker=dict(
+            color=theme["chart_pred"],
+            line=dict(color=theme["chart_legend_border"], width=1.2)
+        ),
         hovertemplate="<b>%{x}</b><br>Rata-rata: %{y:,.0f} ton<extra></extra>",
         text=[format_integer(v) for v in avg_month["jumlah_sampah"]],
-        textposition="outside",
-        textfont=dict(color=theme["chart_font"], size=11, family="Arial")
+        textposition="outside"
     ))
 
-    fig = apply_eda_layout(fig, theme, "Rata-rata Jumlah Sampah per Bulan", x_title="Bulan", height=420)
-    fig.update_layout(showlegend=False, bargap=0.34, uniformtext_minsize=9, uniformtext_mode="hide")
+    fig = apply_eda_layout(fig, theme, "Rata-rata Jumlah Sampah per Bulan", x_title="Bulan", height=430)
+    fig.update_layout(showlegend=False)
     fig.update_xaxes(tickangle=-35)
-    fig.update_yaxes(rangemode="tozero")
     return fig
 
 
@@ -3941,96 +3296,86 @@ def make_eda_heatmap(ts, theme):
     ).reindex(columns=list(range(1, 13)))
 
     month_labels = [BULAN_INDO[i] for i in range(1, 13)]
-    z_values = pivot.to_numpy(dtype=float)
+    text_values = pivot.applymap(lambda x: "" if pd.isna(x) else format_integer(x))
 
-    line_color = eda_line_color(theme)
-    bg_color = theme.get("chart_bg", "#111915")
-    card_color = theme.get("card", "#222A24")
-
-    # Heatmap dibuat minimal-valid supaya aman di berbagai versi Plotly/Streamlit.
-    # Hindari texttemplate/xgap/ygap/marker.colorbar yang sebelumnya rawan error.
     fig = go.Figure(data=go.Heatmap(
+        z=pivot.values,
         x=month_labels,
-        y=[str(y) for y in pivot.index],
-        z=z_values,
+        y=pivot.index.astype(str),
+        text=text_values.values,
+        texttemplate="%{text}",
+        textfont=dict(size=10, color=theme["chart_font"], family="Arial"),
         colorscale=[
-            [0.00, bg_color],
-            [0.50, card_color],
-            [1.00, line_color]
+            [0, theme["chart_bg"]],
+            [0.45, theme["chart_hist"]],
+            [1, theme["chart_pred"]]
         ],
-        hoverongaps=False,
-        showscale=True,
         colorbar=dict(
             title="Ton",
-            tickfont=dict(color=theme["chart_font"], size=11),
-            len=0.76,
-            thickness=12,
-            outlinewidth=0
+            tickfont=dict(color=theme["chart_font"]),
+            titlefont=dict(color=theme["chart_font"])
         ),
-        hovertemplate="<b>%{x} %{y}</b><br>Jumlah sampah: %{z:,.0f} ton<extra></extra>"
+        hovertemplate="<b>%{x} %{y}</b><br>%{z:,.0f} ton<extra></extra>"
     ))
 
-    # Angka di dalam cell pakai annotation, bukan texttemplate, agar kompatibel.
-    if pivot.size:
-        finite_values = z_values[np.isfinite(z_values)]
-        threshold = np.nanmedian(finite_values) if finite_values.size else np.nan
-        for row_idx, year in enumerate(pivot.index):
-            for col_idx, month in enumerate(month_labels):
-                value = z_values[row_idx, col_idx]
-                if np.isfinite(value):
-                    fig.add_annotation(
-                        x=month,
-                        y=str(year),
-                        text=format_integer(value),
-                        showarrow=False,
-                        font=dict(size=10, color=theme["chart_font"]),
-                        opacity=0.92
-                    )
-
-    fig = apply_eda_layout(fig, theme, "Heatmap Jumlah Sampah Tahun-Bulan", x_title="Bulan", y_title="Tahun", height=470)
-    fig.update_layout(showlegend=False)
-    fig.update_xaxes(tickangle=-35, showgrid=False)
-    fig.update_yaxes(autorange="reversed", showgrid=False)
+    fig = apply_eda_layout(fig, theme, "Heatmap Jumlah Sampah Tahun-Bulan", x_title="Bulan", y_title="Tahun", height=520)
+    fig.update_xaxes(tickangle=-35)
     return fig
 
 
 def make_eda_distribution(ts, theme):
-    line_color = eda_line_color(theme)
-    fill_color = eda_fill_color(theme, 0.12)
+    mean_value = ts.mean()
+    median_value = ts.median()
 
     fig = go.Figure()
     fig.add_trace(go.Histogram(
         x=ts.values,
-        nbinsx=10,
+        nbinsx=11,
         name="Frekuensi",
-        marker=dict(color=fill_color, line=dict(color=line_color, width=2.0)),
-        opacity=1,
-        hovertemplate="Rentang jumlah sampah: %{x:,.0f} ton<br>Frekuensi: %{y}<extra></extra>"
+        marker=dict(
+            color=theme["chart_hist"],
+            line=dict(color=theme["chart_legend_border"], width=1.2)
+        ),
+        opacity=0.86,
+        hovertemplate="Jumlah sampah: %{x:,.0f} ton<br>Frekuensi: %{y}<extra></extra>"
     ))
 
-    fig = apply_eda_layout(fig, theme, "Distribusi Frekuensi Jumlah Sampah", x_title="Jumlah sampah (ton)", y_title="Frekuensi", height=410)
-    fig.update_layout(showlegend=False, bargap=0.08)
-    fig.update_yaxes(rangemode="tozero")
+    fig.add_vline(x=mean_value, line_width=2, line_dash="dash", line_color=theme["chart_pred"])
+    fig.add_vline(x=median_value, line_width=2, line_dash="dot", line_color=theme["chart_hist"])
+
+    fig.add_annotation(
+        x=mean_value,
+        y=1,
+        yref="paper",
+        text=f"Mean<br>{format_integer(mean_value)} ton",
+        showarrow=False,
+        yanchor="bottom",
+        font=dict(size=12, color=theme["chart_font"]),
+        bgcolor=theme["annotation_bg"],
+        bordercolor=theme["annotation_border"],
+        borderwidth=1
+    )
+
+    fig = apply_eda_layout(fig, theme, "Distribusi Jumlah Sampah", x_title="Jumlah sampah (ton)", y_title="Frekuensi", height=430)
     return fig
+
 
 def make_eda_decomposition(ts, theme):
     decomposition = seasonal_decompose(ts, model="additive", period=12, extrapolate_trend="freq")
-    line_color = eda_line_color(theme)
-    soft_color = eda_fill_color(theme, 0.36)
 
     fig = make_subplots(
         rows=4,
         cols=1,
         shared_xaxes=True,
-        vertical_spacing=0.05,
+        vertical_spacing=0.055,
         subplot_titles=("Observed", "Trend", "Seasonal", "Residual")
     )
 
     components_data = [
-        (decomposition.observed, "Observed", line_color, "lines"),
-        (decomposition.trend, "Trend", line_color, "lines"),
-        (decomposition.seasonal, "Seasonal", soft_color, "lines"),
-        (decomposition.resid, "Residual", line_color, "markers"),
+        (decomposition.observed, "Observed", theme["chart_hist"], "lines"),
+        (decomposition.trend, "Trend", theme["chart_pred"], "lines"),
+        (decomposition.seasonal, "Seasonal", theme["chart_hist"], "lines"),
+        (decomposition.resid, "Residual", theme["chart_pred"], "markers"),
     ]
 
     for row, (series, name, color, mode) in enumerate(components_data, start=1):
@@ -4039,8 +3384,8 @@ def make_eda_decomposition(ts, theme):
             y=series.values,
             mode=mode,
             name=name,
-            line=dict(color=color, width=2.4),
-            marker=dict(size=5, color=theme["chart_bg"], line=dict(color=line_color, width=1.2)),
+            line=dict(color=color, width=2.5),
+            marker=dict(size=5, color=color, line=dict(color=theme["chart_bg"], width=0.8)),
             hovertemplate=f"<b>%{{x|%b %Y}}</b><br>{name}: %{{y:,.0f}}<extra></extra>"
         ), row=row, col=1)
 
@@ -4053,8 +3398,8 @@ def make_eda_decomposition(ts, theme):
         ),
         paper_bgcolor=theme["chart_bg"],
         plot_bgcolor=theme["chart_bg"],
-        margin=dict(l=54, r=24, t=74, b=42),
-        height=600,
+        margin=dict(l=56, r=24, t=88, b=48),
+        height=650,
         hovermode="x unified",
         showlegend=False,
         font=dict(color=theme["chart_font"], family="Arial")
@@ -4082,22 +3427,11 @@ def make_eda_decomposition(ts, theme):
     return fig
 
 
-def eda_metric_card(title, value, note, theme, icon="dashboard"):
-    icons = {
-        "calendar": '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>',
-        "average": '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18h16"/><path d="M7 15l4-8 3 6 3-4"/></svg>',
-        "up": '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-6 4 4 6-8"/><path d="M14 7h6v6"/></svg>',
-        "down": '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7l6 6 4-4 6 8"/><path d="M14 17h6v-6"/></svg>',
-        "dashboard": '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>',
-    }
-    icon_svg = icons.get(icon, icons["dashboard"])
+def eda_metric_card(title, value, note, theme):
     st.markdown(
         f"""
         <div class="eda-metric-card">
-            <div class="eda-metric-head">
-                <span class="eda-metric-icon">{icon_svg}</span>
-                <div class="eda-metric-title">{title}</div>
-            </div>
+            <div class="eda-metric-title">{title}</div>
             <div class="eda-metric-value">{value}</div>
             <div class="eda-metric-note">{note}</div>
         </div>
@@ -4110,60 +3444,41 @@ def render_eda_section(ts, theme):
     st.markdown(
         f"""
         <style>
-        .eda-metric-card {{
+        .eda-control-panel {{
             background:
-                linear-gradient(145deg, rgba(255,255,255,0.030), rgba(255,255,255,0)),
+                radial-gradient(circle at 8% 5%, {theme["accent_soft"]}, transparent 30%),
                 {theme["card"]};
             border: 1px solid {theme["border"]};
-            border-radius: 20px;
-            padding: 15px 16px;
-            min-height: 98px;
-            box-shadow: 0 10px 26px {theme["shadow"]};
-            position: relative;
-            overflow: hidden;
+            border-radius: 22px;
+            padding: 20px 22px;
+            margin: 10px 0 20px 0;
+            box-shadow: 0 10px 28px {theme["shadow"]};
         }}
-        .eda-metric-card::before {{
-            content: "";
-            position: absolute;
-            inset: 0;
-            border-radius: 20px;
-            background:
-                radial-gradient(circle at 12% 10%, {theme["accent_soft"]}, transparent 34%),
-                radial-gradient(circle at 95% 8%, rgba(226, 177, 93, 0.08), transparent 30%);
-            pointer-events: none;
+        .eda-title {{
+            font-size: 20px;
+            font-weight: 900;
+            color: {theme["text"]} !important;
+            margin-bottom: 5px;
         }}
-        .eda-metric-card > * {{
-            position: relative;
-            z-index: 2;
+        .eda-desc {{
+            font-size: 13.5px;
+            line-height: 1.6;
+            color: {theme["muted"]} !important;
+            margin-bottom: 13px;
         }}
-        .eda-metric-head {{
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            margin-bottom: 8px;
-        }}
-        .eda-metric-icon {{
-            width: 26px;
-            height: 26px;
-            min-width: 26px;
-            border-radius: 9px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: {theme["accent"]} !important;
-            background: {theme["accent_soft"]};
+        .eda-metric-card {{
+            background: linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0)), {theme["card"]};
             border: 1px solid {theme["border"]};
-        }}
-        .eda-metric-icon svg {{
-            width: 15px;
-            height: 15px;
-            display: block;
+            border-radius: 18px;
+            padding: 15px 16px;
+            min-height: 102px;
+            box-shadow: 0 8px 22px {theme["shadow"]};
         }}
         .eda-metric-title {{
             font-size: 12.5px;
             font-weight: 850;
             color: {theme["muted"]} !important;
-            margin-bottom: 0;
+            margin-bottom: 7px;
         }}
         .eda-metric-value {{
             font-size: 21px;
@@ -4178,181 +3493,119 @@ def render_eda_section(ts, theme):
             margin-top: 6px;
         }}
         .eda-select-gap {{
-            height: 20px;
+            height: 30px;
         }}
-
-        /* EDA dropdown stabil: klik judul sekali buka, klik lagi tutup */
-        div[data-testid="stExpander"] {{
-            margin-top: 10px !important;
-            margin-bottom: 18px !important;
-            border: none !important;
+        .eda-select-label {{
+            font-size: 14px;
+            font-weight: 850;
+            color: {theme["text"]} !important;
+            margin: 0 0 9px 2px;
         }}
-        div[data-testid="stExpander"] details {{
+        .eda-options-title {{
+            font-size: 12.6px;
+            font-weight: 800;
+            color: {theme["muted"]} !important;
+            margin: -12px 0 8px 2px;
+        }}
+        div[data-testid="stButton"] > button {{
+            border-radius: 15px !important;
             border: 1px solid {theme["border"]} !important;
-            border-radius: 18px !important;
             background: {theme["card"]} !important;
-            overflow: hidden !important;
-            box-shadow: none !important;
-        }}
-        div[data-testid="stExpander"] summary {{
-            min-height: 56px !important;
-            width: 100% !important;
-            box-sizing: border-box !important;
-            padding: 0 18px !important;
-            font-size: 15.5px !important;
-            font-weight: 850 !important;
             color: {theme["text"]} !important;
-            display: flex !important;
-            align-items: center !important;
-            background: linear-gradient(90deg, rgba(139, 203, 136, 0.20) 0%, rgba(139, 203, 136, 0.12) 64%, rgba(139, 203, 136, 0.08) 100%) !important;
-            transition: background 0.16s ease-in-out !important;
+            min-height: 46px !important;
+            font-weight: 800 !important;
+            transition: all .15s ease-in-out !important;
+            box-shadow: 0 7px 18px {theme["shadow"]} !important;
         }}
-        div[data-testid="stExpander"] details[open] > summary {{
-            background: linear-gradient(90deg, rgba(139, 203, 136, 0.24) 0%, rgba(139, 203, 136, 0.16) 64%, rgba(139, 203, 136, 0.10) 100%) !important;
+        div[data-testid="stButton"] > button:hover {{
+            background: {theme["accent_hover"]} !important;
+            color: white !important;
+            border-color: {theme["accent"]} !important;
+            transform: translateY(-1px);
         }}
-        div[data-testid="stExpander"] summary:hover {{
-            background: linear-gradient(90deg, rgba(139, 203, 136, 0.26) 0%, rgba(139, 203, 136, 0.17) 64%, rgba(139, 203, 136, 0.11) 100%) !important;
+        div[data-baseweb="popover"] ul,
+        div[role="listbox"] {{
+            max-height: 280px !important;
+            overflow-y: auto !important;
+            border-radius: 16px !important;
         }}
-        div[data-testid="stExpander"] summary svg {{
-            color: {theme["accent"]} !important;
-            fill: {theme["accent"]} !important;
-            width: 17px !important;
-            height: 17px !important;
-        }}
-        div[data-testid="stExpander"] div[data-testid="stExpanderDetails"] {{
-            background: #080C12 !important;
-            border-top: none !important;
-            padding: 8px 0 10px 0 !important;
-        }}
-        div[data-testid="stExpander"] [role="radiogroup"] {{
-            width: 100% !important;
-            display: flex !important;
-            flex-direction: column !important;
-            gap: 6px !important;
-            padding: 0 !important;
-            margin: 0 !important;
-        }}
-        div[data-testid="stExpander"] [role="radiogroup"] > div {{
-            width: 100% !important;
-            min-width: 100% !important;
-            box-sizing: border-box !important;
-            border-radius: 0 !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            background: transparent !important;
-            overflow: hidden !important;
-        }}
-        div[data-testid="stExpander"] [role="radiogroup"] > div:hover {{
-            background: rgba(139, 203, 136, 0.08) !important;
-        }}
-        div[data-testid="stExpander"] [role="radiogroup"] > div:hover label::before {{
-            border-color: #FF4B4B !important;
-            background: radial-gradient(circle, #FF4B4B 0 42%, rgba(255,255,255,0.96) 43% 64%, transparent 65% 100%) !important;
-            box-shadow: 0 0 0 5px rgba(255, 75, 75, 0.16) !important;
-            transform: scale(1.08);
-        }}
-        div[data-testid="stExpander"] [role="radiogroup"] > div:has(input:checked) {{
-            background: linear-gradient(90deg, rgba(139, 203, 136, 0.24) 0%, rgba(139, 203, 136, 0.16) 70%, rgba(139, 203, 136, 0.10) 100%) !important;
-            border-left: 3px solid rgba(165, 224, 161, 0.88) !important;
-        }}
-        div[data-testid="stExpander"] [role="radiogroup"] label {{
-            width: 100% !important;
-            min-width: 100% !important;
-            min-height: 50px !important;
-            box-sizing: border-box !important;
-            border-radius: 0 !important;
-            padding: 12px 24px !important;
-            margin: 0 !important;
-            color: {theme["text"]} !important;
-            font-size: 14.2px !important;
-            font-weight: 760 !important;
-            display: flex !important;
-            align-items: center !important;
-            gap: 12px !important;
-            background: transparent !important;
-            cursor: pointer !important;
-            transition: background 0.14s ease-in-out !important;
-        }}
-        /* Hilangkan radio bawaan, ganti dengan bulatan custom yang lebih clean. */
-        div[data-testid="stExpander"] [role="radiogroup"] label > div:first-child {{
-            display: none !important;
-        }}
-        div[data-testid="stExpander"] [role="radiogroup"] label::before {{
-            content: "";
-            width: 14px;
-            height: 14px;
-            min-width: 14px;
-            border-radius: 50%;
-            border: 2px solid rgba(232, 239, 228, 0.32);
-            background: rgba(255,255,255,0.03);
-            box-sizing: border-box;
-            transition: all 0.14s ease-in-out;
-        }}
-        div[data-testid="stExpander"] [role="radiogroup"] > div:has(input:checked) label::before {{
-            border-color: {theme["accent"]};
-            background: radial-gradient(circle, {theme["accent"]} 0 42%, rgba(255,255,255,0.96) 43% 64%, transparent 65% 100%);
-            box-shadow: 0 0 0 3px rgba(139, 203, 136, 0.12);
-        }}
-
-        /* Saat mouse menyentuh baris opsi mana pun, bulatan kiri berubah merah. */
-        div[data-testid="stExpander"] [role="radiogroup"] > div:hover label::before,
-        div[data-testid="stExpander"] [role="radiogroup"] label:hover::before {{
-            border-color: #FF4B4B !important;
-            background: radial-gradient(circle, #FF4B4B 0 55%, #FF4B4B 56% 100%) !important;
-            box-shadow: 0 0 0 5px rgba(255, 75, 75, 0.16) !important;
-            transform: scale(1.08) !important;
-        }}
-        div[data-testid="stExpander"] [role="radiogroup"] p {{
-            color: {theme["text"]} !important;
-            font-weight: 760 !important;
-            line-height: 1.2 !important;
-            margin: 0 !important;
-        }}
-        div[data-testid="stExpander"] [role="radiogroup"] > div:has(input:checked) p {{
-            font-weight: 900 !important;
+        .eda-closed-note {{
+            background: {theme["card"]};
+            border: 1px solid {theme["border"]};
+            border-radius: 18px;
+            padding: 16px 18px;
+            margin-top: 14px;
+            color: {theme["muted"]} !important;
+            font-size: 13.5px;
+            font-weight: 650;
+            box-shadow: 0 8px 22px {theme["shadow"]};
         }}
         @media screen and (max-width: 900px) {{
+            .eda-control-panel {{ padding: 14px; border-radius: 17px; }}
+            .eda-title {{ font-size: 16px; }}
+            .eda-desc {{ font-size: 11.8px; }}
             .eda-metric-card {{ padding: 11px 12px; min-height: 84px; }}
             .eda-metric-title {{ font-size: 10.5px; }}
             .eda-metric-value {{ font-size: 14.5px; }}
             .eda-metric-note {{ font-size: 9.6px; }}
         }}
         </style>
+        <div class="eda-control-panel">
+            <div class="eda-title">Eksplorasi Data Interaktif</div>
+            <div class="eda-desc">
+                Pilih satu jenis EDA agar dashboard tetap ringan, fokus, dan tidak menampilkan semua grafik sekaligus.
+                Visualisasi dibuat dengan Plotly agar tampil modern, interaktif, dan menyatu dengan tema dashboard.
+            </div>
+        </div>
         """,
         unsafe_allow_html=True
     )
 
     eda_values = ts.dropna()
-    metric1, metric2, metric3, metric4 = st.columns(4, gap="small")
+    metric1, metric2, metric3, metric4 = st.columns(4, gap="large")
     with metric1:
-        eda_metric_card("Jumlah Observasi", f"{format_integer(len(eda_values))} bulan", f"{format_periode(eda_values.index.min())} - {format_periode(eda_values.index.max())}", theme, "calendar")
+        eda_metric_card("Jumlah Observasi", f"{format_integer(len(eda_values))} bulan", f"{format_periode(eda_values.index.min())} - {format_periode(eda_values.index.max())}", theme)
     with metric2:
-        eda_metric_card("Rata-rata Bulanan", f"{format_angka(eda_values.mean())} ton", "nilai tengah umum periode data", theme, "average")
+        eda_metric_card("Rata-rata Bulanan", f"{format_angka(eda_values.mean())} ton", "nilai tengah umum periode data", theme)
     with metric3:
-        eda_metric_card("Nilai Tertinggi", f"{format_angka(eda_values.max())} ton", format_periode(eda_values.idxmax()), theme, "up")
+        eda_metric_card("Nilai Tertinggi", f"{format_angka(eda_values.max())} ton", format_periode(eda_values.idxmax()), theme)
     with metric4:
-        eda_metric_card("Nilai Terendah", f"{format_angka(eda_values.min())} ton", format_periode(eda_values.idxmin()), theme, "down")
+        eda_metric_card("Nilai Terendah", f"{format_angka(eda_values.min())} ton", format_periode(eda_values.idxmin()), theme)
 
     st.markdown('<div class="eda-select-gap"></div>', unsafe_allow_html=True)
-    st.markdown('<div class="small-title">Pilih tampilan EDA</div>', unsafe_allow_html=True)
 
     if "eda_choice" not in st.session_state or st.session_state.eda_choice not in EDA_OPTIONS:
         st.session_state.eda_choice = EDA_OPTIONS[0]
 
-    current_eda_index = EDA_OPTIONS.index(st.session_state.eda_choice)
-    with st.expander(st.session_state.eda_choice, expanded=False):
-        selected_eda = st.radio(
-            "Pilih visualisasi EDA",
-            EDA_OPTIONS,
-            index=current_eda_index,
-            key="eda_choice_radio",
-            label_visibility="collapsed"
-        )
-        if selected_eda != st.session_state.eda_choice:
-            st.session_state.eda_choice = selected_eda
-            st.rerun()
+    if "eda_dropdown_open" not in st.session_state:
+        st.session_state.eda_dropdown_open = False
+
+    st.markdown('<div class="eda-select-label">Pilih tampilan EDA</div>', unsafe_allow_html=True)
+    arrow_icon = "⌃" if st.session_state.eda_dropdown_open else "⌄"
+    spacer = "\u00A0" * 38
+    if st.button(
+        f"{st.session_state.eda_choice}{spacer}{arrow_icon}",
+        key="eda_dropdown_toggle",
+        use_container_width=True
+    ):
+        st.session_state.eda_dropdown_open = not st.session_state.eda_dropdown_open
+        st.rerun()
+
+    if st.session_state.eda_dropdown_open:
+        st.markdown('<div class="eda-options-title">Pilih salah satu visualisasi</div>', unsafe_allow_html=True)
+        for idx, option in enumerate(EDA_OPTIONS):
+            selected_mark = "✓ " if option == st.session_state.eda_choice else ""
+            if st.button(
+                f"{selected_mark}{option}",
+                key=f"eda_option_{idx}",
+                use_container_width=True
+            ):
+                st.session_state.eda_choice = option
+                st.session_state.eda_dropdown_open = False
+                st.rerun()
 
     eda_choice = st.session_state.eda_choice
+
 
     if eda_choice == "Time Series Plot":
         fig_eda = make_eda_timeseries(ts, theme)
@@ -4392,9 +3645,9 @@ def render_eda_section(ts, theme):
     elif eda_choice == "Heatmap Tahun-Bulan":
         fig_eda = make_eda_heatmap(ts, theme)
         insight_items = [
-            "Heatmap menunjukkan pola jumlah sampah berdasarkan kombinasi tahun dan bulan.",
-            "Warna yang lebih pekat menandakan jumlah sampah yang lebih tinggi pada periode tersebut.",
-            "Visual ini membantu menemukan bulan dengan lonjakan, penurunan, atau pola tidak biasa."
+            "Heatmap memperlihatkan intensitas jumlah sampah berdasarkan kombinasi tahun dan bulan.",
+            "Warna yang lebih kuat menunjukkan nilai jumlah sampah yang lebih tinggi.",
+            "Visual ini cocok untuk mencari pola anomali, lonjakan, atau penurunan pada periode tertentu."
         ]
     elif eda_choice == "Distribusi Jumlah Sampah":
         fig_eda = make_eda_distribution(ts, theme)
@@ -4415,47 +3668,350 @@ def render_eda_section(ts, theme):
     bullet_card(f"Insight EDA - {eda_choice}", insight_items)
 
 
+
 # ============================================================
-# SIDEBAR KIRI
+# CUSTOM LAYOUT SIDEBAR + MAIN CONTENT
 # ============================================================
 
-st.sidebar.markdown('<div class="theme-label">Pilih Tampilan</div>', unsafe_allow_html=True)
+if "sidebar_open" not in st.session_state:
+    st.session_state.sidebar_open = True
 
-theme_col1, theme_col2 = st.sidebar.columns(2)
+if "uploaded_data_bytes" not in st.session_state:
+    st.session_state.uploaded_data_bytes = None
 
-with theme_col1:
-    st.button(
-        "☀️",
-        use_container_width=True,
-        on_click=set_theme,
-        args=("Terang",)
-    )
+if "uploaded_data_name" not in st.session_state:
+    st.session_state.uploaded_data_name = None
 
-with theme_col2:
-    st.button(
-        "🌙",
-        use_container_width=True,
-        on_click=set_theme,
-        args=("Gelap",)
-    )
 
-uploaded_file = st.sidebar.file_uploader(
-    "Upload data sampah terbaru",
-    type=["xlsx", "xls", "csv"],
-    help="Format minimal: kolom tahun, bulan, dan jumlah_sampah."
-)
-st.sidebar.markdown(
-    '<div class="data-input-note">Format wajib: <b>tahun</b>, <b>bulan</b>, <b>jumlah_sampah</b>.</div>',
+def toggle_sidebar():
+    st.session_state.sidebar_open = not st.session_state.sidebar_open
+
+
+st.markdown(
+    f"""
+    <style>
+    /* Matikan sidebar native Streamlit agar tidak bentrok dengan layout custom */
+    [data-testid="stSidebar"],
+    [data-testid="stSidebarCollapsedControl"],
+    [data-testid="collapsedControl"],
+    button[title="Open sidebar"],
+    button[aria-label="Open sidebar"],
+    button[title="Close sidebar"],
+    button[aria-label="Close sidebar"] {{
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }}
+
+    .block-container {{
+        max-width: 1640px !important;
+        padding-top: 1.15rem !important;
+        padding-left: 1.25rem !important;
+        padding-right: 1.25rem !important;
+    }}
+
+    .custom-sidebar-panel {{
+        min-height: calc(100vh - 34px);
+        background: {theme["sidebar_bg"]};
+        border: 1px solid {theme["border"]};
+        border-radius: 24px;
+        padding: 22px 20px 24px 20px;
+        box-shadow: 0 18px 45px rgba(0,0,0,.18);
+        position: sticky;
+        top: 18px;
+        overflow: hidden;
+    }}
+
+    .custom-sidebar-panel::before {{
+        content: "";
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        right: -70px;
+        bottom: 260px;
+        border-radius: 999px;
+        background: rgba(139,203,136,.10);
+        pointer-events: none;
+    }}
+
+    .custom-sidebar-title {{
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: .2px;
+        color: {theme["muted"]} !important;
+        text-transform: uppercase;
+        padding-top: 11px;
+    }}
+
+    .custom-sidebar-divider {{
+        height: 1px;
+        background: {theme["border"]};
+        margin: 18px 0;
+        opacity: .9;
+    }}
+
+    .custom-sidebar-label {{
+        font-size: 13px;
+        font-weight: 900;
+        color: {theme["text"]} !important;
+        margin: 14px 0 9px 0;
+    }}
+
+    .custom-sidebar-note {{
+        color: {theme["muted"]} !important;
+        font-size: 11.5px;
+        font-weight: 650;
+        line-height: 1.45;
+        margin: -4px 0 8px 0;
+    }}
+
+    .custom-data-status {{
+        border: 1px solid {theme["border"]};
+        border-radius: 16px;
+        background: {theme["card"]};
+        color: {theme["text"]} !important;
+        font-size: 12px;
+        font-weight: 850;
+        line-height: 1.38;
+        padding: 11px 12px;
+        margin: 10px 0 18px 0;
+        box-shadow: 0 8px 18px {theme["shadow"]};
+    }}
+
+    .custom-data-status.success {{
+        border-color: {theme["accent"]};
+        background: {theme["accent_soft"]};
+    }}
+
+    .custom-data-status span {{
+        color: {theme["muted"]} !important;
+        font-size: 10.8px;
+        font-weight: 650;
+    }}
+
+    .custom-sidebar-visual {{
+        background: {theme["sidebar_visual"]};
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 22px;
+        padding: 17px 16px;
+        margin-top: 22px;
+        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
+        position: relative;
+        overflow: hidden;
+    }}
+
+    .custom-sidebar-visual::before {{
+        content: "";
+        position: absolute;
+        width: 95px;
+        height: 95px;
+        right: -25px;
+        top: -28px;
+        background: rgba(255,255,255,.14);
+        border-radius: 50%;
+    }}
+
+    .custom-sidebar-emoji {{
+        font-size: 35px;
+        line-height: 1;
+        color: white !important;
+        position: relative;
+        z-index: 2;
+    }}
+
+    .custom-sidebar-visual-title {{
+        color: white !important;
+        font-size: 18px;
+        font-weight: 900;
+        margin-top: 12px;
+        position: relative;
+        z-index: 2;
+    }}
+
+    .custom-sidebar-visual-subtitle {{
+        color: white !important;
+        font-size: 12.3px;
+        line-height: 1.5;
+        margin-top: 7px;
+        position: relative;
+        z-index: 2;
+    }}
+
+    .custom-team-name {{
+        margin-top: 12px;
+        padding: 9px 10px;
+        border-radius: 16px;
+        background: rgba(255,255,255,.16);
+        border: 1px solid rgba(255,255,255,.24);
+        font-size: 12.5px;
+        font-weight: 850;
+        color: white !important;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+    }}
+
+    .custom-sidebar-rail {{
+        min-height: calc(100vh - 34px);
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding-top: 16px;
+        background: linear-gradient(180deg, rgba(31,77,54,.20), rgba(10,17,13,0));
+        border-right: 1px solid {theme["border"]};
+    }}
+
+    .custom-main-shell {{
+        width: 100%;
+        max-width: 1480px;
+        margin-left: auto;
+        margin-right: auto;
+    }}
+
+    div[data-testid="stButton"] > button {{
+        border-radius: 16px !important;
+        border: 1px solid {theme["border"]} !important;
+        background: {theme["card"]} !important;
+        color: {theme["text"]} !important;
+        min-height: 44px !important;
+        font-weight: 850 !important;
+        box-shadow: 0 8px 20px {theme["shadow"]} !important;
+        transition: all .15s ease-in-out !important;
+    }}
+
+    div[data-testid="stButton"] > button:hover {{
+        background: {theme["accent_hover"]} !important;
+        color: white !important;
+        border-color: {theme["accent"]} !important;
+        transform: translateY(-1px);
+    }}
+
+    div[role="radiogroup"] label {{
+        border-radius: 14px !important;
+        padding: 7px 9px !important;
+        transition: all .15s ease-in-out !important;
+    }}
+
+    div[role="radiogroup"] label:hover {{
+        background: {theme["accent_soft"]} !important;
+    }}
+
+    [data-testid="stFileUploader"] section {{
+        background: {theme["card"]} !important;
+        border: 1px dashed {theme["border"]} !important;
+        border-radius: 16px !important;
+        padding: 10px !important;
+    }}
+
+    @media screen and (max-width: 900px) {{
+        .block-container {{
+            padding-left: .7rem !important;
+            padding-right: .7rem !important;
+            padding-top: .65rem !important;
+        }}
+        .custom-sidebar-panel {{
+            position: relative;
+            top: 0;
+            min-height: auto;
+            margin-bottom: 14px;
+        }}
+        .custom-sidebar-rail {{
+            min-height: auto;
+            border-right: none;
+            justify-content: flex-start;
+            padding-top: 0;
+            margin-bottom: 10px;
+        }}
+        .custom-main-shell {{
+            max-width: 100%;
+        }}
+    }}
+    </style>
+    """,
     unsafe_allow_html=True
 )
 
+# Layout dibuat sendiri, bukan st.sidebar, supaya collapse/open stabil dan tidak membuat konten ke-crop.
+if st.session_state.sidebar_open:
+    side_col, main_col = st.columns([0.265, 0.735], gap="large")
+else:
+    side_col, main_col = st.columns([0.055, 0.945], gap="large")
+
+with side_col:
+    if st.session_state.sidebar_open:
+        st.markdown('<div class="custom-sidebar-panel">', unsafe_allow_html=True)
+        header_left, header_right = st.columns([0.72, 0.28])
+        with header_left:
+            st.markdown('<div class="custom-sidebar-title">Control Panel</div>', unsafe_allow_html=True)
+        with header_right:
+            st.button("≪", key="sidebar_close_button", on_click=toggle_sidebar, use_container_width=True)
+
+        st.markdown('<div class="custom-sidebar-label">Pilih Tampilan</div>', unsafe_allow_html=True)
+        theme_col1, theme_col2 = st.columns(2)
+        with theme_col1:
+            st.button("☀️", key="theme_light_button", use_container_width=True, on_click=set_theme, args=("Terang",))
+        with theme_col2:
+            st.button("🌙", key="theme_dark_button", use_container_width=True, on_click=set_theme, args=("Gelap",))
+
+        st.markdown('<div class="custom-sidebar-divider"></div>', unsafe_allow_html=True)
+        st.markdown('<div class="custom-sidebar-label">📂 Input Data</div>', unsafe_allow_html=True)
+        uploaded_file = st.file_uploader(
+            "Upload data sampah terbaru",
+            type=["xlsx", "xls", "csv"],
+            help="Format minimal: kolom tahun, bulan, dan jumlah_sampah.",
+            key="custom_uploaded_file"
+        )
+        st.markdown(
+            '<div class="custom-sidebar-note">Format wajib: <b>tahun</b>, <b>bulan</b>, <b>jumlah_sampah</b>.</div>',
+            unsafe_allow_html=True
+        )
+        status_slot = st.empty()
+
+        st.markdown('<div class="custom-sidebar-divider"></div>', unsafe_allow_html=True)
+        menu = st.radio(
+            "Menu Utama",
+            MENU_OPTIONS,
+            key="active_menu"
+        )
+
+        st.markdown(
+            """
+            <div class="custom-sidebar-visual">
+                <div class="custom-sidebar-emoji">◇</div>
+                <div class="custom-sidebar-visual-title">Dashboard Sampah</div>
+                <div class="custom-sidebar-visual-subtitle">
+                    Prediksi jumlah sampah, estimasi anggaran, volume sampah, dan kebutuhan muatan truk compactor.
+                </div>
+                <div class="custom-team-name">Kelompok 5 Capstone</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        st.markdown('</div>', unsafe_allow_html=True)
+    else:
+        st.markdown('<div class="custom-sidebar-rail">', unsafe_allow_html=True)
+        st.button("≫", key="sidebar_open_button", on_click=toggle_sidebar, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        uploaded_file = None
+        status_slot = None
+        menu = st.session_state.active_menu
+
+# Simpan upload terakhir agar data tetap aktif walaupun sidebar ditutup.
+if uploaded_file is not None:
+    st.session_state.uploaded_data_bytes = uploaded_file.getvalue()
+    st.session_state.uploaded_data_name = uploaded_file.name
+
 try:
-    uploaded_bytes = uploaded_file.getvalue() if uploaded_file is not None else None
-    uploaded_name = uploaded_file.name if uploaded_file is not None else None
+    uploaded_bytes = st.session_state.uploaded_data_bytes
+    uploaded_name = st.session_state.uploaded_data_name
     df_raw, df, ts, source_data_name, source_data_type = load_data(uploaded_bytes, uploaded_name)
 except Exception as error:
-    if uploaded_file is not None:
-        st.sidebar.error(f"File upload tidak valid: {error}")
+    if st.session_state.uploaded_data_bytes is not None:
+        if status_slot is not None:
+            status_slot.error(f"File upload tidak valid: {error}")
+        st.session_state.uploaded_data_bytes = None
+        st.session_state.uploaded_data_name = None
         df_raw, df, ts, source_data_name, source_data_type = load_data()
     else:
         st.error(f"Data tidak dapat dimuat: {error}")
@@ -4466,247 +4022,224 @@ kota = safe_unique_text(df_raw, "bps_nama_kabupaten_kota")
 satuan = safe_unique_text(df_raw, "satuan", default="Ton")
 periode_data = f"{format_periode(ts.index.min())} - {format_periode(ts.index.max())}"
 
-if source_data_type == "upload":
-    st.sidebar.markdown(
-        f'<div class="data-status success"><span class="modern-status-dot success-dot"></span>Data upload aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
-        unsafe_allow_html=True
-    )
-else:
-    st.sidebar.markdown(
-        f'<div class="data-status info"><span class="modern-status-dot info-dot"></span>Data bawaan aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
-        unsafe_allow_html=True
-    )
+if status_slot is not None:
+    if source_data_type == "upload":
+        status_slot.markdown(
+            f'<div class="custom-data-status success">✅ Data upload aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
+            unsafe_allow_html=True
+        )
+    else:
+        status_slot.markdown(
+            f'<div class="custom-data-status">ℹ️ Data bawaan aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
+            unsafe_allow_html=True
+        )
 
-menu = st.sidebar.radio(
-    "Menu Utama",
-    MENU_OPTIONS,
-    key="active_menu"
-)
+with main_col:
+    st.markdown('<div class="custom-main-shell">', unsafe_allow_html=True)
+    # ============================================================
+    # HERO
+    # ============================================================
 
-st.sidebar.markdown(
-    """
-    <div class="sidebar-visual">
-        <div class="sidebar-icons">
-            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v3l4-5-4-5v3H7a5 5 0 0 0-4.6 3"/><path d="M17 17H7v-3l-4 5 4 5v-3h10a5 5 0 0 0 4.6-3"/></svg></span>
-            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M6 7l1 13h10l1-13"/><path d="M9 7V4h6v3"/></svg></span>
-            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4c-7.5 1-12 4.7-13.5 10.8"/><path d="M20 4c.2 7.4-4.5 13.1-11.8 12.8"/><path d="M4 20c2.6-5.9 7.1-9.5 13-11"/></svg></span>
-        </div>
-        <div class="sidebar-visual-title">dashboard sampah</div>
-        <div class="sidebar-visual-subtitle">
-            Prediksi jumlah sampah, estimasi anggaran, volume sampah, dan kebutuhan muatan truk compactor.
-        </div>
-        <div class="team-name">
-            Kelompok 5 Capstone
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-
-# ============================================================
-# HERO
-# ============================================================
-
-st.markdown(
-    """
-    <div class="hero">
-        <div class="hero-title">Simulasi Pengelolaan Sampah Kota Bandung</div>
-        <div class="hero-subtitle">
-            Dashboard ini difokuskan untuk membantu staf DLH melakukan simulasi kebutuhan operasional
-            berdasarkan prediksi jumlah sampah bulanan.
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-
-# ============================================================
-# MENU 1
-# ============================================================
-
-if menu == "Simulasi Pengelolaan":
-    st.markdown('<div class="section-title">Simulasi Pengelolaan</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="section-desc">Isi operasional, lalu sistem akan menghitung prediksi sampah, anggaran, volume sampah, dan kebutuhan muatan truk compactor.</div>',
+        """
+        <div class="hero">
+            <div class="hero-title">Simulasi Pengelolaan Sampah Kota Bandung</div>
+            <div class="hero-subtitle">
+                Dashboard ini difokuskan untuk membantu staf DLH melakukan simulasi kebutuhan operasional
+                berdasarkan prediksi jumlah sampah bulanan.
+            </div>
+        </div>
+        """,
         unsafe_allow_html=True
     )
 
-    input1, input2, input3, input4 = st.columns(4, gap="small")
 
-    with input1:
-        forecast_steps = st.slider(
-            "Simulasi untuk berapa bulan ke depan?",
-            min_value=1,
-            max_value=24,
-            value=12,
-            step=1
+    # ============================================================
+    # MENU 1
+    # ============================================================
+
+    if menu == "Simulasi Pengelolaan":
+        st.markdown('<div class="section-title">Simulasi Pengelolaan</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="section-desc">Isi operasional, lalu sistem akan menghitung prediksi sampah, anggaran, volume sampah, dan kebutuhan muatan truk compactor.</div>',
+            unsafe_allow_html=True
         )
 
-    with input2:
-        biaya_per_ton = st.number_input(
-            "Biaya penanganan per ton",
-            min_value=0,
-            value=308482,
-            step=1000
+        input1, input2, input3, input4 = st.columns(4, gap="large")
+
+        with input1:
+            forecast_steps = st.slider(
+                "Simulasi untuk berapa bulan ke depan?",
+                min_value=1,
+                max_value=24,
+                value=12,
+                step=1
+            )
+
+        with input2:
+            biaya_per_ton = st.number_input(
+                "Biaya penanganan per ton",
+                min_value=0,
+                value=308482,
+                step=1000
+            )
+
+        with input3:
+            kapasitas_truk_compactor_m3 = st.selectbox(
+                "Kapasitas truk compactor (m³)",
+                options=[6, 12],
+                index=1
+            )
+
+        with input4:
+            hari_operasional_angkut_per_minggu = st.number_input(
+                "Hari operasional angkut per minggu",
+                min_value=1,
+                max_value=7,
+                value=4,
+                step=1
+            )
+
+        forecast, forecast_model_label, model_selection_df = make_sarima_forecast(ts, forecast_steps)
+
+        simulation_df = build_simulation_table(
+            forecast=forecast,
+            biaya_per_ton=biaya_per_ton,
+            kapasitas_truk_compactor_m3=kapasitas_truk_compactor_m3,
+            hari_operasional_angkut_per_minggu=hari_operasional_angkut_per_minggu
         )
 
-    with input3:
-        kapasitas_truk_compactor_m3 = st.selectbox(
-            "Kapasitas truk compactor (m³)",
-            options=[6, 12],
-            index=1
+        total_sampah = simulation_df["Prediksi Sampah (Ton)"].sum()
+        total_anggaran = simulation_df["Estimasi Anggaran"].sum()
+        total_volume_sampah = simulation_df["Estimasi Volume Sampah (m³)"].sum()
+        total_muatan_truk = simulation_df["Estimasi Kebutuhan Muatan Truk"].sum()
+
+        highest_row = simulation_df.loc[simulation_df["Prediksi Sampah (Ton)"].idxmax()]
+        lowest_row = simulation_df.loc[simulation_df["Prediksi Sampah (Ton)"].idxmin()]
+
+        start_period = format_periode(simulation_df["Tanggal"].min())
+        end_period = format_periode(simulation_df["Tanggal"].max())
+
+        mobile_kpi_summary([
+            {"label": "🗓️ Periode", "value": f"{start_period} - {end_period}", "note": f"{forecast_steps} bulan ke depan"},
+            {"label": "♻️ Total Sampah", "value": f"{format_angka(total_sampah)} ton"},
+            {"label": "💰 Total Anggaran", "value": format_rupiah(total_anggaran), "note": f"{format_rupiah(biaya_per_ton)} per ton"},
+            {"label": "📦 Total Volume", "value": f"{format_angka(total_volume_sampah)} m³", "note": f"densitas {format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³"},
+            {"label": "📈 Beban Tertinggi", "value": highest_row["Periode"], "note": f"{format_angka(highest_row['Prediksi Sampah (Ton)'])} ton"},
+            {"label": "📉 Beban Terendah", "value": lowest_row["Periode"], "note": f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton"},
+            {"label": "🚛 Total Muatan Truk", "value": f"{format_integer(total_muatan_truk)} muatan", "note": f"kapasitas {kapasitas_truk_compactor_m3} m³"},
+            {"label": "🚚 Muatan Maks/Hari Angkut", "value": f"{format_integer(int(simulation_df['Muatan Truk per Hari Angkut'].max()))} muatan/hari"},
+            {"label": "📆 Hari Angkut/Minggu", "value": f"{hari_operasional_angkut_per_minggu} hari/minggu", "note": "parameter jadwal angkut"},
+        ])
+
+        row1_col1, row1_col2, row1_col3, row1_col4 = st.columns(4, gap="large")
+
+        with row1_col1:
+            kpi_card("🗓️ Periode Simulasi", f"{start_period} - {end_period}", f"{forecast_steps} bulan ke depan")
+
+        with row1_col2:
+            kpi_card("♻️ Total Prediksi Sampah", f"{format_angka(total_sampah)} ton")
+
+        with row1_col3:
+            kpi_card("💰 Total Estimasi Anggaran", format_rupiah(total_anggaran), f" {format_rupiah(biaya_per_ton)} per ton")
+
+        with row1_col4:
+            kpi_card("📦 Total Estimasi Volume", f"{format_angka(total_volume_sampah)} m³", f"Densitas {format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³")
+
+        row2_col1, row2_col2, row2_col3, row2_col4 = st.columns(4, gap="large")
+
+        with row2_col1:
+            kpi_card("📈 Beban Tertinggi", highest_row["Periode"], f"{format_angka(highest_row['Prediksi Sampah (Ton)'])} ton")
+
+        with row2_col2:
+            kpi_card("📉 Beban Terendah", lowest_row["Periode"], f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton")
+
+        with row2_col3:
+            kpi_card("🚛 Total Kebutuhan Muatan Truk", f"{format_integer(total_muatan_truk)} muatan", f"Kapasitas {kapasitas_truk_compactor_m3} m³")
+
+        with row2_col4:
+            kpi_card("🚚 Muatan Maksimum per Hari Angkut", f"{format_integer(int(simulation_df['Muatan Truk per Hari Angkut'].max()))} muatan/hari", f"{hari_operasional_angkut_per_minggu} hari angkut/minggu")
+
+        fig_forecast = make_forecast_chart(ts, forecast, theme)
+        st.plotly_chart(
+            fig_forecast,
+            use_container_width=True,
+            config={"displayModeBar": False, "responsive": True}
         )
 
-    with input4:
-        hari_operasional_angkut_per_minggu = st.number_input(
-            "Hari operasional angkut per minggu",
-            min_value=1,
-            max_value=7,
-            value=4,
-            step=1
-        )
+        st.markdown('<div class="small-title table-title-mobile-tight">Tabel Simulasi Kebutuhan Operasional</div>', unsafe_allow_html=True)
+        show_table(prepare_display_table(simulation_df))
 
-    forecast, forecast_model_label, model_selection_df = make_sarima_forecast(ts, forecast_steps)
-
-    simulation_df = build_simulation_table(
-        forecast=forecast,
-        biaya_per_ton=biaya_per_ton,
-        kapasitas_truk_compactor_m3=kapasitas_truk_compactor_m3,
-        hari_operasional_angkut_per_minggu=hari_operasional_angkut_per_minggu
-    )
-
-    total_sampah = simulation_df["Prediksi Sampah (Ton)"].sum()
-    total_anggaran = simulation_df["Estimasi Anggaran"].sum()
-    total_volume_sampah = simulation_df["Estimasi Volume Sampah (m³)"].sum()
-    total_muatan_truk = simulation_df["Estimasi Kebutuhan Muatan Truk"].sum()
-
-    highest_row = simulation_df.loc[simulation_df["Prediksi Sampah (Ton)"].idxmax()]
-    lowest_row = simulation_df.loc[simulation_df["Prediksi Sampah (Ton)"].idxmin()]
-
-    start_period = format_periode(simulation_df["Tanggal"].min())
-    end_period = format_periode(simulation_df["Tanggal"].max())
-
-    mobile_kpi_summary([
-        {"label": "🗓️ Periode", "value": f"{start_period} - {end_period}", "note": f"{forecast_steps} bulan ke depan"},
-        {"label": "♻️ Total Sampah", "value": f"{format_angka(total_sampah)} ton"},
-        {"label": "💰 Total Anggaran", "value": format_rupiah(total_anggaran), "note": f"{format_rupiah(biaya_per_ton)} per ton"},
-        {"label": "📦 Total Volume", "value": f"{format_angka(total_volume_sampah)} m³", "note": f"densitas {format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³"},
-        {"label": "📈 Beban Tertinggi", "value": highest_row["Periode"], "note": f"{format_angka(highest_row['Prediksi Sampah (Ton)'])} ton"},
-        {"label": "📉 Beban Terendah", "value": lowest_row["Periode"], "note": f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton"},
-        {"label": "🚛 Total Muatan Truk", "value": f"{format_integer(total_muatan_truk)} muatan", "note": f"kapasitas {kapasitas_truk_compactor_m3} m³"},
-        {"label": "🚚 Muatan Maks/Hari Angkut", "value": f"{format_integer(int(simulation_df['Muatan Truk per Hari Angkut'].max()))} muatan/hari"},
-        {"label": "📆 Hari Angkut/Minggu", "value": f"{hari_operasional_angkut_per_minggu} hari/minggu", "note": "parameter jadwal angkut"},
-    ])
-
-    row1_col1, row1_col2, row1_col3, row1_col4 = st.columns(4, gap="small")
-
-    with row1_col1:
-        kpi_card("🗓️ Periode Simulasi", f"{start_period} - {end_period}", f"{forecast_steps} bulan ke depan")
-
-    with row1_col2:
-        kpi_card("♻️ Total Prediksi Sampah", f"{format_angka(total_sampah)} ton")
-
-    with row1_col3:
-        kpi_card("💰 Total Estimasi Anggaran", format_rupiah(total_anggaran), f" {format_rupiah(biaya_per_ton)} per ton")
-
-    with row1_col4:
-        kpi_card("📦 Total Estimasi Volume", f"{format_angka(total_volume_sampah)} m³", f"Densitas {format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³")
-
-    row2_col1, row2_col2, row2_col3, row2_col4 = st.columns(4, gap="small")
-
-    with row2_col1:
-        kpi_card("📈 Beban Tertinggi", highest_row["Periode"], f"{format_angka(highest_row['Prediksi Sampah (Ton)'])} ton")
-
-    with row2_col2:
-        kpi_card("📉 Beban Terendah", lowest_row["Periode"], f"{format_angka(lowest_row['Prediksi Sampah (Ton)'])} ton")
-
-    with row2_col3:
-        kpi_card("🚛 Total Kebutuhan Muatan Truk", f"{format_integer(total_muatan_truk)} muatan", f"Kapasitas {kapasitas_truk_compactor_m3} m³")
-
-    with row2_col4:
-        kpi_card("🚚 Muatan Maksimum per Hari Angkut", f"{format_integer(int(simulation_df['Muatan Truk per Hari Angkut'].max()))} muatan/hari", f"{hari_operasional_angkut_per_minggu} hari angkut/minggu")
-
-    fig_forecast = make_forecast_chart(ts, forecast, theme)
-    st.plotly_chart(
-        fig_forecast,
-        use_container_width=True,
-        config={"displayModeBar": False, "responsive": True}
-    )
-
-    st.markdown('<div class="small-title table-title-mobile-tight">Tabel Simulasi Kebutuhan Operasional</div>', unsafe_allow_html=True)
-    show_table(prepare_display_table(simulation_df))
-
-    bullet_card(
-        "Catatan simulasi",
-        [
-            f"Model prediksi yang digunakan adalah <b>{forecast_model_label}</b>, dipilih otomatis berdasarkan data historis terbaru.",
-            f"Asumsi biaya penanganan adalah <b>{format_rupiah(biaya_per_ton)} per ton</b>.",
-            f"Kapasitas truk compactor yang digunakan adalah <b>{kapasitas_truk_compactor_m3} m³</b> per muatan.",
-            f"Prediksi sampah dalam satuan ton dikonversi menjadi volume memakai densitas <b>{format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³</b>.",
-            f"Frekuensi hari angkut diasumsikan <b>{hari_operasional_angkut_per_minggu} hari per minggu</b>.",
-            "Kebutuhan muatan truk dan hari angkut dibulatkan ke atas agar estimasi lebih aman untuk kebutuhan lapangan.",
-            "Dashboard ini digunakan sebagai simulasi awal untuk mendukung perencanaan operasional pengelolaan sampah."
-        ]
-    )
-
-
-# ============================================================
-# MENU 2
-# ============================================================
-
-elif menu == "Ringkasan Data & Model":
-    st.markdown('<div class="section-title">Ringkasan Data & Model</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="section-desc">Halaman ini menampilkan ringkasan data, EDA interaktif, dan evaluasi model secara singkat. Pilih visualisasi EDA yang ingin dilihat agar dashboard tetap fokus dan tidak terlalu penuh.</div>',
-        unsafe_allow_html=True
-    )
-
-    eval_df, comparison_df, test_actual, test_forecast, eval_model_label, eval_model_selection_df = evaluate_sarima(ts)
-
-    left, right = st.columns(2, gap="small")
-
-    with left:
         bullet_card(
-            "Ringkasan Data",
+            "Catatan simulasi",
             [
-                f"Sumber data: <b>{source_data_name}</b>",
-                f"Wilayah: <b>{kota}</b>",
-                f"Provinsi: <b>{provinsi}</b>",
-                f"Jumlah data: <b>{len(df_raw)} baris</b>",
-                f"Periode: <b>{periode_data}</b>",
-                f"Satuan: <b>{satuan}</b>",
-                "Variabel utama: <b>jumlah_sampah</b>",
-                "Bentuk data: <b>bulanan</b>",
-                f"Missing value: <b>{int(df_raw.isnull().sum().sum())}</b>",
-                f"Data duplikat: <b>{int(df_raw.duplicated().sum())}</b>"
+                f"Model prediksi yang aktif adalah <b>{forecast_model_label}</b> dan dipilih otomatis berdasarkan data terbaru.",
+                f"Biaya penanganan yang digunakan adalah <b>{format_rupiah(biaya_per_ton)} per ton</b>.",
+                f"Kapasitas truk compactor digunakan sebesar <b>{kapasitas_truk_compactor_m3} m³</b> per muatan.",
+                f"Prediksi sampah dalam ton dikonversi menjadi volume menggunakan densitas <b>{format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³</b>.",
+                f"Hari operasional angkut digunakan sebesar <b>{hari_operasional_angkut_per_minggu} hari per minggu</b>.",
+                "Kebutuhan muatan truk dan hari operasional angkut dibulatkan ke atas agar estimasi tidak kurang dari kebutuhan lapangan.",
+                "Dashboard ini berfungsi sebagai simulasi awal untuk membantu perencanaan operasional."
             ]
         )
 
-    with right:
-        bullet_card(
-            "Ringkasan Model",
-            [
-                f"Model evaluasi terbaik yang dipilih otomatis: <b>{eval_model_label}</b>.",
-                "Sistem mencoba beberapa kandidat SARIMA, lalu memilih parameter terbaik berdasarkan nilai <b>AIC</b> terkecil.",
-                "Jika user mengunggah data terbaru, preprocessing dan pelatihan model dilakukan ulang secara otomatis berdasarkan data tersebut.",
-                "Prediksi dapat dibuat sampai <b>24 bulan ke depan</b> untuk mendukung simulasi hingga dua tahun mendatang.",
-                "Model digunakan untuk menghasilkan estimasi jumlah sampah, anggaran, volume sampah, dan kebutuhan muatan truk compactor.",
-                "Detail teori, EDA, parameter model, dan evaluasi lengkap dijelaskan pada laporan."
-            ]
+
+    # ============================================================
+    # MENU 2
+    # ============================================================
+
+    elif menu == "Ringkasan Data & Model":
+        st.markdown('<div class="section-title">Ringkasan Data & Model</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="section-desc">Halaman ini menampilkan ringkasan data, EDA interaktif, dan evaluasi model secara singkat. Pilih visualisasi EDA yang ingin dilihat agar dashboard tetap fokus dan tidak terlalu penuh.</div>',
+            unsafe_allow_html=True
         )
 
-    render_eda_section(ts, theme)
+        eval_df, comparison_df, test_actual, test_forecast, eval_model_label, eval_model_selection_df = evaluate_sarima(ts)
 
-    st.markdown('<div class="small-title">Evaluasi Model</div>', unsafe_allow_html=True)
-    show_table(prepare_eval_display(eval_df))
+        left, right = st.columns(2, gap="large")
 
-    st.markdown('<div class="small-title">Aktual vs Prediksi Data Uji</div>', unsafe_allow_html=True)
-    fig_eval = make_eval_chart(test_actual, test_forecast, theme)
-    st.plotly_chart(fig_eval, use_container_width=True, config={"displayModeBar": False, "responsive": True})
+        with left:
+            bullet_card(
+                "Ringkasan Data",
+                [
+                    f"Sumber data: <b>{source_data_name}</b>",
+                    f"Wilayah: <b>{kota}</b>",
+                    f"Provinsi: <b>{provinsi}</b>",
+                    f"Jumlah data: <b>{len(df_raw)} baris</b>",
+                    f"Periode: <b>{periode_data}</b>",
+                    f"Satuan: <b>{satuan}</b>",
+                    "Variabel utama: <b>jumlah_sampah</b>",
+                    "Bentuk data: <b>bulanan</b>",
+                    f"Missing value: <b>{int(df_raw.isnull().sum().sum())}</b>",
+                    f"Data duplikat: <b>{int(df_raw.duplicated().sum())}</b>"
+                ]
+            )
 
-    st.markdown('<div class="small-title table-title-mobile-tight">Tabel Aktual vs Prediksi</div>', unsafe_allow_html=True)
-    show_table(prepare_comparison_display(comparison_df))
+        with right:
+            bullet_card(
+                "Ringkasan Model",
+                [
+                    f"Model evaluasi terbaik yang dipilih otomatis: <b>{eval_model_label}</b>.",
+                    "Sistem mencoba beberapa kandidat SARIMA, lalu memilih parameter terbaik berdasarkan nilai <b>AIC</b> terkecil.",
+                    "Jika user mengunggah data terbaru, preprocessing dan pelatihan model dilakukan ulang secara otomatis berdasarkan data tersebut.",
+                    "Prediksi dapat dibuat sampai <b>24 bulan ke depan</b> untuk mendukung simulasi hingga dua tahun mendatang.",
+                    "Model digunakan untuk menghasilkan estimasi jumlah sampah, anggaran, volume sampah, dan kebutuhan muatan truk compactor.",
+                    "Detail teori, EDA, parameter model, dan evaluasi lengkap dijelaskan pada laporan."
+                ]
+            )
+
+        render_eda_section(ts, theme)
+
+        st.markdown('<div class="small-title">Evaluasi Model</div>', unsafe_allow_html=True)
+        show_table(prepare_eval_display(eval_df))
+
+        st.markdown('<div class="small-title">Aktual vs Prediksi Data Uji</div>', unsafe_allow_html=True)
+        fig_eval = make_eval_chart(test_actual, test_forecast, theme)
+        st.plotly_chart(fig_eval, use_container_width=True, config={"displayModeBar": False, "responsive": True})
+
+        st.markdown('<div class="small-title table-title-mobile-tight">Tabel Aktual vs Prediksi</div>', unsafe_allow_html=True)
+        show_table(prepare_comparison_display(comparison_df))
 
     
+    st.markdown('</div>', unsafe_allow_html=True)
