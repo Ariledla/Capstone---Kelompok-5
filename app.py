@@ -375,12 +375,12 @@ def prepare_display_table(output):
     ]
 
     display = display.rename(columns={
-        "Prediksi Sampah (Ton)": "♻️ Prediksi Sampah (Ton)",
-        "Estimasi Anggaran": "💰 Estimasi Anggaran",
-        "Estimasi Volume Sampah (m³)": "📦 Estimasi Volume Sampah (m³)",
-        "Estimasi Hari Operasional Angkut": "📆 Estimasi Hari Operasional Angkut",
-        "Estimasi Kebutuhan Muatan Truk": "🚛 Estimasi Kebutuhan Muatan Truk",
-        "Muatan Truk per Hari Angkut": "🚚 Muatan Truk per Hari Angkut"
+        "Prediksi Sampah (Ton)": "Prediksi<br>Sampah (Ton)",
+        "Estimasi Anggaran": "Estimasi<br>Anggaran",
+        "Estimasi Volume Sampah (m³)": "Estimasi<br>Volume (m³)",
+        "Estimasi Hari Operasional Angkut": "Hari<br>Operasional<br>Angkut",
+        "Estimasi Kebutuhan Muatan Truk": "Kebutuhan<br>Muatan<br>Truk",
+        "Muatan Truk per Hari Angkut": "Muatan<br>Truk/Hari"
     })
 
     return display
@@ -586,6 +586,27 @@ def apply_theme(mode):
             margin-top: 18px;
             margin-bottom: 8px;
             color: {cfg["text"]} !important;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }}
+
+        .modern-section-icon {{
+            width: 20px;
+            height: 20px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, {cfg["accent_soft"]}, rgba(226, 177, 93, 0.14));
+            border: 1px solid {cfg["border"]};
+            color: {cfg["accent"]} !important;
+        }}
+
+        .modern-section-icon svg {{
+            width: 13px;
+            height: 13px;
+            display: block;
         }}
 
         .data-input-note {{
@@ -614,6 +635,29 @@ def apply_theme(mode):
             color: {cfg["muted"]} !important;
             font-size: 10.8px;
             font-weight: 650;
+        }}
+
+        .modern-status-dot {{
+            width: 16px;
+            height: 16px;
+            border-radius: 6px;
+            display: inline-flex;
+            vertical-align: -3px;
+            margin-right: 7px;
+            border: 1px solid {cfg["border"]};
+            background: {cfg["accent_soft"]};
+            position: relative;
+        }}
+
+        .modern-status-dot::after {{
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: {cfg["accent"]};
+            position: absolute;
+            left: 4px;
+            top: 4px;
         }}
 
         .data-status.success {{
@@ -697,11 +741,10 @@ def apply_theme(mode):
         .sidebar-icons {{
             display: flex;
             align-items: center;
-            gap: 16px;
-            margin-bottom: 12px;
+            gap: 10px;
+            margin-bottom: 13px;
             position: relative;
             z-index: 2;
-            font-size: 34px;
             line-height: 1;
         }}
 
@@ -709,9 +752,21 @@ def apply_theme(mode):
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 38px;
-            height: 38px;
-            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.16));
+            width: 42px;
+            height: 42px;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.22);
+            backdrop-filter: blur(8px);
+            color: white !important;
+            box-shadow: 0 10px 22px rgba(0,0,0,0.16);
+        }}
+
+        .sidebar-icons svg {{
+            width: 22px;
+            height: 22px;
+            display: block;
+            stroke: currentColor;
         }}
 
         .sidebar-visual-title {{
@@ -1157,23 +1212,23 @@ def apply_theme(mode):
 
         .custom-table-wrapper {{
             width: 100%;
-            overflow-x: auto;
+            overflow-x: hidden !important;
             border: none !important;
             border-radius: 18px;
             background: transparent !important;
             margin-bottom: 24px;
             box-shadow: none !important;
-            overflow: visible;
         }}
 
         table.custom-table {{
             width: 100%;
+            table-layout: fixed !important;
             border-collapse: separate;
             border-spacing: 0;
             background: transparent !important;
             color: {cfg["text"]} !important;
-            font-size: 13px;
-            line-height: 1.2;
+            font-size: 11.2px;
+            line-height: 1.16;
             margin: 0 !important;
             border: none !important;
             border-radius: 18px;
@@ -1183,16 +1238,26 @@ def apply_theme(mode):
         table.custom-table thead tr th {{
             background: {cfg["card2"]} !important;
             color: {cfg["text"]} !important;
-            font-weight: 850;
-            padding: 11px 14px;
-            height: 42px;
+            font-weight: 900;
+            padding: 8px 8px;
+            height: 38px;
             border-top: 1px solid {cfg["border"]};
             border-bottom: 1px solid {cfg["border"]};
             border-right: 1px solid {cfg["border"]};
             text-align: left;
-            white-space: nowrap;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            word-break: normal;
             vertical-align: middle;
         }}
+
+        table.custom-table thead tr th:nth-child(1) {{ width: 10.5%; }}
+        table.custom-table thead tr th:nth-child(2) {{ width: 12%; }}
+        table.custom-table thead tr th:nth-child(3) {{ width: 13.5%; }}
+        table.custom-table thead tr th:nth-child(4) {{ width: 14%; }}
+        table.custom-table thead tr th:nth-child(5) {{ width: 15%; }}
+        table.custom-table thead tr th:nth-child(6) {{ width: 16%; }}
+        table.custom-table thead tr th:nth-child(7) {{ width: 14%; }}
 
         table.custom-table thead tr th:first-child {{
             border-left: 1px solid {cfg["border"]};
@@ -1207,12 +1272,14 @@ def apply_theme(mode):
         table.custom-table tbody tr th {{
             background: {cfg["card"]} !important;
             color: {cfg["text"]} !important;
-            padding: 11px 14px;
-            height: 42px;
+            padding: 8px 8px;
+            height: 36px;
             border-right: 1px solid {cfg["border"]};
             border-bottom: 1px solid {cfg["border"]};
-            font-weight: 650;
-            white-space: nowrap;
+            font-weight: 700;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            word-break: normal;
             vertical-align: middle;
         }}
 
@@ -1223,9 +1290,9 @@ def apply_theme(mode):
 
         table.custom-table tbody tr:last-child td,
         table.custom-table tbody tr:last-child th {{
-            height: 42px !important;
-            padding-top: 11px !important;
-            padding-bottom: 11px !important;
+            height: 36px !important;
+            padding-top: 8px !important;
+            padding-bottom: 8px !important;
         }}
 
         table.custom-table tbody tr:last-child td:first-child,
@@ -3667,53 +3734,64 @@ def render_eda_section(ts, theme):
             margin-top: 6px;
         }}
         .eda-select-gap {{
-            height: 34px;
-        }}
-        div[data-baseweb="select"] {{
-            margin-top: 12px !important;
-            margin-bottom: 26px !important;
+            height: 28px;
         }}
 
-        /* Panel opsi EDA: cukup satu scrollbar halaman, tidak perlu scrollbar dalam dropdown */
-        div[data-baseweb="popover"] {{
-            z-index: 999999 !important;
+        /* EDA dropdown versi stabil: pakai expander, klik sekali buka dan klik lagi tutup */
+        div[data-testid="stExpander"] {{
+            margin-top: 12px !important;
+            margin-bottom: 26px !important;
             border: none !important;
-            outline: none !important;
-            background: transparent !important;
+        }}
+        div[data-testid="stExpander"] details {{
+            border: 1px solid {theme["border"]} !important;
+            border-radius: 18px !important;
+            background: {theme["card"]} !important;
+            overflow: hidden !important;
             box-shadow: none !important;
         }}
-        div[data-baseweb="popover"] > div,
-        div[data-baseweb="popover"] > div > div {{
-            border: none !important;
-            outline: none !important;
-            background: transparent !important;
-            box-shadow: none !important;
+        div[data-testid="stExpander"] summary {{
+            min-height: 58px !important;
+            padding: 0 18px !important;
+            font-size: 15.5px !important;
+            font-weight: 850 !important;
+            color: {theme["text"]} !important;
+            display: flex !important;
+            align-items: center !important;
         }}
-        div[data-baseweb="popover"] ul,
-        div[role="listbox"] {{
-            max-height: none !important;
-            overflow-y: visible !important;
-            border-radius: 16px !important;
-            padding: 8px 8px !important;
+        div[data-testid="stExpander"] summary:hover {{
+            background: {theme["accent_soft"]} !important;
+        }}
+        div[data-testid="stExpander"] summary svg {{
+            color: {theme["accent"]} !important;
+            fill: {theme["accent"]} !important;
+            width: 18px !important;
+            height: 18px !important;
+        }}
+        div[data-testid="stExpander"] div[data-testid="stExpanderDetails"] {{
             background: #080C12 !important;
-            border: none !important;
-            box-shadow: 0 18px 42px rgba(0,0,0,0.28) !important;
-            scrollbar-width: none !important;
-            -ms-overflow-style: none !important;
+            border-top: 1px solid {theme["border"]} !important;
+            padding: 8px 12px 12px 12px !important;
         }}
-        div[data-baseweb="popover"] ul::-webkit-scrollbar,
-        div[role="listbox"]::-webkit-scrollbar {{
-            display: none !important;
-            width: 0 !important;
-            height: 0 !important;
+        div[data-testid="stExpander"] [role="radiogroup"] {{
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 4px !important;
         }}
-        div[role="option"] {{
+        div[data-testid="stExpander"] [role="radiogroup"] label {{
+            min-height: 40px !important;
             border-radius: 10px !important;
-            margin: 3px 0 !important;
-            min-height: 42px !important;
+            padding: 7px 10px !important;
+            color: {theme["text"]} !important;
+            font-size: 14px !important;
+            font-weight: 750 !important;
         }}
-        div[role="option"]:hover {{
+        div[data-testid="stExpander"] [role="radiogroup"] label:hover {{
             background: rgba(139, 203, 136, 0.12) !important;
+        }}
+        div[data-testid="stExpander"] [role="radiogroup"] label[data-checked="true"],
+        div[data-testid="stExpander"] [role="radiogroup"] label:has(input:checked) {{
+            background: rgba(139, 203, 136, 0.16) !important;
         }}
         .eda-closed-note {{
             background: {theme["card"]};
@@ -3760,13 +3838,25 @@ def render_eda_section(ts, theme):
 
     st.markdown('<div class="eda-select-gap"></div>', unsafe_allow_html=True)
 
-    eda_choice = st.selectbox(
-        "Pilih tampilan EDA",
-        EDA_OPTIONS,
-        index=0,
-        key="eda_choice"
-    )
+    st.markdown('<div class="small-title">Pilih tampilan EDA</div>', unsafe_allow_html=True)
 
+    if "eda_choice" not in st.session_state or st.session_state.eda_choice not in EDA_OPTIONS:
+        st.session_state.eda_choice = EDA_OPTIONS[0]
+
+    current_eda_index = EDA_OPTIONS.index(st.session_state.eda_choice)
+    with st.expander(st.session_state.eda_choice, expanded=False):
+        selected_eda = st.radio(
+            "Pilih visualisasi EDA",
+            EDA_OPTIONS,
+            index=current_eda_index,
+            key="eda_choice_radio",
+            label_visibility="collapsed"
+        )
+        if selected_eda != st.session_state.eda_choice:
+            st.session_state.eda_choice = selected_eda
+            st.rerun()
+
+    eda_choice = st.session_state.eda_choice
 
     if eda_choice == "Time Series Plot":
         fig_eda = make_eda_timeseries(ts, theme)
@@ -3853,7 +3943,17 @@ with theme_col2:
         args=("Gelap",)
     )
 
-st.sidebar.markdown('<div class="data-input-title">📂 Input Data</div>', unsafe_allow_html=True)
+st.sidebar.markdown('''
+<div class="data-input-title">
+    <span class="modern-section-icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 7.5A2.5 2.5 0 0 1 5.5 5H9l2 2.2h7.5A2.5 2.5 0 0 1 21 9.7v7.8A2.5 2.5 0 0 1 18.5 20h-13A2.5 2.5 0 0 1 3 17.5z"/>
+            <path d="M8 13h8"/>
+        </svg>
+    </span>
+    Input Data
+</div>
+''', unsafe_allow_html=True)
 uploaded_file = st.sidebar.file_uploader(
     "Upload data sampah terbaru",
     type=["xlsx", "xls", "csv"],
@@ -3883,12 +3983,12 @@ periode_data = f"{format_periode(ts.index.min())} - {format_periode(ts.index.max
 
 if source_data_type == "upload":
     st.sidebar.markdown(
-        f'<div class="data-status success">✅ Data upload aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
+        f'<div class="data-status success"><span class="modern-status-dot success-dot"></span>Data upload aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
         unsafe_allow_html=True
     )
 else:
     st.sidebar.markdown(
-        f'<div class="data-status info">ℹ️ Data bawaan aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
+        f'<div class="data-status info"><span class="modern-status-dot info-dot"></span>Data bawaan aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
         unsafe_allow_html=True
     )
 
@@ -3902,9 +4002,9 @@ st.sidebar.markdown(
     """
     <div class="sidebar-visual">
         <div class="sidebar-icons">
-            <span>♻️</span>
-            <span>🗑️</span>
-            <span>🍃</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v3l4-5-4-5v3H7a5 5 0 0 0-4.6 3"/><path d="M17 17H7v-3l-4 5 4 5v-3h10a5 5 0 0 0 4.6-3"/></svg></span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M6 7l1 13h10l1-13"/><path d="M9 7V4h6v3"/></svg></span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4c-7.5 1-12 4.7-13.5 10.8"/><path d="M20 4c.2 7.4-4.5 13.1-11.8 12.8"/><path d="M4 20c2.6-5.9 7.1-9.5 13-11"/></svg></span>
         </div>
         <div class="sidebar-visual-title">dashboard sampah</div>
         <div class="sidebar-visual-subtitle">
