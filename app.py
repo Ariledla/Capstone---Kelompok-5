@@ -2734,7 +2734,7 @@ st.markdown(
     }
 
     [data-testid="stSidebar"] [data-testid="stFileUploader"] label p {
-        font-size: 14.6px !important;
+        font-size: 12px !important;
         line-height: 1.18 !important;
         margin-bottom: 5px !important;
         letter-spacing: 0.01em !important;
