@@ -6,9 +6,11 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import streamlit.components.v1 as components
 
 from statsmodels.tsa.statespace.sarimax import SARIMAX
+from statsmodels.tsa.seasonal import seasonal_decompose
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 # ============================================================
@@ -794,15 +796,15 @@ def apply_theme(mode):
                 {cfg["card"]};
             border: 1px solid {cfg["border"]};
             border-radius: 22px;
-            padding: 20px 22px 18px 22px;
+            padding: 18px 22px 24px 22px;
             height: 138px;
             min-height: 138px;
             box-shadow: 0 12px 30px {cfg["shadow"]};
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: stretch;
-            gap: 8px;
+            gap: 13px;
             margin-bottom: 22px;
             box-sizing: border-box;
             overflow: hidden;
@@ -876,7 +878,7 @@ def apply_theme(mode):
             line-height: 1.08;
             letter-spacing: -0.6px;
             margin: 0;
-            min-height: 42px;
+            min-height: 38px;
             display: flex;
             align-items: center;
             overflow-wrap: anywhere;
@@ -1905,7 +1907,7 @@ def inject_mobile_sidebar_button():
         <script>
         (function() {
           const doc = window.parent.document;
-          const isMobile = () => window.parent.innerWidth <= 900;
+          const isMobile = () => true;
           function findNativeSidebarButton() {
             return doc.querySelector('[data-testid="stSidebarCollapsedControl"] button') ||
                    doc.querySelector('[data-testid="stSidebarCollapsedControl"]') ||
@@ -1931,7 +1933,7 @@ def inject_mobile_sidebar_button():
               doc.body.appendChild(b);
             }
             b.style.cssText = `
-              display: ${isMobile() ? 'flex' : 'none'};
+              display: flex;
               position: fixed;
               top: 10px;
               left: 10px;
@@ -2444,6 +2446,539 @@ def make_eval_chart(actual, predicted, theme):
 
 
 # ============================================================
+# MODERN EDA VISUALIZATION
+# ============================================================
+
+EDA_OPTIONS = [
+    "Time Series Plot",
+    "Moving Average 12 Bulan",
+    "Boxplot per Tahun",
+    "Rata-rata per Tahun",
+    "Rata-rata per Bulan",
+    "Heatmap Tahun-Bulan",
+    "Distribusi Jumlah Sampah",
+    "Seasonal Decomposition",
+]
+
+
+def build_eda_df(ts):
+    eda_df = pd.DataFrame({
+        "tanggal": ts.index,
+        "jumlah_sampah": ts.values
+    })
+    eda_df["tahun"] = eda_df["tanggal"].dt.year
+    eda_df["bulan_num"] = eda_df["tanggal"].dt.month
+    eda_df["bulan"] = eda_df["bulan_num"].map(BULAN_INDO)
+    eda_df["periode"] = eda_df["tanggal"].apply(format_periode)
+    return eda_df
+
+
+def apply_eda_layout(fig, theme, title, height=460, x_title=None, y_title="Jumlah sampah (ton)"):
+    fig.update_layout(
+        title=dict(
+            text=f"<b>{title}</b>",
+            x=0.5,
+            xanchor="center",
+            font=dict(size=20, color=theme["chart_font"], family="Arial")
+        ),
+        paper_bgcolor=theme["chart_bg"],
+        plot_bgcolor=theme["chart_bg"],
+        margin=dict(l=56, r=24, t=84, b=56),
+        height=height,
+        hovermode="x unified",
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.05,
+            xanchor="right",
+            x=1,
+            bgcolor=theme["chart_legend_bg"],
+            bordercolor=theme["chart_legend_border"],
+            borderwidth=1,
+            font=dict(size=12, color=theme["chart_font"], family="Arial")
+        ),
+        font=dict(color=theme["chart_font"], family="Arial")
+    )
+
+    fig.update_xaxes(
+        title=f"<b>{x_title}</b>" if x_title else None,
+        showgrid=True,
+        gridcolor=theme["chart_grid"],
+        tickfont=dict(size=12, color=theme["chart_axis"], family="Arial"),
+        title_font=dict(size=14, color=theme["chart_axis"], family="Arial"),
+        zeroline=False,
+        automargin=True
+    )
+
+    fig.update_yaxes(
+        title=f"<b>{y_title}</b>" if y_title else None,
+        showgrid=True,
+        gridcolor=theme["chart_grid"],
+        tickfont=dict(size=12, color=theme["chart_axis"], family="Arial"),
+        title_font=dict(size=14, color=theme["chart_axis"], family="Arial"),
+        zeroline=False,
+        automargin=True
+    )
+    return fig
+
+
+def make_eda_timeseries(ts, theme):
+    peak_date = ts.idxmax()
+    peak_value = ts.max()
+    low_date = ts.idxmin()
+    low_value = ts.min()
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=ts.index,
+        y=ts.values,
+        mode="lines+markers",
+        name="Jumlah Sampah",
+        line=dict(color=theme["chart_hist"], width=3.2, shape="spline"),
+        marker=dict(size=6.5, color=theme["chart_hist"], line=dict(color=theme["chart_bg"], width=1.2)),
+        fill="tozeroy",
+        fillcolor=theme["chart_hist_fill"],
+        hovertemplate="<b>%{x|%b %Y}</b><br>%{y:,.0f} ton<extra></extra>"
+    ))
+
+    fig.add_annotation(
+        x=peak_date,
+        y=peak_value,
+        text=f"<b>Tertinggi</b><br>{format_integer(peak_value)} ton",
+        showarrow=True,
+        arrowhead=2,
+        ax=44,
+        ay=-42,
+        font=dict(size=12, color=theme["chart_font"], family="Arial"),
+        bgcolor=theme["annotation_bg"],
+        bordercolor=theme["annotation_border"],
+        borderwidth=1,
+        borderpad=4
+    )
+
+    fig.add_annotation(
+        x=low_date,
+        y=low_value,
+        text=f"<b>Terendah</b><br>{format_integer(low_value)} ton",
+        showarrow=True,
+        arrowhead=2,
+        ax=-44,
+        ay=42,
+        font=dict(size=12, color=theme["chart_font"], family="Arial"),
+        bgcolor=theme["annotation_bg"],
+        bordercolor=theme["annotation_border"],
+        borderwidth=1,
+        borderpad=4
+    )
+
+    fig = apply_eda_layout(fig, theme, "Pola Time Series Jumlah Sampah", x_title="Periode")
+    fig.update_xaxes(tickformat="%Y")
+    return fig
+
+
+def make_eda_moving_average(ts, theme):
+    rolling_mean = ts.rolling(window=12).mean()
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=ts.index,
+        y=ts.values,
+        mode="lines+markers",
+        name="Aktual",
+        line=dict(color=theme["chart_hist"], width=2.3),
+        marker=dict(size=5, color=theme["chart_hist"], line=dict(color=theme["chart_bg"], width=1)),
+        opacity=0.72,
+        hovertemplate="<b>%{x|%b %Y}</b><br>Aktual: %{y:,.0f} ton<extra></extra>"
+    ))
+    fig.add_trace(go.Scatter(
+        x=rolling_mean.index,
+        y=rolling_mean.values,
+        mode="lines",
+        name="Moving Average 12 Bulan",
+        line=dict(color=theme["chart_pred"], width=4.2, shape="spline"),
+        hovertemplate="<b>%{x|%b %Y}</b><br>MA 12 bulan: %{y:,.0f} ton<extra></extra>"
+    ))
+
+    fig = apply_eda_layout(fig, theme, "Moving Average Jumlah Sampah", x_title="Periode")
+    fig.update_xaxes(tickformat="%Y")
+    return fig
+
+
+def make_eda_boxplot_year(ts, theme):
+    eda_df = build_eda_df(ts)
+    fig = go.Figure()
+
+    for year, group in eda_df.groupby("tahun"):
+        fig.add_trace(go.Box(
+            y=group["jumlah_sampah"],
+            name=str(year),
+            boxmean=True,
+            fillcolor=theme["chart_hist_fill"],
+            marker=dict(color=theme["chart_hist"], size=5),
+            line=dict(color=theme["chart_hist"], width=1.8),
+            hovertemplate=f"<b>{year}</b><br>%{{y:,.0f}} ton<extra></extra>"
+        ))
+
+    fig = apply_eda_layout(fig, theme, "Sebaran Jumlah Sampah per Tahun", x_title="Tahun")
+    fig.update_layout(showlegend=False)
+    return fig
+
+
+def make_eda_avg_year(ts, theme):
+    eda_df = build_eda_df(ts)
+    avg_year = eda_df.groupby("tahun", as_index=False)["jumlah_sampah"].mean()
+
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        x=avg_year["tahun"].astype(str),
+        y=avg_year["jumlah_sampah"],
+        name="Rata-rata",
+        marker=dict(
+            color=theme["chart_hist"],
+            line=dict(color=theme["chart_legend_border"], width=1.2)
+        ),
+        hovertemplate="<b>%{x}</b><br>Rata-rata: %{y:,.0f} ton<extra></extra>",
+        text=[format_integer(v) for v in avg_year["jumlah_sampah"]],
+        textposition="outside"
+    ))
+
+    fig = apply_eda_layout(fig, theme, "Rata-rata Jumlah Sampah per Tahun", x_title="Tahun", height=430)
+    fig.update_layout(showlegend=False)
+    return fig
+
+
+def make_eda_avg_month(ts, theme):
+    eda_df = build_eda_df(ts)
+    avg_month = eda_df.groupby(["bulan_num", "bulan"], as_index=False)["jumlah_sampah"].mean()
+    avg_month = avg_month.sort_values("bulan_num")
+
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        x=avg_month["bulan"],
+        y=avg_month["jumlah_sampah"],
+        name="Rata-rata",
+        marker=dict(
+            color=theme["chart_pred"],
+            line=dict(color=theme["chart_legend_border"], width=1.2)
+        ),
+        hovertemplate="<b>%{x}</b><br>Rata-rata: %{y:,.0f} ton<extra></extra>",
+        text=[format_integer(v) for v in avg_month["jumlah_sampah"]],
+        textposition="outside"
+    ))
+
+    fig = apply_eda_layout(fig, theme, "Rata-rata Jumlah Sampah per Bulan", x_title="Bulan", height=430)
+    fig.update_layout(showlegend=False)
+    fig.update_xaxes(tickangle=-35)
+    return fig
+
+
+def make_eda_heatmap(ts, theme):
+    eda_df = build_eda_df(ts)
+    pivot = eda_df.pivot_table(
+        values="jumlah_sampah",
+        index="tahun",
+        columns="bulan_num",
+        aggfunc="mean"
+    ).reindex(columns=list(range(1, 13)))
+
+    month_labels = [BULAN_INDO[i] for i in range(1, 13)]
+    text_values = pivot.applymap(lambda x: "" if pd.isna(x) else format_integer(x))
+
+    fig = go.Figure(data=go.Heatmap(
+        z=pivot.values,
+        x=month_labels,
+        y=pivot.index.astype(str),
+        text=text_values.values,
+        texttemplate="%{text}",
+        textfont=dict(size=10, color=theme["chart_font"], family="Arial"),
+        colorscale=[
+            [0, theme["chart_bg"]],
+            [0.45, theme["chart_hist"]],
+            [1, theme["chart_pred"]]
+        ],
+        colorbar=dict(
+            title="Ton",
+            tickfont=dict(color=theme["chart_font"]),
+            titlefont=dict(color=theme["chart_font"])
+        ),
+        hovertemplate="<b>%{x} %{y}</b><br>%{z:,.0f} ton<extra></extra>"
+    ))
+
+    fig = apply_eda_layout(fig, theme, "Heatmap Jumlah Sampah Tahun-Bulan", x_title="Bulan", y_title="Tahun", height=520)
+    fig.update_xaxes(tickangle=-35)
+    return fig
+
+
+def make_eda_distribution(ts, theme):
+    mean_value = ts.mean()
+    median_value = ts.median()
+
+    fig = go.Figure()
+    fig.add_trace(go.Histogram(
+        x=ts.values,
+        nbinsx=11,
+        name="Frekuensi",
+        marker=dict(
+            color=theme["chart_hist"],
+            line=dict(color=theme["chart_legend_border"], width=1.2)
+        ),
+        opacity=0.86,
+        hovertemplate="Jumlah sampah: %{x:,.0f} ton<br>Frekuensi: %{y}<extra></extra>"
+    ))
+
+    fig.add_vline(x=mean_value, line_width=2, line_dash="dash", line_color=theme["chart_pred"])
+    fig.add_vline(x=median_value, line_width=2, line_dash="dot", line_color=theme["chart_hist"])
+
+    fig.add_annotation(
+        x=mean_value,
+        y=1,
+        yref="paper",
+        text=f"Mean<br>{format_integer(mean_value)} ton",
+        showarrow=False,
+        yanchor="bottom",
+        font=dict(size=12, color=theme["chart_font"]),
+        bgcolor=theme["annotation_bg"],
+        bordercolor=theme["annotation_border"],
+        borderwidth=1
+    )
+
+    fig = apply_eda_layout(fig, theme, "Distribusi Jumlah Sampah", x_title="Jumlah sampah (ton)", y_title="Frekuensi", height=430)
+    return fig
+
+
+def make_eda_decomposition(ts, theme):
+    decomposition = seasonal_decompose(ts, model="additive", period=12, extrapolate_trend="freq")
+
+    fig = make_subplots(
+        rows=4,
+        cols=1,
+        shared_xaxes=True,
+        vertical_spacing=0.055,
+        subplot_titles=("Observed", "Trend", "Seasonal", "Residual")
+    )
+
+    components_data = [
+        (decomposition.observed, "Observed", theme["chart_hist"], "lines"),
+        (decomposition.trend, "Trend", theme["chart_pred"], "lines"),
+        (decomposition.seasonal, "Seasonal", theme["chart_hist"], "lines"),
+        (decomposition.resid, "Residual", theme["chart_pred"], "markers"),
+    ]
+
+    for row, (series, name, color, mode) in enumerate(components_data, start=1):
+        fig.add_trace(go.Scatter(
+            x=series.index,
+            y=series.values,
+            mode=mode,
+            name=name,
+            line=dict(color=color, width=2.5),
+            marker=dict(size=5, color=color, line=dict(color=theme["chart_bg"], width=0.8)),
+            hovertemplate=f"<b>%{{x|%b %Y}}</b><br>{name}: %{{y:,.0f}}<extra></extra>"
+        ), row=row, col=1)
+
+    fig.update_layout(
+        title=dict(
+            text="<b>Seasonal Decomposition Jumlah Sampah</b>",
+            x=0.5,
+            xanchor="center",
+            font=dict(size=20, color=theme["chart_font"], family="Arial")
+        ),
+        paper_bgcolor=theme["chart_bg"],
+        plot_bgcolor=theme["chart_bg"],
+        margin=dict(l=56, r=24, t=88, b=48),
+        height=650,
+        hovermode="x unified",
+        showlegend=False,
+        font=dict(color=theme["chart_font"], family="Arial")
+    )
+
+    fig.update_xaxes(
+        showgrid=True,
+        gridcolor=theme["chart_grid"],
+        tickformat="%Y",
+        tickfont=dict(size=11, color=theme["chart_axis"], family="Arial"),
+        zeroline=False,
+        automargin=True
+    )
+    fig.update_yaxes(
+        showgrid=True,
+        gridcolor=theme["chart_grid"],
+        tickfont=dict(size=11, color=theme["chart_axis"], family="Arial"),
+        zeroline=False,
+        automargin=True
+    )
+
+    for annotation in fig.layout.annotations:
+        annotation.font = dict(size=13, color=theme["chart_font"], family="Arial")
+
+    return fig
+
+
+def eda_metric_card(title, value, note, theme):
+    st.markdown(
+        f"""
+        <div class="eda-metric-card">
+            <div class="eda-metric-title">{title}</div>
+            <div class="eda-metric-value">{value}</div>
+            <div class="eda-metric-note">{note}</div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+def render_eda_section(ts, theme):
+    st.markdown(
+        f"""
+        <style>
+        .eda-control-panel {{
+            background:
+                radial-gradient(circle at 8% 5%, {theme["accent_soft"]}, transparent 30%),
+                {theme["card"]};
+            border: 1px solid {theme["border"]};
+            border-radius: 22px;
+            padding: 20px 22px;
+            margin: 10px 0 20px 0;
+            box-shadow: 0 10px 28px {theme["shadow"]};
+        }}
+        .eda-title {{
+            font-size: 20px;
+            font-weight: 900;
+            color: {theme["text"]} !important;
+            margin-bottom: 5px;
+        }}
+        .eda-desc {{
+            font-size: 13.5px;
+            line-height: 1.6;
+            color: {theme["muted"]} !important;
+            margin-bottom: 13px;
+        }}
+        .eda-metric-card {{
+            background: linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0)), {theme["card"]};
+            border: 1px solid {theme["border"]};
+            border-radius: 18px;
+            padding: 15px 16px;
+            min-height: 102px;
+            box-shadow: 0 8px 22px {theme["shadow"]};
+        }}
+        .eda-metric-title {{
+            font-size: 12.5px;
+            font-weight: 850;
+            color: {theme["muted"]} !important;
+            margin-bottom: 7px;
+        }}
+        .eda-metric-value {{
+            font-size: 21px;
+            font-weight: 950;
+            color: {theme["text"]} !important;
+            line-height: 1.15;
+        }}
+        .eda-metric-note {{
+            font-size: 11.2px;
+            font-weight: 650;
+            color: {theme["muted"]} !important;
+            margin-top: 6px;
+        }}
+        @media screen and (max-width: 900px) {{
+            .eda-control-panel {{ padding: 14px; border-radius: 17px; }}
+            .eda-title {{ font-size: 16px; }}
+            .eda-desc {{ font-size: 11.8px; }}
+            .eda-metric-card {{ padding: 11px 12px; min-height: 84px; }}
+            .eda-metric-title {{ font-size: 10.5px; }}
+            .eda-metric-value {{ font-size: 14.5px; }}
+            .eda-metric-note {{ font-size: 9.6px; }}
+        }}
+        </style>
+        <div class="eda-control-panel">
+            <div class="eda-title">Eksplorasi Data Interaktif</div>
+            <div class="eda-desc">
+                Pilih satu jenis EDA agar dashboard tetap ringan, fokus, dan tidak menampilkan semua grafik sekaligus.
+                Visualisasi dibuat dengan Plotly agar tampil modern, interaktif, dan menyatu dengan tema dashboard.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    eda_values = ts.dropna()
+    metric1, metric2, metric3, metric4 = st.columns(4, gap="large")
+    with metric1:
+        eda_metric_card("Jumlah Observasi", f"{format_integer(len(eda_values))} bulan", f"{format_periode(eda_values.index.min())} - {format_periode(eda_values.index.max())}", theme)
+    with metric2:
+        eda_metric_card("Rata-rata Bulanan", f"{format_angka(eda_values.mean())} ton", "nilai tengah umum periode data", theme)
+    with metric3:
+        eda_metric_card("Nilai Tertinggi", f"{format_angka(eda_values.max())} ton", format_periode(eda_values.idxmax()), theme)
+    with metric4:
+        eda_metric_card("Nilai Terendah", f"{format_angka(eda_values.min())} ton", format_periode(eda_values.idxmin()), theme)
+
+    eda_choice = st.selectbox(
+        "Pilih tampilan EDA",
+        EDA_OPTIONS,
+        index=0,
+        key="eda_choice"
+    )
+
+    if eda_choice == "Time Series Plot":
+        fig_eda = make_eda_timeseries(ts, theme)
+        insight_items = [
+            "Grafik ini dipakai untuk melihat perubahan jumlah sampah dari waktu ke waktu.",
+            "Puncak dan titik terendah diberi anotasi agar pola ekstrem lebih mudah dibaca.",
+            "Visual ini cocok untuk melihat perubahan umum sebelum masuk ke model prediksi."
+        ]
+    elif eda_choice == "Moving Average 12 Bulan":
+        fig_eda = make_eda_moving_average(ts, theme)
+        insight_items = [
+            "Moving average 12 bulan membantu membaca tren tahunan tanpa terlalu terganggu fluktuasi bulanan.",
+            "Garis aktual tetap ditampilkan agar perbedaan antara fluktuasi dan tren tetap terlihat.",
+            "Visual ini cocok untuk menjelaskan apakah jumlah sampah cenderung naik, turun, atau stabil."
+        ]
+    elif eda_choice == "Boxplot per Tahun":
+        fig_eda = make_eda_boxplot_year(ts, theme)
+        insight_items = [
+            "Boxplot membandingkan sebaran jumlah sampah antar tahun.",
+            "Visual ini membantu melihat median, variasi, dan kemungkinan nilai ekstrem pada tiap tahun.",
+            "Tahun dengan box lebih panjang berarti variasi bulanannya lebih besar."
+        ]
+    elif eda_choice == "Rata-rata per Tahun":
+        fig_eda = make_eda_avg_year(ts, theme)
+        insight_items = [
+            "Grafik ini merangkum rata-rata jumlah sampah untuk setiap tahun.",
+            "Visual ini cocok untuk melihat tahun mana yang secara umum tinggi atau rendah.",
+            "Angka di atas bar memudahkan pembacaan tanpa harus membuka tabel tambahan."
+        ]
+    elif eda_choice == "Rata-rata per Bulan":
+        fig_eda = make_eda_avg_month(ts, theme)
+        insight_items = [
+            "Grafik ini menunjukkan rata-rata jumlah sampah berdasarkan bulan kalender.",
+            "Visual ini membantu membaca indikasi pola musiman bulanan.",
+            "Bulan dengan rata-rata tinggi dapat menjadi perhatian untuk perencanaan kapasitas operasional."
+        ]
+    elif eda_choice == "Heatmap Tahun-Bulan":
+        fig_eda = make_eda_heatmap(ts, theme)
+        insight_items = [
+            "Heatmap memperlihatkan intensitas jumlah sampah berdasarkan kombinasi tahun dan bulan.",
+            "Warna yang lebih kuat menunjukkan nilai jumlah sampah yang lebih tinggi.",
+            "Visual ini cocok untuk mencari pola anomali, lonjakan, atau penurunan pada periode tertentu."
+        ]
+    elif eda_choice == "Distribusi Jumlah Sampah":
+        fig_eda = make_eda_distribution(ts, theme)
+        insight_items = [
+            "Histogram menunjukkan sebaran nilai jumlah sampah dalam seluruh periode data.",
+            "Garis vertikal membantu membandingkan posisi rata-rata dan median.",
+            "Visual ini berguna untuk melihat apakah data terkonsentrasi pada rentang tertentu atau memiliki nilai ekstrem."
+        ]
+    else:
+        fig_eda = make_eda_decomposition(ts, theme)
+        insight_items = [
+            "Seasonal decomposition memecah data menjadi observed, trend, seasonal, dan residual.",
+            "Bagian trend membantu membaca arah jangka panjang.",
+            "Bagian seasonal membantu melihat pola musiman yang berulang setiap 12 bulan."
+        ]
+
+    st.plotly_chart(fig_eda, use_container_width=True, config={"displayModeBar": False, "responsive": True})
+    bullet_card(f"Insight EDA - {eda_choice}", insight_items)
+
+
+# ============================================================
 # SIDEBAR KIRI
 # ============================================================
 
@@ -2684,7 +3219,7 @@ if menu == "Simulasi Pengelolaan":
 elif menu == "Ringkasan Data & Model":
     st.markdown('<div class="section-title">Ringkasan Data & Model</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="section-desc">Halaman ini menampilkan ringkasan data dan evaluasi model secara singkat. Detail teori, EDA, dan pembentukan model dijelaskan pada laporan.</div>',
+        '<div class="section-desc">Halaman ini menampilkan ringkasan data, EDA interaktif, dan evaluasi model secara singkat. Pilih visualisasi EDA yang ingin dilihat agar dashboard tetap fokus dan tidak terlalu penuh.</div>',
         unsafe_allow_html=True
     )
 
@@ -2721,6 +3256,8 @@ elif menu == "Ringkasan Data & Model":
                 "Detail teori, EDA, parameter model, dan evaluasi lengkap dijelaskan pada laporan."
             ]
         )
+
+    render_eda_section(ts, theme)
 
     st.markdown('<div class="small-title">Evaluasi Model</div>', unsafe_allow_html=True)
     show_table(prepare_eval_display(eval_df))
