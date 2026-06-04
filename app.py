@@ -539,18 +539,18 @@ def apply_theme(mode):
 
         .block-container {{
             max-width: 1420px !important;
-            padding-top: 0.25rem !important;
+            padding-top: 0rem !important;
             padding-left: 0.95rem !important;
             padding-right: 0.95rem !important;
             padding-bottom: 1.5rem !important;
         }}
 
         [data-testid="stMainBlockContainer"] {{
-            padding-top: 0.25rem !important;
+            padding-top: 0rem !important;
         }}
 
         main .block-container {{
-            padding-top: 0.25rem !important;
+            padding-top: 0rem !important;
         }}
 
         [data-testid="stSidebar"] {{
@@ -835,7 +835,7 @@ def apply_theme(mode):
             color: white !important;
             padding: 24px 31px;
             border-radius: 24px;
-            margin-top: 0 !important;
+            margin-top: -14px !important;
             margin-bottom: 24px;
             box-shadow: 0 18px 42px rgba(31, 41, 51, 0.18);
         }}
@@ -2496,24 +2496,24 @@ st.markdown(
         transform: none !important;
     }
 
-    /* Tombol custom: kecil, modern, tidak nabrak elemen bawah. */
-    #custom-sidebar-toggle-v21 {
+    /* Tombol custom: ikon panel-web kecil, lebih halus, dan tidak menabrak hero. */
+    #custom-sidebar-toggle-v22 {
         position: fixed !important;
-        top: 8px !important;
+        top: 5px !important;
         left: 258px !important;
-        width: 38px !important;
-        height: 34px !important;
-        border-radius: 12px !important;
-        border: 1px solid rgba(139,203,136,.36) !important;
-        background: rgba(15,27,20,.64) !important;
-        backdrop-filter: blur(10px) !important;
-        -webkit-backdrop-filter: blur(10px) !important;
+        width: 34px !important;
+        height: 32px !important;
+        border-radius: 11px !important;
+        border: 1px solid rgba(139,203,136,.28) !important;
+        background: rgba(15,27,20,.54) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
         color: #F5F7F2 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         z-index: 2147483647 !important;
-        box-shadow: 0 10px 24px rgba(0,0,0,.20) !important;
+        box-shadow: 0 10px 22px rgba(0,0,0,.18) !important;
         cursor: pointer !important;
         user-select: none !important;
         padding: 0 !important;
@@ -2521,38 +2521,37 @@ st.markdown(
         transition: left .22s ease, background .15s ease, border-color .15s ease, transform .15s ease, opacity .15s ease, box-shadow .15s ease !important;
     }
 
-    #custom-sidebar-toggle-v21 svg {
+    #custom-sidebar-toggle-v22 svg {
         width: 18px !important;
         height: 18px !important;
         display: block !important;
         stroke: currentColor !important;
         fill: none !important;
-        stroke-width: 2.35 !important;
+        stroke-width: 2.15 !important;
         stroke-linecap: round !important;
         stroke-linejoin: round !important;
         margin: 0 !important;
-        transform: translateX(0) !important;
     }
 
-    #custom-sidebar-toggle-v21:hover {
-        background: rgba(47,125,82,.94) !important;
-        border-color: rgba(139,203,136,.78) !important;
+    #custom-sidebar-toggle-v22:hover {
+        background: rgba(47,125,82,.92) !important;
+        border-color: rgba(139,203,136,.76) !important;
         transform: translateY(-1px) !important;
         opacity: 1 !important;
-        box-shadow: 0 14px 30px rgba(0,0,0,.28) !important;
+        box-shadow: 0 14px 28px rgba(0,0,0,.26) !important;
     }
 
-    body.sidebar-custom-closed #custom-sidebar-toggle-v21 {
-        left: 16px !important;
-        top: 8px !important;
+    body.sidebar-custom-closed #custom-sidebar-toggle-v22 {
+        left: 2px !important;
+        top: 5px !important;
         opacity: 1 !important;
     }
 
-    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v21 {
-        opacity: .42 !important;
+    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v22 {
+        opacity: .48 !important;
     }
 
-    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v21:hover {
+    body:not(.sidebar-custom-closed) #custom-sidebar-toggle-v22:hover {
         opacity: 1 !important;
     }
 
@@ -2563,13 +2562,13 @@ st.markdown(
     }
 
     @media screen and (max-width: 900px) {
-        #custom-sidebar-toggle-v21 {
+        #custom-sidebar-toggle-v22 {
             left: 258px !important;
-            top: 8px !important;
+            top: 5px !important;
         }
-        body.sidebar-custom-closed #custom-sidebar-toggle-v21 {
-            left: 12px !important;
-            top: 8px !important;
+        body.sidebar-custom-closed #custom-sidebar-toggle-v22 {
+            left: 2px !important;
+            top: 5px !important;
         }
         body.sidebar-custom-closed .block-container,
         body.sidebar-custom-closed [data-testid="stMainBlockContainer"] {
@@ -2589,18 +2588,18 @@ def inject_custom_sidebar_toggle():
         <script>
         (function() {
             const doc = window.parent.document;
-            const STORAGE_KEY = "bandung_sidebar_custom_closed_v21";
-            const BTN_ID = "custom-sidebar-toggle-v21";
+            const STORAGE_KEY = "bandung_sidebar_custom_closed_v22";
+            const BTN_ID = "custom-sidebar-toggle-v22";
 
             function isClosed() {
                 return localStorage.getItem(STORAGE_KEY) === "1";
             }
 
-            function chevronSvg(direction) {
-                const d = direction === "right"
-                    ? '<path d="M7 5l6 7-6 7"/><path d="M12 5l6 7-6 7"/>'
-                    : '<path d="M17 5l-6 7 6 7"/><path d="M12 5l-6 7 6 7"/>';
-                return '<svg viewBox="0 0 24 24" aria-hidden="true">' + d + '</svg>';
+            function panelSvg(direction) {
+                const arrow = direction === "right"
+                    ? '<path d="M11 8l4 4-4 4"/><path d="M7 8l4 4-4 4"/>'
+                    : '<path d="M13 8l-4 4 4 4"/><path d="M17 8l-4 4 4 4"/>';
+                return '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="3" opacity=".26"/>' + arrow + '</svg>';
             }
 
             function setClosed(closed) {
@@ -2608,14 +2607,14 @@ def inject_custom_sidebar_toggle():
                 doc.body.classList.toggle("sidebar-custom-closed", closed);
                 const btn = doc.getElementById(BTN_ID);
                 if (btn) {
-                    btn.innerHTML = chevronSvg(closed ? "right" : "left");
+                    btn.innerHTML = panelSvg(closed ? "right" : "left");
                     btn.title = closed ? "Buka sidebar" : "Tutup sidebar";
                     btn.setAttribute("aria-label", closed ? "Buka sidebar" : "Tutup sidebar");
                 }
             }
 
             function removeOldButtons() {
-                ["custom-sidebar-toggle-v19", "custom-sidebar-toggle-v20", "app-sidebar-toggle-btn",
+                ["custom-sidebar-toggle-v19", "custom-sidebar-toggle-v20", "custom-sidebar-toggle-v21", "app-sidebar-toggle-btn",
                  "custom-mobile-sidebar-button", "custom-sidebar-open-button", "custom-sidebar-close-button"].forEach(function(id) {
                     const old = doc.getElementById(id);
                     if (old) old.remove();
