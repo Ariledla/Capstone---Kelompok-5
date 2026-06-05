@@ -6376,7 +6376,12 @@ st.markdown(
 # ============================================================
 
 def render_upload_management_section(ts, source_data_type, periode_data, forecast_max_months):
-    """Halaman Kelola Data Upload versi compact modern tanpa kartu ringkasan tambahan."""
+    """Halaman Kelola Data Upload versi clean modern.
+    Perubahan utama:
+    - Background banner upload dibuat sama feel-nya dengan hero simulasi.
+    - Kartu/chip fitur tambahan dihapus.
+    - Tombol Tambah Data Lagi dan Batalkan Antrian dihapus.
+    """
 
     active_upload_count = len(st.session_state.uploaded_data_payloads)
     queue_count = len(st.session_state.upload_queue)
@@ -6385,107 +6390,85 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
         """
         <style>
         /* ============================================================
-           KELOLA DATA UPLOAD — COMPACT MODERN LAYOUT
-           Fokus: tidak ada kartu status 3 kolom dan tidak ada kartu format/tips.
+           KELOLA DATA UPLOAD — CLEAN HERO + TWO PANEL LAYOUT
            ============================================================ */
 
         main .block-container {
-            padding-top: 0.2rem !important;
+            padding-top: 0.15rem !important;
         }
 
-        div[data-testid="stElementContainer"]:has(.upload-v3-hero) {
+        /* Tarik halaman upload ke atas agar tidak ada ruang kosong terlalu lebar */
+        div[data-testid="stElementContainer"]:has(.upload-v4-hero) {
             margin-top: -300px !important;
-            margin-bottom: 14px !important;
-            padding-top: 0px !important;
-            padding-bottom: 0px !important;
+            margin-bottom: 16px !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
         }
 
-        div[data-testid="stMarkdownContainer"]:has(.upload-v3-hero) {
-            margin-top: 0px !important;
-            padding-top: 0px !important;
+        div[data-testid="stMarkdownContainer"]:has(.upload-v4-hero) {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
         }
 
-        .upload-v3-wrap {
+        .upload-v4-wrap {
             width: 100%;
             max-width: 1320px;
             margin: 0 auto;
         }
 
-        .upload-v3-hero {
+        .upload-v4-hero {
             position: relative;
             overflow: hidden;
             border-radius: 28px;
-            border: 1px solid rgba(139,203,136,.18);
-            padding: 30px 34px 28px 34px;
-            background:
-                radial-gradient(circle at 8% 12%, rgba(103,240,193,.18), transparent 24%),
-                radial-gradient(circle at 94% 16%, rgba(241,190,84,.16), transparent 28%),
-                linear-gradient(135deg, rgba(30,44,34,.98) 0%, rgba(17,25,21,.99) 56%, rgba(40,47,31,.96) 100%);
-            box-shadow: 0 22px 56px rgba(0,0,0,.22);
+            padding: 34px 36px;
             margin-bottom: 18px;
+            border: 1px solid rgba(255,255,255,0.14);
+            background: linear-gradient(135deg, #1F4D36 0%, #4F8B59 55%, #B78335 100%);
+            box-shadow: 0 18px 42px rgba(31, 41, 51, 0.18);
         }
 
-        .upload-v3-hero::before {
+        .upload-v4-hero::before {
+            content: "";
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            right: -85px;
+            top: -105px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.12);
+        }
+
+        .upload-v4-hero::after {
             content: "";
             position: absolute;
             inset: 0;
-            background-image:
-                linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
-            background-size: 34px 34px;
-            mask-image: linear-gradient(90deg, rgba(0,0,0,.94), transparent 84%);
+            background: linear-gradient(90deg, rgba(0,0,0,.06), rgba(255,255,255,.02));
             pointer-events: none;
         }
 
-        .upload-v3-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 7px 12px;
-            border-radius: 999px;
-            border: 1px solid rgba(139,203,136,.24);
-            background: rgba(139,203,136,.10);
-            color: #AEE7A8 !important;
-            font-size: 12px;
-            font-weight: 850;
-            text-transform: uppercase;
-            letter-spacing: .04em;
-            margin-bottom: 12px;
+        .upload-v4-title {
             position: relative;
             z-index: 2;
-        }
-
-        .upload-v3-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 999px;
-            background: #8BCB88;
-            box-shadow: 0 0 0 5px rgba(139,203,136,.12);
-        }
-
-        .upload-v3-title {
-            color: #F5F7F2 !important;
-            font-size: clamp(30px, 3.2vw, 46px);
-            line-height: 1.05;
-            letter-spacing: -.85px;
+            color: white !important;
+            font-size: clamp(34px, 3.6vw, 52px);
+            line-height: 1.08;
             font-weight: 950;
-            margin: 0 0 10px 0;
-            position: relative;
-            z-index: 2;
+            letter-spacing: -.9px;
+            margin: 0 0 12px 0;
         }
 
-        .upload-v3-desc {
-            color: #D8E0D4 !important;
-            font-size: 15px;
+        .upload-v4-desc {
+            position: relative;
+            z-index: 2;
+            color: rgba(255,255,255,.92) !important;
+            font-size: 15.5px;
             line-height: 1.65;
-            font-weight: 620;
-            max-width: 920px;
+            font-weight: 650;
+            max-width: 1060px;
             margin: 0;
-            position: relative;
-            z-index: 2;
         }
 
-        .upload-v3-main-grid {
+        .upload-v4-grid {
             display: grid;
             grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
             gap: 18px;
@@ -6493,35 +6476,35 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             margin-bottom: 16px;
         }
 
-        .upload-v3-card {
+        .upload-v4-card {
             border: 1px solid rgba(61,74,64,.95);
             border-radius: 24px;
-            padding: 20px;
+            padding: 22px;
             background:
                 linear-gradient(150deg, rgba(255,255,255,.040), rgba(255,255,255,.008)),
                 rgba(29,38,31,.96);
             box-shadow: 0 16px 38px rgba(0,0,0,.14);
-            min-height: 330px;
+            min-height: 342px;
             height: 100%;
             box-sizing: border-box;
         }
 
-        .upload-v3-card-head {
+        .upload-v4-card-head {
             display: flex;
             align-items: flex-start;
             justify-content: space-between;
             gap: 14px;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
         }
 
-        .upload-v3-title-row {
+        .upload-v4-title-row {
             display: flex;
             align-items: center;
             gap: 12px;
             min-width: 0;
         }
 
-        .upload-v3-icon {
+        .upload-v4-icon {
             width: 42px;
             height: 42px;
             min-width: 42px;
@@ -6536,7 +6519,7 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             font-weight: 900;
         }
 
-        .upload-v3-card-title {
+        .upload-v4-card-title {
             color: #F5F7F2 !important;
             font-size: 20px;
             line-height: 1.15;
@@ -6545,7 +6528,7 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             margin: 0 0 5px 0;
         }
 
-        .upload-v3-card-subtitle {
+        .upload-v4-card-subtitle {
             color: #D8E0D4 !important;
             font-size: 12.8px;
             line-height: 1.5;
@@ -6553,7 +6536,7 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             margin: 0;
         }
 
-        .upload-v3-pill {
+        .upload-v4-pill {
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -6567,24 +6550,13 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             font-weight: 850;
         }
 
-        .upload-v3-helper {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 12px;
-        }
-
-        .upload-v3-helper span {
-            display: inline-flex;
-            align-items: center;
-            min-height: 30px;
-            padding: 6px 10px;
-            border-radius: 999px;
-            border: 1px solid rgba(61,74,64,.85);
-            background: rgba(255,255,255,.025);
+        .upload-v4-note {
             color: #D8E0D4 !important;
-            font-size: 11.4px;
-            font-weight: 750;
+            font-size: 12.4px;
+            line-height: 1.55;
+            font-weight: 650;
+            margin-top: 13px;
+            opacity: .92;
         }
 
         [data-testid="stFileUploader"] {
@@ -6593,7 +6565,7 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
         }
 
         [data-testid="stFileUploader"] section {
-            min-height: 188px !important;
+            min-height: 196px !important;
             padding: 18px !important;
             border-radius: 22px !important;
             border: 1.4px dashed rgba(139,203,136,.24) !important;
@@ -6644,52 +6616,52 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             font-weight: 650 !important;
         }
 
-        .upload-v3-empty {
-            min-height: 188px;
+        .upload-v4-empty {
+            min-height: 196px;
             border: 1.4px dashed rgba(139,203,136,.22);
             border-radius: 22px;
-            padding: 22px;
             background:
-                radial-gradient(circle at 50% 6%, rgba(139,203,136,.09), transparent 28%),
-                rgba(255,255,255,.020);
+                radial-gradient(circle at 50% 0%, rgba(139,203,136,.08), transparent 35%),
+                rgba(255,255,255,.018);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
+            padding: 22px;
             box-sizing: border-box;
         }
 
-        .upload-v3-empty-icon {
-            width: 60px;
-            height: 60px;
-            margin: 0 auto 12px auto;
+        .upload-v4-empty-icon {
+            width: 62px;
+            height: 62px;
             border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, rgba(103,240,193,.12), rgba(241,190,84,.12));
-            border: 1px solid rgba(139,203,136,.16);
-            font-size: 25px;
+            background: linear-gradient(135deg, rgba(103,240,193,.13), rgba(241,190,84,.12));
+            border: 1px solid rgba(139,203,136,.18);
+            margin-bottom: 13px;
+            font-size: 26px;
         }
 
-        .upload-v3-empty-title {
+        .upload-v4-empty-title {
             color: #F5F7F2 !important;
-            font-size: 15px;
+            font-size: 15.5px;
+            line-height: 1.35;
             font-weight: 900;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
         }
 
-        .upload-v3-empty-desc {
+        .upload-v4-empty-desc {
             color: #D8E0D4 !important;
-            font-size: 12px;
+            font-size: 12.2px;
             line-height: 1.5;
             font-weight: 650;
-            max-width: 340px;
-            margin: 0 auto;
+            max-width: 360px;
         }
 
-        .upload-v3-file-row {
+        .upload-v4-file-row {
             border: 1px solid rgba(61,74,64,.85);
             border-radius: 18px;
             padding: 13px 15px;
@@ -6697,91 +6669,43 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             margin-bottom: 10px;
         }
 
-        .upload-v3-file-title {
+        .upload-v4-file-title {
             color: #F5F7F2 !important;
-            font-size: 13.2px;
+            font-size: 13.1px;
             line-height: 1.4;
             font-weight: 850;
             margin-bottom: 4px;
             word-break: break-word;
         }
 
-        .upload-v3-file-meta {
+        .upload-v4-file-meta {
             color: #BFC9BD !important;
             font-size: 11.5px;
             line-height: 1.4;
             font-weight: 700;
         }
 
-        .upload-v3-actions {
-            border: 1px solid rgba(61,74,64,.95);
-            border-radius: 22px;
-            padding: 16px;
-            background:
-                linear-gradient(150deg, rgba(255,255,255,.032), rgba(255,255,255,.006)),
-                rgba(29,38,31,.94);
-            box-shadow: 0 14px 34px rgba(0,0,0,.12);
-            margin-top: 2px;
-            margin-bottom: 16px;
+        .upload-v4-actions-clean {
+            margin-top: 4px;
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr);
+            gap: 14px;
+            align-items: center;
         }
 
-        .upload-v3-actions-title {
-            color: #F5F7F2 !important;
-            font-size: 15px;
-            font-weight: 950;
-            margin-bottom: 6px;
-        }
-
-        .upload-v3-actions-desc {
-            color: #D8E0D4 !important;
-            font-size: 12.2px;
-            line-height: 1.5;
-            font-weight: 650;
-            margin-bottom: 12px;
-        }
-
-        .upload-v3-wrap .stButton > button {
-            width: 100% !important;
-            min-height: 42px !important;
-            border-radius: 14px !important;
-            font-size: 13px !important;
-            font-weight: 850 !important;
-            border: 1px solid rgba(61,74,64,.95) !important;
-            background: linear-gradient(135deg, #212A23 0%, #29332B 100%) !important;
-            color: #F5F7F2 !important;
-            box-shadow: 0 10px 22px rgba(0,0,0,.14) !important;
-        }
-
-        .upload-v3-wrap .stButton > button:hover {
-            background: linear-gradient(135deg, #2F7D52 0%, #4A8A58 100%) !important;
-            color: white !important;
-            border-color: #2F7D52 !important;
-        }
-
-        .upload-v3-wrap .stButton > button[kind="primary"] {
-            background: linear-gradient(135deg, #2F7D52 0%, #4A8A58 58%, #D1A64A 100%) !important;
-            border-color: rgba(209,166,74,.58) !important;
-            color: white !important;
-        }
-
-        .upload-v3-wrap .stButton > button:disabled {
-            opacity: .50 !important;
-            cursor: not-allowed !important;
-        }
-
-        .upload-v3-success {
+        .upload-v4-success {
             display: flex;
             align-items: flex-start;
             gap: 14px;
             padding: 16px 18px;
-            margin-top: 14px;
+            margin-top: 16px;
             border-radius: 20px;
             border: 1px solid rgba(103,240,193,.22);
             background: linear-gradient(135deg, rgba(103,240,193,.10), rgba(139,203,136,.06));
             box-shadow: 0 14px 30px rgba(0,0,0,.12);
         }
 
-        .upload-v3-success-icon {
+        .upload-v4-success-icon {
             width: 42px;
             height: 42px;
             min-width: 42px;
@@ -6796,51 +6720,80 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             font-weight: 950;
         }
 
-        .upload-v3-success-title {
+        .upload-v4-success-title {
             color: #F5F7F2 !important;
             font-size: 15px;
             font-weight: 900;
             margin-bottom: 4px;
         }
 
-        .upload-v3-success-text {
+        .upload-v4-success-text {
             color: #D8E0D4 !important;
             font-size: 12.8px;
             line-height: 1.55;
             font-weight: 700;
         }
 
+        .upload-v4-wrap .stButton > button {
+            width: 100% !important;
+            min-height: 46px !important;
+            border-radius: 15px !important;
+            font-size: 13px !important;
+            font-weight: 850 !important;
+            border: 1px solid rgba(61,74,64,.95) !important;
+            background: linear-gradient(135deg, #212A23 0%, #29332B 100%) !important;
+            color: #F5F7F2 !important;
+            box-shadow: 0 10px 22px rgba(0,0,0,.14) !important;
+        }
+
+        .upload-v4-wrap .stButton > button:hover {
+            background: linear-gradient(135deg, #2F7D52 0%, #4A8A58 100%) !important;
+            color: white !important;
+            border-color: #2F7D52 !important;
+        }
+
+        .upload-v4-wrap .stButton > button[kind="primary"] {
+            background: linear-gradient(135deg, #2F7D52 0%, #4A8A58 58%, #D1A64A 100%) !important;
+            border-color: rgba(209,166,74,.58) !important;
+            color: white !important;
+        }
+
+        .upload-v4-wrap .stButton > button:disabled {
+            opacity: .50 !important;
+            cursor: not-allowed !important;
+        }
+
         @media screen and (max-width: 960px) {
-            div[data-testid="stElementContainer"]:has(.upload-v3-hero) {
+            div[data-testid="stElementContainer"]:has(.upload-v4-hero) {
                 margin-top: 50px !important;
             }
 
-            .upload-v3-main-grid {
+            .upload-v4-grid,
+            .upload-v4-actions-clean {
                 grid-template-columns: 1fr !important;
-                gap: 14px;
             }
 
-            .upload-v3-hero {
-                padding: 20px 18px 18px 18px;
+            .upload-v4-hero {
+                padding: 20px 18px;
                 border-radius: 22px;
             }
 
-            .upload-v3-title {
+            .upload-v4-title {
                 font-size: 24px;
             }
 
-            .upload-v3-desc,
-            .upload-v3-card-subtitle {
-                font-size: 12.3px;
+            .upload-v4-desc {
+                font-size: 13px;
             }
 
-            .upload-v3-card {
+            .upload-v4-card {
                 min-height: auto;
                 padding: 16px;
+                border-radius: 20px;
             }
 
             [data-testid="stFileUploader"] section,
-            .upload-v3-empty {
+            .upload-v4-empty {
                 min-height: 165px !important;
             }
         }
@@ -6849,14 +6802,13 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
         unsafe_allow_html=True
     )
 
-    st.markdown('<div class="upload-v3-wrap">', unsafe_allow_html=True)
+    st.markdown('<div class="upload-v4-wrap">', unsafe_allow_html=True)
 
     st.markdown(
         """
-        <div class="upload-v3-hero">
-            <div class="upload-v3-badge"><span class="upload-v3-dot"></span>upload control center</div>
-            <div class="upload-v3-title">Kelola Data Upload</div>
-            <div class="upload-v3-desc">
+        <div class="upload-v4-hero">
+            <div class="upload-v4-title">Kelola Data Upload</div>
+            <div class="upload-v4-desc">
                 Tambahkan file baru ke antrian terlebih dahulu. File yang diunggah belum memengaruhi model sampai tombol
                 <b>Upload ke Data Aktif</b> diklik.
             </div>
@@ -6865,22 +6817,21 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
         unsafe_allow_html=True
     )
 
-    st.markdown('<div class="upload-v3-main-grid">', unsafe_allow_html=True)
-
-    left_col, right_col = st.columns([0.96, 1.04], gap="large")
+    left_col, right_col = st.columns([0.95, 1.05], gap="large")
 
     with left_col:
+        st.markdown('<div class="upload-v4-card">', unsafe_allow_html=True)
         st.markdown(
             """
-            <div class="upload-v3-card-head">
-                <div class="upload-v3-title-row">
-                    <div class="upload-v3-icon">⤴</div>
+            <div class="upload-v4-card-head">
+                <div class="upload-v4-title-row">
+                    <div class="upload-v4-icon">⤴</div>
                     <div>
-                        <div class="upload-v3-card-title">Upload File</div>
-                        <div class="upload-v3-card-subtitle">Pilih file Excel/CSV, lalu sistem menaruhnya ke antrian sementara.</div>
+                        <div class="upload-v4-card-title">Upload File ke Antrian</div>
+                        <div class="upload-v4-card-subtitle">Pilih file Excel atau CSV. File akan masuk antrian dulu sebelum digabung ke data aktif.</div>
                     </div>
                 </div>
-                <div class="upload-v3-pill">.xlsx / .xls / .csv</div>
+                <div class="upload-v4-pill">Excel / CSV</div>
             </div>
             """,
             unsafe_allow_html=True
@@ -6891,19 +6842,19 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             type=["xlsx", "xls", "csv"],
             help="File wajib memiliki kolom: tahun, bulan, jumlah_sampah.",
             accept_multiple_files=True,
-            key=f"modern_upload_panel_{st.session_state.uploader_key}",
+            key=f"clean_upload_panel_{st.session_state.uploader_key}",
             label_visibility="collapsed"
         )
 
         st.markdown(
             """
-            <div class="upload-v3-helper">
-                <span>Kolom wajib: tahun, bulan, jumlah_sampah</span>
-                <span>File masuk antrian dulu</span>
+            <div class="upload-v4-note">
+                Kolom wajib: <b>tahun</b>, <b>bulan</b>, dan <b>jumlah_sampah</b>. File tidak langsung memengaruhi model sebelum upload final.
             </div>
             """,
             unsafe_allow_html=True
         )
+        st.markdown('</div>', unsafe_allow_html=True)
 
     if uploaded_files_main:
         new_errors = []
@@ -6936,17 +6887,18 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
         st.rerun()
 
     with right_col:
+        st.markdown('<div class="upload-v4-card">', unsafe_allow_html=True)
         st.markdown(
             f"""
-            <div class="upload-v3-card-head">
-                <div class="upload-v3-title-row">
-                    <div class="upload-v3-icon">☷</div>
+            <div class="upload-v4-card-head">
+                <div class="upload-v4-title-row">
+                    <div class="upload-v4-icon">☷</div>
                     <div>
-                        <div class="upload-v3-card-title">Antrian File</div>
-                        <div class="upload-v3-card-subtitle">Cek file sebelum digabung ke data aktif.</div>
+                        <div class="upload-v4-card-title">Antrian File</div>
+                        <div class="upload-v4-card-subtitle">Cek file sebelum digabung ke data aktif.</div>
                     </div>
                 </div>
-                <div class="upload-v3-pill">{queue_count} file</div>
+                <div class="upload-v4-pill">{queue_count} file</div>
             </div>
             """,
             unsafe_allow_html=True
@@ -6955,10 +6907,10 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
         if queue_count == 0:
             st.markdown(
                 """
-                <div class="upload-v3-empty">
-                    <div class="upload-v3-empty-icon">🗂</div>
-                    <div class="upload-v3-empty-title">Belum ada file di antrian</div>
-                    <div class="upload-v3-empty-desc">
+                <div class="upload-v4-empty">
+                    <div class="upload-v4-empty-icon">🗂</div>
+                    <div class="upload-v4-empty-title">Belum ada file di antrian</div>
+                    <div class="upload-v4-empty-desc">
                         Unggah file dari panel kiri. Setelah valid, file akan muncul di sini sebelum digabung ke data aktif.
                     </div>
                 </div>
@@ -6971,9 +6923,9 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
                 with qcol1:
                     st.markdown(
                         f"""
-                        <div class="upload-v3-file-row">
-                            <div class="upload-v3-file-title">{idx + 1}. {html.escape(item.get('name', 'file upload'))}</div>
-                            <div class="upload-v3-file-meta">{format_file_size(item.get('size', 0))} • siap diproses ke data aktif</div>
+                        <div class="upload-v4-file-row">
+                            <div class="upload-v4-file-title">{idx + 1}. {html.escape(item.get('name', 'file upload'))}</div>
+                            <div class="upload-v4-file-meta">{format_file_size(item.get('size', 0))} • siap diproses ke data aktif</div>
                         </div>
                         """,
                         unsafe_allow_html=True
@@ -6986,38 +6938,15 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
                         st.session_state.uploader_key += 1
                         st.rerun()
 
-    st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
     if st.session_state.upload_error_messages:
         for error_message in st.session_state.upload_error_messages:
             st.error(f"File tidak valid: {error_message}")
 
-    st.markdown(
-        """
-        <div class="upload-v3-actions">
-            <div class="upload-v3-actions-title">Aksi Data</div>
-            <div class="upload-v3-actions-desc">Atur antrian file, lalu upload final saat sudah yakin.</div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    action_col1, action_col2, action_col3, action_col4 = st.columns([1.05, 1.0, 1.2, 0.9], gap="small")
+    action_col1, action_col2 = st.columns([1.35, 0.75], gap="small")
 
     with action_col1:
-        if st.button("＋ Tambah Data Lagi", key="upload_add_more", use_container_width=True):
-            st.session_state.uploader_key += 1
-            st.session_state.upload_success_message = ""
-            st.rerun()
-
-    with action_col2:
-        if st.button("Batalkan Antrian", key="upload_cancel_queue", use_container_width=True):
-            st.session_state.upload_queue = []
-            st.session_state.upload_error_messages = []
-            st.session_state.upload_success_message = ""
-            st.session_state.uploader_key += 1
-            st.rerun()
-
-    with action_col3:
         if st.button("Upload ke Data Aktif", key="upload_commit_queue", type="primary", disabled=queue_count == 0, use_container_width=True):
             jumlah_digabung = len(st.session_state.upload_queue)
             st.session_state.uploaded_data_payloads.extend(st.session_state.upload_queue)
@@ -7028,7 +6957,7 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             st.cache_data.clear()
             st.rerun()
 
-    with action_col4:
+    with action_col2:
         reset_disabled = active_upload_count == 0 and queue_count == 0
         if st.button("Reset Awal", key="upload_reset_default", disabled=reset_disabled, use_container_width=True):
             st.session_state.uploaded_data_payloads = []
@@ -7039,16 +6968,14 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             st.cache_data.clear()
             st.rerun()
 
-    st.markdown('</div>', unsafe_allow_html=True)
-
     if st.session_state.upload_success_message:
         st.markdown(
             f"""
-            <div class="upload-v3-success">
-                <div class="upload-v3-success-icon">✓</div>
+            <div class="upload-v4-success">
+                <div class="upload-v4-success-icon">✓</div>
                 <div>
-                    <div class="upload-v3-success-title">Upload berhasil</div>
-                    <div class="upload-v3-success-text">{html.escape(st.session_state.upload_success_message)}</div>
+                    <div class="upload-v4-success-title">Upload berhasil</div>
+                    <div class="upload-v4-success-text">{html.escape(st.session_state.upload_success_message)}</div>
                 </div>
             </div>
             """,
