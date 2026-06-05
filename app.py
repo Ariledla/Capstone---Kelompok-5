@@ -5373,30 +5373,7 @@ if source_data_type == "upload":
     )
     forecast_max_months = max(DEFAULT_FORECAST_MAX_MONTHS, forecast_max_months)
 
-if source_data_type == "upload":
-    jumlah_file_upload = len(st.session_state.uploaded_data_payloads)
-    st.sidebar.markdown(
-        f'''
-        <div class="upload-active-card">
-            <div class="upload-active-title">Data upload aktif</div>
-            <div class="upload-active-sub">{jumlah_file_upload} file sudah digabung</div>
-            <div class="upload-active-sub">{len(ts.dropna())} baris</div>
-            <div class="upload-active-sub">{periode_data}</div>
-        </div>
-        ''',
-        unsafe_allow_html=True
-    )
-else:
-    st.sidebar.markdown(
-        f'''
-        <div class="upload-active-card">
-            <div class="upload-active-title">Data aktif</div>
-            <div class="upload-active-sub">{len(ts.dropna())} baris</div>
-            <div class="upload-active-sub">{periode_data}</div>
-        </div>
-        ''',
-        unsafe_allow_html=True
-    )
+# Ringkasan data aktif di sidebar dihapus agar tampilan sidebar lebih bersih.
 
 menu = st.sidebar.radio(
     "Menu Utama",
