@@ -4473,26 +4473,6 @@ def render_eda_section(ts, theme):
 # SIDEBAR KIRI
 # ============================================================
 
-st.sidebar.markdown('<div class="theme-label">Pilih Tampilan</div>', unsafe_allow_html=True)
-
-theme_col1, theme_col2 = st.sidebar.columns(2)
-
-with theme_col1:
-    st.button(
-        "☀️",
-        use_container_width=True,
-        on_click=set_theme,
-        args=("Terang",)
-    )
-
-with theme_col2:
-    st.button(
-        "🌙",
-        use_container_width=True,
-        on_click=set_theme,
-        args=("Gelap",)
-    )
-
 uploaded_file = st.sidebar.file_uploader(
     "Upload data sampah terbaru",
     type=["xlsx", "xls", "csv"],
