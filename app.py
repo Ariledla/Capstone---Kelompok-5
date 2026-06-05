@@ -6376,8 +6376,12 @@ st.markdown(
 # ============================================================
 
 def render_upload_management_section(ts, source_data_type, periode_data, forecast_max_months):
-    """Halaman Kelola Data Upload tanpa card kosong.
-    Fokus: hero, panel upload, panel antrian, tombol upload final/reset.
+    """Halaman Kelola Data Upload.
+    Revisi fokus:
+    - dropzone hijau upload dilebarkan ke kanan sampai mendekati batas card putih
+    - teks 200MB per file ditampilkan penuh tanpa ellipsis
+    - card antrian diberi ruang bawah lebih lega tanpa menggeser garis hijau
+    - daftar file bawaan Streamlit setelah upload disembunyikan
     """
 
     active_upload_count = len(st.session_state.uploaded_data_payloads)
@@ -6387,16 +6391,20 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
         """
         <style>
         /* ============================================================
-           KELOLA DATA UPLOAD — NO EMPTY CARD VERSION
+           KELOLA DATA UPLOAD — FINAL PRECISE LAYOUT
            ============================================================ */
 
         main .block-container {
-            padding-top: 0.15rem !important;
+            padding-top: 0rem !important;
         }
 
-        /* Tarik halaman upload ke atas seperti halaman simulasi */
+        [data-testid="stMainBlockContainer"] {
+            padding-top: 0rem !important;
+        }
+
+        /* Tarik hero ke atas agar ruang kosong tidak terlalu lebar */
         div[data-testid="stElementContainer"]:has(.upload-v5-hero) {
-            margin-top: -300px !important;
+            margin-top: -318px !important;
             margin-bottom: 16px !important;
             padding-top: 0 !important;
             padding-bottom: 0 !important;
@@ -6460,13 +6468,13 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             margin: 0;
         }
 
-        /* Container Streamlit pada halaman upload dibuat menjadi card modern */
+        /* Card putih/luar Streamlit */
         .upload-v5-wrap div[data-testid="stVerticalBlockBorderWrapper"] {
-            border: 1px solid rgba(61,74,64,.95) !important;
+            border: 1px solid rgba(190,202,191,.42) !important;
             border-radius: 24px !important;
             background:
-                linear-gradient(150deg, rgba(255,255,255,.040), rgba(255,255,255,.008)),
-                rgba(29,38,31,.96) !important;
+                linear-gradient(150deg, rgba(255,255,255,.035), rgba(255,255,255,.006)),
+                rgba(18,27,22,.96) !important;
             box-shadow: 0 16px 38px rgba(0,0,0,.14) !important;
             overflow: hidden !important;
         }
@@ -6545,47 +6553,100 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             opacity: .92;
         }
 
+        /* ============================================================
+           FILE UPLOADER: hijau dalam card dilebarkan, bukan card luarnya
+           ============================================================ */
+
         [data-testid="stFileUploader"] {
+            width: 100% !important;
+            max-width: 100% !important;
             margin-top: 0 !important;
             margin-bottom: 0 !important;
         }
 
-        [data-testid="stFileUploader"] section {
+        [data-testid="stFileUploader"] > div,
+        [data-testid="stFileUploader"] div:has(> section) {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+
+        [data-testid="stFileUploader"] > label,
+        [data-testid="stFileUploader"] label {
+            display: none !important;
+        }
+
+        [data-testid="stFileUploader"] section,
+        [data-testid="stFileUploaderDropzone"] {
+            width: 100% !important;
+            max-width: 100% !important;
             min-height: 196px !important;
-            padding: 18px !important;
-            border-radius: 22px !important;
-            border: 1.4px dashed rgba(139,203,136,.24) !important;
+            padding: 26px 30px !important;
+            border-radius: 24px !important;
+            border: 1.4px dashed rgba(139,203,136,.28) !important;
             background:
                 radial-gradient(circle at 10% 12%, rgba(103,240,193,.09), transparent 22%),
                 linear-gradient(145deg, rgba(255,255,255,.035), rgba(255,255,255,.012)),
                 #1B241E !important;
+            box-sizing: border-box !important;
+            overflow: visible !important;
             display: flex !important;
             align-items: center !important;
-            justify-content: center !important;
-            text-align: center !important;
+            justify-content: flex-start !important;
+            text-align: left !important;
         }
 
-        [data-testid="stFileUploader"] section:hover {
-            border-color: rgba(103,240,193,.44) !important;
+        [data-testid="stFileUploader"] section:hover,
+        [data-testid="stFileUploaderDropzone"]:hover {
+            border-color: rgba(103,240,193,.50) !important;
             background:
                 radial-gradient(circle at 10% 12%, rgba(103,240,193,.12), transparent 22%),
                 linear-gradient(145deg, rgba(255,255,255,.045), rgba(255,255,255,.018)),
                 #1C2720 !important;
         }
 
+        [data-testid="stFileUploader"] section > div,
+        [data-testid="stFileUploaderDropzone"] > div {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            display: grid !important;
+            grid-template-columns: 185px minmax(250px, max-content) !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            column-gap: 30px !important;
+            row-gap: 0 !important;
+            overflow: visible !important;
+            text-align: left !important;
+        }
+
         [data-testid="stFileUploader"] section button,
+        [data-testid="stFileUploaderDropzone"] button,
         [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
         [data-testid="stFileUploader"] button[kind="secondary"] {
-            min-height: 42px !important;
-            border-radius: 14px !important;
-            border: 1px solid rgba(139,203,136,.18) !important;
+            width: 185px !important;
+            min-width: 185px !important;
+            max-width: 185px !important;
+            min-height: 58px !important;
+            height: 58px !important;
+            border-radius: 18px !important;
+            border: 1px solid rgba(139,203,136,.28) !important;
             background: linear-gradient(135deg, #26322A 0%, #2D3A30 100%) !important;
             color: #F5F7F2 !important;
-            font-weight: 850 !important;
-            box-shadow: 0 8px 20px rgba(0,0,0,.16) !important;
+            font-size: 16px !important;
+            font-weight: 900 !important;
+            box-shadow: 0 8px 20px rgba(0,0,0,.14) !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 10px !important;
+            overflow: visible !important;
+            white-space: nowrap !important;
+            grid-column: 1 / 2 !important;
+            align-self: center !important;
         }
 
         [data-testid="stFileUploader"] section button:hover,
+        [data-testid="stFileUploaderDropzone"] button:hover,
         [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"]:hover,
         [data-testid="stFileUploader"] button[kind="secondary"]:hover {
             background: linear-gradient(135deg, #2F7D52 0%, #4A8A58 100%) !important;
@@ -6593,14 +6654,59 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             border-color: #2F7D52 !important;
         }
 
-        [data-testid="stFileUploader"] small,
-        [data-testid="stFileUploader"] section small,
-        [data-testid="stFileUploader"] section div,
-        [data-testid="stFileUploader"] section span,
-        [data-testid="stFileUploader"] section p {
-            color: #D8E0D4 !important;
-            font-weight: 650 !important;
+        /* Teks kanan sejajar vertikal dengan tombol kiri, dan tidak boleh ellipsis */
+        [data-testid="stFileUploader"] small {
+            grid-column: 2 / 3 !important;
+            align-self: center !important;
+            min-width: 290px !important;
+            width: max-content !important;
+            max-width: none !important;
+            overflow: visible !important;
+            text-overflow: clip !important;
+            white-space: nowrap !important;
+            color: transparent !important;
+            font-size: 0 !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            display: block !important;
         }
+
+        [data-testid="stFileUploader"] small::after {
+            content: "200MB per file • XLSX, XLS, CSV";
+            display: inline-block !important;
+            color: #F5F7F2 !important;
+            font-size: 16px !important;
+            line-height: 1.2 !important;
+            font-weight: 900 !important;
+            white-space: nowrap !important;
+            overflow: visible !important;
+            text-overflow: clip !important;
+        }
+
+        [data-testid="stFileUploader"] section p,
+        [data-testid="stFileUploader"] section span,
+        [data-testid="stFileUploader"] section div,
+        [data-testid="stFileUploaderDropzone"] p,
+        [data-testid="stFileUploaderDropzone"] span,
+        [data-testid="stFileUploaderDropzone"] div {
+            overflow: visible !important;
+            text-overflow: clip !important;
+        }
+
+        /* Setelah file dipilih, card bawaan Streamlit + tombol X disembunyikan */
+        [data-testid="stFileUploaderFile"],
+        [data-testid="stFileUploader"] ul,
+        [data-testid="stFileUploader"] li,
+        [data-testid="stFileUploader"] [data-testid="stFileUploaderFile"],
+        [data-testid="stFileUploaderDropzone"] + div {
+            display: none !important;
+        }
+
+        /* ============================================================
+           EMPTY STATE ANTRIAN
+           Garis hijau tetap, garis putih/card luar diturunkan dengan spacer bawah.
+           ============================================================ */
 
         .upload-v5-empty {
             min-height: 196px;
@@ -6614,37 +6720,47 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 22px;
+            padding: 34px 22px 38px;
             box-sizing: border-box;
         }
 
         .upload-v5-empty-icon {
-            width: 62px;
-            height: 62px;
-            border-radius: 18px;
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             background: linear-gradient(135deg, rgba(103,240,193,.13), rgba(241,190,84,.12));
             border: 1px solid rgba(139,203,136,.18);
-            margin-bottom: 13px;
-            font-size: 26px;
+            margin-bottom: 16px;
+        }
+
+        .upload-v5-empty-icon svg {
+            width: 34px;
+            height: 34px;
+            display: block;
         }
 
         .upload-v5-empty-title {
             color: #F5F7F2 !important;
-            font-size: 15.5px;
+            font-size: 16px;
             line-height: 1.35;
             font-weight: 900;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
 
         .upload-v5-empty-desc {
             color: #D8E0D4 !important;
-            font-size: 12.2px;
-            line-height: 1.5;
-            font-weight: 650;
-            max-width: 360px;
+            font-size: 12.4px;
+            line-height: 1.6;
+            font-weight: 700;
+            max-width: 470px;
+            margin: 0 auto;
+        }
+
+        .upload-v5-right-bottom-spacer {
+            height: 58px;
         }
 
         .upload-v5-file-row {
@@ -6764,8 +6880,34 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             }
 
             [data-testid="stFileUploader"] section,
+            [data-testid="stFileUploaderDropzone"],
             .upload-v5-empty {
                 min-height: 165px !important;
+            }
+
+            [data-testid="stFileUploader"] section > div,
+            [data-testid="stFileUploaderDropzone"] > div {
+                grid-template-columns: 1fr !important;
+                row-gap: 14px !important;
+            }
+
+            [data-testid="stFileUploader"] section button,
+            [data-testid="stFileUploaderDropzone"] button,
+            [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
+            [data-testid="stFileUploader"] button[kind="secondary"] {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            [data-testid="stFileUploader"] small {
+                grid-column: 1 / 2 !important;
+                min-width: 0 !important;
+                width: 100% !important;
+            }
+
+            [data-testid="stFileUploader"] small::after {
+                white-space: normal !important;
+                font-size: 13px !important;
             }
         }
         </style>
@@ -6878,12 +7020,19 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
                 st.markdown(
                     """
                     <div class="upload-v5-empty">
-                        <div class="upload-v5-empty-icon">🗂</div>
+                        <div class="upload-v5-empty-icon">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <path d="M5 6.2H11.7L13.5 8H19C20.1 8 21 8.9 21 10V17.4C21 18.5 20.1 19.4 19 19.4H5C3.9 19.4 3 18.5 3 17.4V8.2C3 7.1 3.9 6.2 5 6.2Z" stroke="#F5F7F2" stroke-width="1.7" stroke-linejoin="round"/>
+                                <path d="M7.5 12H16.5" stroke="#F5F7F2" stroke-width="1.7" stroke-linecap="round"/>
+                                <path d="M7.5 15H14" stroke="#F5F7F2" stroke-width="1.7" stroke-linecap="round"/>
+                            </svg>
+                        </div>
                         <div class="upload-v5-empty-title">Belum ada file di antrian</div>
                         <div class="upload-v5-empty-desc">
                             Unggah file dari panel kiri. Setelah valid, file akan muncul di sini sebelum digabung ke data aktif.
                         </div>
                     </div>
+                    <div class="upload-v5-right-bottom-spacer"></div>
                     """,
                     unsafe_allow_html=True
                 )
