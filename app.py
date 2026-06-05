@@ -2486,6 +2486,48 @@ theme = apply_theme("Gelap")
 
 
 # ============================================================
+# OVERVIEW CARD BACKGROUND FIX — v61
+# Menyamakan background card Ringkasan Data & Model dengan KPI card dark theme.
+# ============================================================
+
+st.markdown(
+    """
+    <style>
+    .overview-mini-card,
+    .overview-panel {
+        background:
+            linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0.000)),
+            #222A24 !important;
+        border-color: #3D4A40 !important;
+        box-shadow: 0 10px 26px rgba(0,0,0,0.14) !important;
+    }
+
+    .overview-mini-card::before,
+    .overview-panel::before {
+        background:
+            radial-gradient(circle at 16% 8%, rgba(139, 203, 136, 0.12), transparent 34%),
+            radial-gradient(circle at 95% 12%, rgba(226, 177, 93, 0.10), transparent 32%) !important;
+        pointer-events: none !important;
+    }
+
+    .overview-mini-card::after {
+        display: none !important;
+    }
+
+    .overview-mini-card > *,
+    .overview-panel > * {
+        position: relative !important;
+        z-index: 2 !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+
+
+# ============================================================
 # HERO VISUAL GAP FIX — v60
 # Target: hero naik seperti referensi, tetapi section bawah tetap ikut rapat.
 # Penyebab gap besar adalah elemen CSS/komponen sebelum hero; jadi yang digeser
@@ -2755,25 +2797,33 @@ st.markdown(
         border: 1px solid #3D4A40;
         background:
             linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0.000)),
-            {cfg["card"]};
-        box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+            #222A24 !important;
+        box-shadow: 0 10px 26px rgba(0,0,0,0.14);
         padding: 15px 17px;
         box-sizing: border-box;
         position: relative;
         overflow: hidden;
     }
 
-    .overview-mini-card::after {
+    .overview-mini-card::before {
         content: "";
         position: absolute;
-        width: 72px;
-        height: 72px;
-        right: -28px;
-        top: -28px;
-        border-radius: 999px;
+        inset: 0;
+        border-radius: 20px;
         background:
-            radial-gradient(circle at 16% 8%, {cfg["accent_soft"]}, transparent 34%),
+            radial-gradient(circle at 16% 8%, rgba(139, 203, 136, 0.12), transparent 34%),
             radial-gradient(circle at 95% 12%, rgba(226, 177, 93, 0.10), transparent 32%);
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .overview-mini-card::after {
+        display: none !important;
+    }
+
+    .overview-mini-card > * {
+        position: relative;
+        z-index: 2;
     }
 
     .overview-mini-top {
@@ -2851,11 +2901,9 @@ st.markdown(
         border-radius: 24px;
         border: 1px solid #3D4A40;
         background:
-            radial-gradient(circle at 8% 8%, rgba(139, 203, 136, 0.15), transparent 34%),
-            radial-gradient(circle at 96% 0%, rgba(226, 177, 93, 0.10), transparent 30%),
             linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0.000)),
-            #222A24;
-        box-shadow: 0 14px 34px rgba(0,0,0,0.15);
+            #222A24 !important;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.14);
         padding: 21px 23px;
         min-height: 318px;
         box-sizing: border-box;
@@ -2866,12 +2914,12 @@ st.markdown(
     .overview-panel::before {
         content: "";
         position: absolute;
-        width: 145px;
-        height: 145px;
-        right: -70px;
-        top: -70px;
-        border-radius: 999px;
-        background: rgba(139, 203, 136, 0.07);
+        inset: 0;
+        border-radius: 24px;
+        background:
+            radial-gradient(circle at 16% 8%, rgba(139, 203, 136, 0.12), transparent 34%),
+            radial-gradient(circle at 95% 12%, rgba(226, 177, 93, 0.10), transparent 32%);
+        pointer-events: none;
     }
 
     .overview-panel > * {
@@ -2933,10 +2981,12 @@ st.markdown(
     .overview-model-highlight {
         border-radius: 18px;
         background:
-            linear-gradient(135deg, rgba(139, 203, 136, 0.16), rgba(226, 177, 93, 0.11));
+            linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0.000)),
+            rgba(38, 48, 41, 0.82) !important;
         border: 1px solid rgba(139, 203, 136, 0.26);
         padding: 14px 16px;
         margin-bottom: 14px;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
     }
 
     .overview-model-kicker {
