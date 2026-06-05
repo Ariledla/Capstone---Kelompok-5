@@ -542,7 +542,7 @@ def apply_theme(mode):
             padding-top: 0rem !important;
             padding-left: 0.72rem !important;
             padding-right: 0.72rem !important;
-            padding-bottom: 0.3rem !important;
+            padding-bottom: 0rem !important;
         }}
 
         [data-testid="stMainBlockContainer"] {{
