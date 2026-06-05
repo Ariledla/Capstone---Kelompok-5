@@ -6384,10 +6384,6 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
     st.markdown(
         """
         <style>
-        main .block-container {
-            padding-top: 0rem !important;
-        }
-
         .upload-page-scope {
             width: 100%;
             max-width: 100%;
@@ -6399,7 +6395,7 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             border-radius: 28px;
             border: 1px solid rgba(217,168,74,.35);
             padding: 34px 38px;
-            margin: -210px 0 18px 0;
+            margin: 0 0 22px 0;
             background: linear-gradient(90deg, #2E7A4F 0%, #5C965D 48%, #C69C49 100%);
             box-shadow: 0 18px 40px rgba(0,0,0,.16);
         }
@@ -6505,24 +6501,22 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             margin-top: 12px;
         }
 
-        /* Uploader override khusus halaman ini: elemen hijau di dalam card dilebarkan, bukan card luarnya */
-        [data-testid="stFileUploader"] {
+        .upload-page-scope [data-testid="stFileUploader"] {
             width: 100% !important;
             max-width: 100% !important;
             margin: 6px 0 0 0 !important;
         }
 
-        [data-testid="stFileUploader"] > label,
-        [data-testid="stFileUploader"] label {
+        .upload-page-scope [data-testid="stFileUploader"] label {
             display: none !important;
         }
 
-        [data-testid="stFileUploader"] section,
-        [data-testid="stFileUploaderDropzone"] {
+        .upload-page-scope [data-testid="stFileUploader"] section,
+        .upload-page-scope [data-testid="stFileUploaderDropzone"] {
             width: 100% !important;
-            max-width: 100% !important;
+            max-width: none !important;
             min-height: 190px !important;
-            border: 1px dashed rgba(112,188,172,.42) !important;
+            border: 1px dashed rgba(112,188,172,.40) !important;
             border-radius: 28px !important;
             background:
                 radial-gradient(circle at 8% 14%, rgba(66,130,101,.22), transparent 22%),
@@ -6530,35 +6524,31 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             padding: 26px 28px !important;
             box-sizing: border-box !important;
             overflow: visible !important;
-            display: flex !important;
-            align-items: center !important;
         }
 
-        [data-testid="stFileUploader"] section > div,
-        [data-testid="stFileUploaderDropzone"] > div {
+        .upload-page-scope [data-testid="stFileUploader"] section > div,
+        .upload-page-scope [data-testid="stFileUploaderDropzone"] > div {
             width: 100% !important;
-            max-width: 100% !important;
-            min-width: 0 !important;
-            display: grid !important;
-            grid-template-columns: 170px minmax(0, max-content) !important;
+            max-width: none !important;
+            display: flex !important;
             align-items: center !important;
             justify-content: flex-start !important;
-            column-gap: 28px !important;
-            row-gap: 0 !important;
+            gap: 28px !important;
+            flex-wrap: nowrap !important;
             overflow: visible !important;
         }
 
-        [data-testid="stFileUploader"] section button,
-        [data-testid="stFileUploaderDropzone"] button,
-        [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
-        [data-testid="stFileUploader"] button[kind="secondary"] {
-            width: 170px !important;
-            min-width: 170px !important;
-            max-width: 170px !important;
+        .upload-page-scope [data-testid="stFileUploader"] section button,
+        .upload-page-scope [data-testid="stFileUploaderDropzone"] button,
+        .upload-page-scope [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
+        .upload-page-scope [data-testid="stFileUploader"] button[kind="secondary"] {
+            width: 164px !important;
+            min-width: 164px !important;
+            max-width: 164px !important;
             min-height: 56px !important;
             height: 56px !important;
             border-radius: 18px !important;
-            border: 1px solid rgba(112,188,172,.30) !important;
+            border: 1px solid rgba(112,188,172,.28) !important;
             background: rgba(66,130,101,.28) !important;
             color: #F5F7F2 !important;
             font-size: 15px !important;
@@ -6567,87 +6557,62 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             align-items: center !important;
             justify-content: center !important;
             gap: 10px !important;
-            flex: 0 0 170px !important;
+            flex: 0 0 164px !important;
             box-shadow: none !important;
-            overflow: visible !important;
-            white-space: nowrap !important;
         }
 
-        [data-testid="stFileUploader"] section button:hover,
-        [data-testid="stFileUploaderDropzone"] button:hover,
-        [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"]:hover,
-        [data-testid="stFileUploader"] button[kind="secondary"]:hover {
+        .upload-page-scope [data-testid="stFileUploader"] section button:hover,
+        .upload-page-scope [data-testid="stFileUploaderDropzone"] button:hover,
+        .upload-page-scope [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"]:hover,
+        .upload-page-scope [data-testid="stFileUploader"] button[kind="secondary"]:hover {
             background: rgba(72,149,114,.42) !important;
-            border-color: rgba(112,188,172,.58) !important;
+            border-color: rgba(112,188,172,.55) !important;
             color: #FFFFFF !important;
         }
 
-        [data-testid="stFileUploader"] section small,
-        [data-testid="stFileUploader"] section p,
-        [data-testid="stFileUploader"] section span,
-        [data-testid="stFileUploaderDropzone"] small,
-        [data-testid="stFileUploaderDropzone"] p,
-        [data-testid="stFileUploaderDropzone"] span {
+        .upload-page-scope [data-testid="stFileUploader"] section small,
+        .upload-page-scope [data-testid="stFileUploader"] section p,
+        .upload-page-scope [data-testid="stFileUploader"] section span,
+        .upload-page-scope [data-testid="stFileUploaderDropzone"] small,
+        .upload-page-scope [data-testid="stFileUploaderDropzone"] p,
+        .upload-page-scope [data-testid="stFileUploaderDropzone"] span {
             width: auto !important;
-            min-width: max-content !important;
             max-width: none !important;
             overflow: visible !important;
-            text-overflow: clip !important;
+            text-overflow: unset !important;
             white-space: nowrap !important;
             color: #F5F7F2 !important;
             font-size: 15px !important;
-            line-height: 1.25 !important;
+            line-height: 1.3 !important;
             font-weight: 800 !important;
             text-align: left !important;
+            flex: 0 0 auto !important;
             margin: 0 !important;
-            display: block !important;
-            align-self: center !important;
-            transform: translateY(0px) !important;
         }
 
-        [data-testid="stFileUploader"] small {
+        .upload-page-scope [data-testid="stFileUploader"] small {
             color: #F5F7F2 !important;
-            opacity: .92 !important;
-        }
-
-        /* Setelah file dipilih, daftar file default Streamlit disembunyikan agar tidak muncul card hitam + tombol X bawaan */
-        [data-testid="stFileUploaderFile"],
-        [data-testid="stFileUploader"] ul,
-        [data-testid="stFileUploader"] li,
-        [data-testid="stFileUploader"] [data-testid="stFileUploaderFile"],
-        [data-testid="stFileUploaderDropzone"] + div {
-            display: none !important;
         }
 
         .queue-empty-box {
             border: 1px dashed rgba(112,188,172,.28);
             border-radius: 26px;
-            min-height: 370px;
-            padding: 46px 24px 72px;
+            padding: 42px 24px;
             background: rgba(255,255,255,.02);
             text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
         }
 
         .queue-empty-icon {
-            width: 92px;
-            height: 92px;
-            margin: 0 auto 22px auto;
-            border-radius: 26px;
+            width: 84px;
+            height: 84px;
+            margin: 0 auto 18px auto;
+            border-radius: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
             background: linear-gradient(135deg, rgba(92,150,93,.20), rgba(198,156,73,.10));
             border: 1px solid rgba(129,176,126,.28);
-        }
-
-        .queue-empty-icon svg {
-            width: 42px;
-            height: 42px;
-            display: block;
+            font-size: 32px;
         }
 
         .queue-empty-title {
@@ -6664,7 +6629,7 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             line-height: 1.6;
             font-weight: 700;
             max-width: 420px;
-            margin: 0 auto 12px;
+            margin: 0 auto;
         }
 
         .queue-file-row {
@@ -6850,13 +6815,7 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
                 st.markdown(
                     """
                     <div class="queue-empty-box">
-                        <div class="queue-empty-icon">
-                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                <path d="M6 5.5H12.6L14.5 7.4H18C19.1 7.4 20 8.3 20 9.4V16.8C20 17.9 19.1 18.8 18 18.8H6C4.9 18.8 4 17.9 4 16.8V7.5C4 6.4 4.9 5.5 6 5.5Z" stroke="#F5F7F2" stroke-width="1.6" stroke-linejoin="round"/>
-                                <path d="M8 11.2H16" stroke="#F5F7F2" stroke-width="1.6" stroke-linecap="round"/>
-                                <path d="M8 14.2H13.8" stroke="#F5F7F2" stroke-width="1.6" stroke-linecap="round"/>
-                            </svg>
-                        </div>
+                        <div class="queue-empty-icon">🗂</div>
                         <div class="queue-empty-title">Belum ada file di antrian</div>
                         <div class="queue-empty-desc">Unggah file dari panel kiri. Setelah valid, file akan muncul di sini sebelum digabung ke data aktif.</div>
                     </div>
