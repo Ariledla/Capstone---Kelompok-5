@@ -3,7 +3,6 @@ warnings.filterwarnings("ignore")
 
 import io
 import textwrap
-import html
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -68,7 +67,7 @@ BULAN_INDO = {
     12: "Desember",
 }
 
-MENU_OPTIONS = ["Simulasi Pengelolaan", "Kelola Data Upload", "Ringkasan Data & Model"]
+MENU_OPTIONS = ["Simulasi Pengelolaan", "Ringkasan Data & Model"]
 
 # Konstanta simulasi operasional
 # Densitas digunakan untuk mengonversi prediksi ton menjadi volume m³.
@@ -190,36 +189,6 @@ def read_uploaded_dataframe(uploaded_bytes, uploaded_name):
         uploaded_df = pd.read_excel(file_buffer)
 
     return normalize_uploaded_columns(uploaded_df)
-
-
-def shorten_file_name(file_name, max_chars=28):
-    file_name = str(file_name)
-    if len(file_name) <= max_chars:
-        return file_name
-
-    if "." in file_name:
-        stem, ext = file_name.rsplit(".", 1)
-        ext = "." + ext
-    else:
-        stem, ext = file_name, ""
-
-    keep = max_chars - len(ext) - 3
-    if keep < 8:
-        keep = max_chars - 3
-        ext = ""
-
-    left = max(5, keep // 2)
-    right = max(4, keep - left)
-    return f"{stem[:left]}...{stem[-right:]}{ext}"
-
-
-def format_file_size(size_bytes):
-    size_bytes = float(size_bytes or 0)
-    if size_bytes < 1024:
-        return f"{size_bytes:.0f} B"
-    if size_bytes < 1024 ** 2:
-        return f"{size_bytes / 1024:.1f} KB"
-    return f"{size_bytes / (1024 ** 2):.1f} MB"
 
 
 @st.cache_data
@@ -489,12 +458,6 @@ if st.session_state.active_menu not in MENU_OPTIONS:
 
 if "uploaded_data_payloads" not in st.session_state:
     st.session_state.uploaded_data_payloads = []
-
-if "upload_queue" not in st.session_state:
-    st.session_state.upload_queue = []
-
-if "upload_error_messages" not in st.session_state:
-    st.session_state.upload_error_messages = []
 
 if "uploader_key" not in st.session_state:
     st.session_state.uploader_key = 0
@@ -5210,141 +5173,38 @@ st.markdown(
 # SIDEBAR KIRI
 # ============================================================
 
-# ============================================================
-# UPLOAD QUEUE — v70
-# File yang dipilih masuk antrian dulu, belum digabung ke data aktif.
-# User bisa hapus salah satu file / batalkan semua / gabungkan ke data.
-# ============================================================
-
-st.markdown(
-    '''
-    <style>
-    /* Sembunyikan row file bawaan Streamlit agar tidak crop/overflow */
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] [data-testid="stFileUploaderFile"],
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] ul,
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] li {
-        display: none !important;
-        visibility: hidden !important;
-        height: 0 !important;
-        min-height: 0 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        overflow: hidden !important;
-    }
-
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] {
-        width: 100% !important;
-        max-width: 100% !important;
-        overflow: hidden !important;
-    }
-
-    [data-testid="stSidebar"] [data-testid="stFileUploader"] section {
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-        overflow: hidden !important;
-    }
-
-    .upload-queue-card,
-    .upload-active-card {
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-        margin: 10px 0 12px 0 !important;
-        padding: 13px 14px !important;
-        border-radius: 18px !important;
-        border: 1px solid rgba(139, 203, 136, 0.55) !important;
-        background: rgba(34, 42, 36, 0.78) !important;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.12) !important;
-        text-align: center !important;
-        overflow: hidden !important;
-    }
-
-    .upload-queue-title,
-    .upload-active-title {
-        font-size: 13.6px !important;
-        line-height: 1.2 !important;
-        font-weight: 950 !important;
-        color: #F5F7F2 !important;
-        margin: 0 0 4px 0 !important;
-        text-align: center !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-    }
-
-    .upload-queue-sub,
-    .upload-active-sub {
-        font-size: 11.2px !important;
-        line-height: 1.35 !important;
-        font-weight: 750 !important;
-        color: #D8E0D4 !important;
-        margin: 0 !important;
-        text-align: center !important;
-        overflow-wrap: anywhere !important;
-    }
-
-    .upload-file-pill {
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-        border: 1px solid rgba(255,255,255,0.10) !important;
-        background: rgba(255,255,255,0.055) !important;
-        border-radius: 13px !important;
-        padding: 8px 9px !important;
-        margin: 6px 0 !important;
-        overflow: hidden !important;
-    }
-
-    .upload-file-name {
-        font-size: 11.4px !important;
-        line-height: 1.25 !important;
-        font-weight: 850 !important;
-        color: #F5F7F2 !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-        text-align: left !important;
-        display: block !important;
-        max-width: 100% !important;
-    }
-
-    .upload-file-meta {
-        display: block !important;
-        font-size: 9.8px !important;
-        line-height: 1.2 !important;
-        font-weight: 700 !important;
-        color: #D8E0D4 !important;
-        text-align: left !important;
-        margin-top: 2px !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-    }
-
-    [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"] {
-        width: 100% !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-    }
-
-    [data-testid="stSidebar"] div[data-testid="column"] {
-        min-width: 0 !important;
-        box-sizing: border-box !important;
-    }
-
-    [data-testid="stSidebar"] .stButton > button {
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-    }
-    </style>
-    ''',
-    unsafe_allow_html=True
+uploaded_file = st.sidebar.file_uploader(
+    "Upload data sampah terbaru",
+    type=["xlsx", "xls", "csv"],
+    help="Format minimal: kolom tahun, bulan, dan jumlah_sampah.",
+    key=f"sidebar_upload_data_sampah_v64_{st.session_state.uploader_key}"
 )
 
-# Upload/antrian dipindahkan ke halaman utama "Kelola Data Upload" agar sidebar tetap rapi.
-# Sidebar hanya menampilkan ringkasan data aktif, menu utama, dan kartu dashboard.
+if uploaded_file is not None:
+    if st.sidebar.button("Tambahkan ke Data Gabungan", key="add_uploaded_data_to_history"):
+        try:
+            uploaded_bytes = uploaded_file.getvalue()
+            uploaded_name = uploaded_file.name
+
+            # Validasi cepat agar file yang salah tidak masuk ke data gabungan sementara.
+            read_uploaded_dataframe(uploaded_bytes, uploaded_name)
+
+            st.session_state.uploaded_data_payloads.append({
+                "name": uploaded_name,
+                "bytes": uploaded_bytes
+            })
+            st.session_state.uploader_key += 1
+            st.cache_data.clear()
+            st.rerun()
+        except Exception as error:
+            st.sidebar.error(f"File upload tidak valid: {error}")
+
+if st.session_state.uploaded_data_payloads:
+    if st.sidebar.button("Reset ke Data Awal", key="reset_to_default_data"):
+        st.session_state.uploaded_data_payloads = []
+        st.session_state.uploader_key += 1
+        st.cache_data.clear()
+        st.rerun()
 
 try:
     upload_payloads = tuple(
@@ -5355,7 +5215,6 @@ try:
 except Exception as error:
     st.sidebar.error(f"Data tidak dapat dimuat: {error}")
     st.session_state.uploaded_data_payloads = []
-    st.session_state.upload_queue = []
     st.cache_data.clear()
     df_raw, df, ts, source_data_name, source_data_type = load_data()
 
@@ -5376,25 +5235,12 @@ if source_data_type == "upload":
 if source_data_type == "upload":
     jumlah_file_upload = len(st.session_state.uploaded_data_payloads)
     st.sidebar.markdown(
-        f'''
-        <div class="upload-active-card">
-            <div class="upload-active-title">Data upload aktif</div>
-            <div class="upload-active-sub">{jumlah_file_upload} file sudah digabung</div>
-            <div class="upload-active-sub">{len(ts.dropna())} baris</div>
-            <div class="upload-active-sub">{periode_data}</div>
-        </div>
-        ''',
+        f'<div class=\"data-status success\"><span class=\"modern-status-dot success-dot\"></span><div class=\"data-status-copy\"><b>Data upload aktif</b><span>{jumlah_file_upload} file | {len(ts.dropna())} baris | {periode_data}</span></div></div>',
         unsafe_allow_html=True
     )
 else:
     st.sidebar.markdown(
-        f'''
-        <div class="upload-active-card">
-            <div class="upload-active-title">Data aktif</div>
-            <div class="upload-active-sub">{len(ts.dropna())} baris</div>
-            <div class="upload-active-sub">{periode_data}</div>
-        </div>
-        ''',
+        f'<div class=\"data-status info\"><span class=\"modern-status-dot info-dot\"></span><div class=\"data-status-copy\"><b>Data aktif</b><span>{len(ts.dropna())} baris | {periode_data}</span></div></div>',
         unsafe_allow_html=True
     )
 
@@ -6390,282 +6236,6 @@ st.markdown(
 
 
 
-
-# ============================================================
-# HALAMAN KELOLA DATA UPLOAD
-# ============================================================
-
-def render_upload_management_section(ts, source_data_type, periode_data, forecast_max_months):
-    st.markdown('<div class="section-title">Kelola Data Upload</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="section-desc">Tambahkan data baru ke antrian terlebih dahulu. Data baru belum memengaruhi model sampai tombol <b>Gabungkan ke Data</b> diklik.</div>',
-        unsafe_allow_html=True
-    )
-
-    st.markdown(
-        """
-        <style>
-        .main-upload-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 16px;
-            margin: 4px 0 18px 0;
-        }
-        .main-upload-card {
-            background: rgba(255,255,255,0.035);
-            border: 1px solid rgba(139,203,136,0.22);
-            border-radius: 20px;
-            padding: 18px 20px;
-            min-height: 94px;
-            box-sizing: border-box;
-            box-shadow: 0 10px 26px rgba(0,0,0,.10);
-        }
-        .main-upload-label {
-            font-size: 13px;
-            font-weight: 850;
-            color: #D8E0D4;
-            margin-bottom: 8px;
-        }
-        .main-upload-value {
-            font-size: 24px;
-            line-height: 1.12;
-            font-weight: 950;
-            color: #F5F7F2;
-            letter-spacing: -0.4px;
-            overflow-wrap: anywhere;
-        }
-        .main-upload-note {
-            margin-top: 7px;
-            font-size: 12px;
-            line-height: 1.35;
-            font-weight: 700;
-            color: #D8E0D4;
-        }
-        .upload-panel {
-            background: rgba(255,255,255,0.035);
-            border: 1px solid rgba(139,203,136,0.24);
-            border-radius: 22px;
-            padding: 22px 24px;
-            margin: 14px 0 18px 0;
-            box-sizing: border-box;
-            overflow: hidden;
-        }
-        .upload-panel-title {
-            font-size: 18px;
-            font-weight: 950;
-            margin-bottom: 6px;
-            color: #F5F7F2;
-        }
-        .upload-panel-desc {
-            font-size: 13px;
-            font-weight: 650;
-            line-height: 1.55;
-            color: #D8E0D4;
-            margin-bottom: 16px;
-        }
-        .queue-header {
-            background: rgba(139,203,136,.09);
-            border: 1px solid rgba(139,203,136,.22);
-            border-radius: 18px;
-            padding: 16px 18px;
-            margin: 14px 0 12px 0;
-            text-align: center;
-        }
-        .queue-header-title {
-            font-size: 18px;
-            font-weight: 950;
-            color: #F5F7F2;
-            margin-bottom: 5px;
-        }
-        .queue-header-sub {
-            font-size: 13px;
-            font-weight: 750;
-            color: #D8E0D4;
-        }
-        .queue-row {
-            background: rgba(255,255,255,0.035);
-            border: 1px solid rgba(139,203,136,0.17);
-            border-radius: 16px;
-            padding: 12px 14px;
-            margin: 8px 0;
-            box-sizing: border-box;
-        }
-        .queue-file-name {
-            font-size: 14px;
-            line-height: 1.25;
-            font-weight: 850;
-            color: #F5F7F2;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .queue-file-meta {
-            margin-top: 4px;
-            font-size: 11px;
-            font-weight: 700;
-            color: #D8E0D4;
-        }
-        .upload-empty-box {
-            border: 1px dashed rgba(139,203,136,.28);
-            border-radius: 18px;
-            padding: 22px;
-            margin: 14px 0;
-            text-align: center;
-            color: #D8E0D4;
-            font-weight: 750;
-            background: rgba(255,255,255,.025);
-        }
-        @media screen and (max-width: 900px) {
-            .main-upload-grid { grid-template-columns: 1fr; gap: 10px; }
-            .main-upload-card { min-height: auto; padding: 14px; }
-            .main-upload-value { font-size: 18px; }
-            .upload-panel { padding: 16px 14px; border-radius: 18px; }
-            .queue-file-name { white-space: normal; overflow-wrap: anywhere; }
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-
-    data_mode = "Data upload aktif" if source_data_type == "upload" else "Data bawaan aktif"
-    joined_count = len(st.session_state.uploaded_data_payloads)
-    queue_count = len(st.session_state.upload_queue)
-
-    st.markdown(
-        f"""
-        <div class="main-upload-grid">
-            <div class="main-upload-card">
-                <div class="main-upload-label">Status Data</div>
-                <div class="main-upload-value">{data_mode}</div>
-                <div class="main-upload-note">{len(ts.dropna())} baris | {periode_data}</div>
-            </div>
-            <div class="main-upload-card">
-                <div class="main-upload-label">File Digabung</div>
-                <div class="main-upload-value">{joined_count} file</div>
-                <div class="main-upload-note">File yang sudah masuk ke data aktif</div>
-            </div>
-            <div class="main-upload-card">
-                <div class="main-upload-label">Maksimal Prediksi</div>
-                <div class="main-upload-value">{int(forecast_max_months)} bulan</div>
-                <div class="main-upload-note">Naik otomatis setelah data baru digabung</div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    with st.container():
-        st.markdown(
-            """
-            <div class="upload-panel">
-                <div class="upload-panel-title">Upload File ke Antrian</div>
-                <div class="upload-panel-desc">Pilih satu atau beberapa file. File akan masuk ke antrian dulu, sehingga bisa dihapus atau dibatalkan sebelum digabung ke data aktif.</div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-        uploaded_files_main = st.file_uploader(
-            "Upload file data sampah",
-            type=["xlsx", "xls", "csv"],
-            help="Format minimal wajib memiliki kolom tahun, bulan, dan jumlah_sampah.",
-            accept_multiple_files=True,
-            key=f"main_upload_data_queue_{st.session_state.uploader_key}"
-        )
-
-        if uploaded_files_main:
-            new_errors = []
-            existing_keys = {
-                (item.get("name"), item.get("size"))
-                for item in st.session_state.upload_queue
-            }
-
-            for uploaded_file in uploaded_files_main:
-                uploaded_bytes = uploaded_file.getvalue()
-                uploaded_name = uploaded_file.name
-                uploaded_size = len(uploaded_bytes)
-
-                try:
-                    read_uploaded_dataframe(uploaded_bytes, uploaded_name)
-                    item_key = (uploaded_name, uploaded_size)
-                    if item_key not in existing_keys:
-                        st.session_state.upload_queue.append({
-                            "name": uploaded_name,
-                            "bytes": uploaded_bytes,
-                            "size": uploaded_size
-                        })
-                        existing_keys.add(item_key)
-                except Exception as error:
-                    new_errors.append(f"{uploaded_name}: {error}")
-
-            st.session_state.upload_error_messages = new_errors
-            st.session_state.uploader_key += 1
-            st.rerun()
-
-    if st.session_state.upload_error_messages:
-        for error_message in st.session_state.upload_error_messages:
-            st.error(f"File tidak valid: {error_message}")
-
-    if st.session_state.upload_queue:
-        st.markdown(
-            f"""
-            <div class="queue-header">
-                <div class="queue-header-title">Antrian Upload</div>
-                <div class="queue-header-sub">{queue_count} file siap digabung ke data aktif</div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-        for idx, item in enumerate(list(st.session_state.upload_queue)):
-            file_label = html.escape(shorten_file_name(item.get("name", "file upload"), max_chars=70))
-            file_size = format_file_size(item.get("size", len(item.get("bytes", b""))))
-            col_file, col_action = st.columns([0.82, 0.18], gap="small")
-            with col_file:
-                st.markdown(
-                    f"""
-                    <div class="queue-row">
-                        <div class="queue-file-name">{idx + 1}. {file_label}</div>
-                        <div class="queue-file-meta">{file_size}</div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-            with col_action:
-                st.write("")
-                if st.button("Hapus", key=f"main_remove_upload_queue_{idx}"):
-                    st.session_state.upload_queue.pop(idx)
-                    st.session_state.uploader_key += 1
-                    st.rerun()
-
-        action_col1, action_col2 = st.columns([0.62, 0.38], gap="small")
-        with action_col1:
-            if st.button("Gabungkan ke Data", key="main_merge_upload_queue_to_data", use_container_width=True):
-                st.session_state.uploaded_data_payloads.extend(st.session_state.upload_queue)
-                st.session_state.upload_queue = []
-                st.session_state.upload_error_messages = []
-                st.cache_data.clear()
-                st.rerun()
-        with action_col2:
-            if st.button("Batalkan Semua", key="main_clear_upload_queue", use_container_width=True):
-                st.session_state.upload_queue = []
-                st.session_state.upload_error_messages = []
-                st.session_state.uploader_key += 1
-                st.rerun()
-    else:
-        st.markdown('<div class="upload-empty-box">Belum ada file di antrian. Upload file untuk menyiapkan data tambahan.</div>', unsafe_allow_html=True)
-
-    if st.session_state.uploaded_data_payloads:
-        st.markdown("---")
-        if st.button("Reset ke Data Awal", key="main_reset_to_default_data", use_container_width=True):
-            st.session_state.uploaded_data_payloads = []
-            st.session_state.upload_queue = []
-            st.session_state.upload_error_messages = []
-            st.session_state.uploader_key += 1
-            st.cache_data.clear()
-            st.rerun()
-
-
 # ============================================================
 # HERO
 # ============================================================
@@ -6816,14 +6386,6 @@ if menu == "Simulasi Pengelolaan":
 
 # ============================================================
 # MENU 2
-# ============================================================
-
-elif menu == "Kelola Data Upload":
-    render_upload_management_section(ts, source_data_type, periode_data, forecast_max_months)
-
-
-# ============================================================
-# MENU 3
 # ============================================================
 
 elif menu == "Ringkasan Data & Model":
