@@ -2486,63 +2486,6 @@ theme = apply_theme("Gelap")
 
 
 # ============================================================
-# HERO TOP GAP FIX — v57
-# Mengurangi ruang kosong atas hero dan jarak hero ke section bawah
-# tanpa mengubah elemen lain.
-# ============================================================
-
-st.markdown(
-    """
-    <style>
-    /* Reset margin hero supaya tidak meninggalkan gap layout yang aneh */
-    .hero {
-        margin-top: 0px !important;
-        margin-bottom: 8px !important;
-    }
-
-    /* Geser satu blok hero ke atas dan rapatkan jarak bawahnya */
-    div[data-testid="stElementContainer"]:has(.hero) {
-        margin-top: -92px !important;
-        margin-bottom: -46px !important;
-    }
-
-    div[data-testid="stMarkdownContainer"]:has(.hero) {
-        margin-top: 0px !important;
-        margin-bottom: 0px !important;
-    }
-
-    /* Section setelah hero dibuat lebih dekat */
-    .section-title {
-        margin-top: 0px !important;
-    }
-
-    /* Kalau sidebar ditutup, tetap pakai jarak yang sama */
-    body.sidebar-custom-closed div[data-testid="stElementContainer"]:has(.hero) {
-        margin-top: -92px !important;
-        margin-bottom: -46px !important;
-    }
-
-    @media screen and (max-width: 900px) {
-        div[data-testid="stElementContainer"]:has(.hero),
-        body.sidebar-custom-closed div[data-testid="stElementContainer"]:has(.hero) {
-            margin-top: 0px !important;
-            margin-bottom: 4px !important;
-        }
-
-        .hero {
-            margin-top: 0px !important;
-            margin-bottom: 10px !important;
-        }
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-
-
-
-# ============================================================
 # PREMIUM READABLE TABLE DESIGN — v56
 # Tabel dibuat lebih terang, rapi, center, compact tapi tetap mudah dibaca.
 # ============================================================
