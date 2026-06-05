@@ -2486,6 +2486,172 @@ theme = apply_theme("Gelap")
 
 
 # ============================================================
+# MODERN COMPACT TABLE DESIGN — v55
+# Redesign khusus tabel agar lebih compact, modern, dan tidak boros ruang.
+# ============================================================
+
+st.markdown(
+    """
+    <style>
+    /* Bungkus tabel jadi panel modern, bukan grid tebal */
+    .custom-table-wrapper {
+        width: 100% !important;
+        overflow-x: auto !important;
+        border: 1px solid #3D4A40 !important;
+        border-radius: 18px !important;
+        background:
+            radial-gradient(circle at 8% 0%, rgba(139, 203, 136, 0.10), transparent 28%),
+            linear-gradient(145deg, rgba(255,255,255,0.030), rgba(255,255,255,0.000)),
+            #1C241F !important;
+        padding: 8px !important;
+        margin: 6px 0 18px 0 !important;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.16) !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Hilangkan kesan tabel Excel: lebih clean dan padat */
+    table.custom-table {
+        width: 100% !important;
+        table-layout: fixed !important;
+        border-collapse: separate !important;
+        border-spacing: 0 5px !important;
+        background: transparent !important;
+        color: #F5F7F2 !important;
+        font-size: 12.2px !important;
+        line-height: 1.15 !important;
+        margin: 0 !important;
+        border: none !important;
+        border-radius: 14px !important;
+        overflow: hidden !important;
+    }
+
+    /* Header lebih tipis, seperti dashboard table */
+    table.custom-table thead tr th {
+        background:
+            linear-gradient(135deg, rgba(139,203,136,0.15), rgba(226,177,93,0.06)),
+            #263029 !important;
+        color: #F5F7F2 !important;
+        font-weight: 950 !important;
+        font-size: 11.6px !important;
+        letter-spacing: 0.01em !important;
+        padding: 9px 12px !important;
+        height: 34px !important;
+        border: none !important;
+        border-bottom: 1px solid rgba(139,203,136,0.22) !important;
+        text-align: left !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        vertical-align: middle !important;
+    }
+
+    table.custom-table thead tr th:first-child {
+        border-top-left-radius: 13px !important;
+        border-bottom-left-radius: 13px !important;
+    }
+
+    table.custom-table thead tr th:last-child {
+        border-top-right-radius: 13px !important;
+        border-bottom-right-radius: 13px !important;
+    }
+
+    /* Isi tabel compact, row seperti kartu tipis */
+    table.custom-table tbody tr td,
+    table.custom-table tbody tr th {
+        background: rgba(34,42,36,0.82) !important;
+        color: #D8E0D4 !important;
+        padding: 8px 12px !important;
+        height: 32px !important;
+        border: none !important;
+        border-top: 1px solid rgba(61,74,64,0.50) !important;
+        border-bottom: 1px solid rgba(61,74,64,0.50) !important;
+        font-weight: 760 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        vertical-align: middle !important;
+    }
+
+    table.custom-table tbody tr td:first-child,
+    table.custom-table tbody tr th:first-child {
+        color: #F5F7F2 !important;
+        font-weight: 900 !important;
+        border-left: 1px solid rgba(61,74,64,0.50) !important;
+        border-top-left-radius: 12px !important;
+        border-bottom-left-radius: 12px !important;
+    }
+
+    table.custom-table tbody tr td:last-child,
+    table.custom-table tbody tr th:last-child {
+        border-right: 1px solid rgba(61,74,64,0.50) !important;
+        border-top-right-radius: 12px !important;
+        border-bottom-right-radius: 12px !important;
+    }
+
+    table.custom-table tbody tr:nth-child(even) td,
+    table.custom-table tbody tr:nth-child(even) th {
+        background: rgba(38,48,41,0.76) !important;
+    }
+
+    table.custom-table tbody tr:hover td,
+    table.custom-table tbody tr:hover th {
+        background: rgba(139,203,136,0.115) !important;
+        color: #F5F7F2 !important;
+    }
+
+    /* Kolom angka rata kanan supaya lebih mudah dibaca */
+    table.custom-table thead tr th:not(:first-child),
+    table.custom-table tbody tr td:not(:first-child) {
+        text-align: right !important;
+    }
+
+    /* Tabel evaluasi 1 baris jangan terlihat terlalu kosong */
+    .custom-table-wrapper table.custom-table tbody:has(tr:only-child) tr td,
+    .custom-table-wrapper table.custom-table tbody:has(tr:only-child) tr th {
+        height: 36px !important;
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+    }
+
+    /* Kalau ada kolom model, tetap kiri karena teks model panjang */
+    table.custom-table thead tr th:first-child,
+    table.custom-table tbody tr td:first-child {
+        text-align: left !important;
+    }
+
+    /* Khusus mobile: tetap compact tapi tidak kepotong brutal */
+    @media screen and (max-width: 900px) {
+        .custom-table-wrapper {
+            padding: 6px !important;
+            border-radius: 14px !important;
+            margin-bottom: 12px !important;
+            overflow-x: auto !important;
+        }
+
+        table.custom-table {
+            min-width: 540px !important;
+            font-size: 10px !important;
+            border-spacing: 0 4px !important;
+        }
+
+        table.custom-table thead tr th,
+        table.custom-table tbody tr td,
+        table.custom-table tbody tr th {
+            font-size: 9.6px !important;
+            padding: 7px 8px !important;
+            height: 29px !important;
+            white-space: nowrap !important;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+
+
+# ============================================================
 # DATA & MODEL OVERVIEW REDESIGN — v52
 # Redesign khusus halaman Ringkasan Data & Model.
 # ============================================================
