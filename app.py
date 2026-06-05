@@ -4845,36 +4845,97 @@ st.markdown(
 
 
 # ============================================================
-# SIDEBAR LEFT BALANCE FIX — v45
-# Geser seluruh isi sidebar sedikit ke kiri agar space kiri-kanan lebih simetris.
+# SIDEBAR SELECTIVE BALANCE FIX — v46
+# Perbaikan dari v45:
+# - Card Dashboard Sampah tidak ikut geser.
+# - Elemen atas/sidebar hanya digeser sedikit ke kiri.
+# - Tombol matahari/bulan diturunkan agar tidak nabrak judul.
+# - Upload button dibuat selebar penuh di dalam upload box.
 # ============================================================
 
 st.markdown(
     f"""
     <style>
     :root {{
-        --sidebar-balance-shift: -22px;
+        --sidebar-soft-shift: -10px;
     }}
 
-    /* Geser kelompok elemen utama sidebar ke kiri secara halus */
+    /* Jangan geser card dashboard bawah. Card ini sudah pas. */
+    .sidebar-visual {{
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }}
+
+    /* Geser hanya elemen kontrol atas sedikit ke kiri, bukan card bawah */
     [data-testid="stSidebar"] .theme-label,
     [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton),
     [data-testid="stSidebar"] [data-testid="stFileUploader"],
     [data-testid="stSidebar"] .data-status,
     [data-testid="stSidebar"] .stRadio {{
-        transform: translateX(var(--sidebar-balance-shift)) !important;
+        transform: translateX(var(--sidebar-soft-shift)) !important;
     }}
 
-    /* Card bawah ikut digeser agar sejajar dengan elemen atas */
-    .sidebar-visual {{
-        transform: translateX(calc(-50% + var(--sidebar-balance-shift))) !important;
+    /* Judul Pilih Tampilan diberi napas ke tombol tema */
+    [data-testid="stSidebar"] .theme-label {{
+        margin-bottom: 13px !important;
+        line-height: 1.1 !important;
+        position: relative !important;
+        z-index: 2 !important;
     }}
 
-    /* Biar tidak ada elemen yang kepotong setelah digeser */
-    [data-testid="stSidebar"],
-    [data-testid="stSidebarContent"],
-    [data-testid="stSidebarUserContent"] {{
-        overflow-x: hidden !important;
+    /* Tombol matahari/bulan turun sedikit, tidak nabrak judul */
+    [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) {{
+        margin-top: 7px !important;
+        margin-bottom: 18px !important;
+        position: relative !important;
+        z-index: 1 !important;
+    }}
+
+    /* Upload label dan ikon ? tetap sejajar, agak dekat dengan box */
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] > label {{
+        margin-bottom: 7px !important;
+        align-items: center !important;
+    }}
+
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] [data-testid="stTooltipIcon"] {{
+        transform: scale(.78) translateY(0px) !important;
+        align-self: center !important;
+    }}
+
+    /* Box upload: isi stretch agar tombol bisa selebar penuh */
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section {{
+        align-items: stretch !important;
+        justify-content: center !important;
+    }}
+
+    /* Tombol upload selebar penuh, tapi tetap rapi */
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section button,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] button[kind="secondary"] {{
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        justify-content: center !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }}
+
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section button svg,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"] svg {{
+        margin-right: 8px !important;
+        transform: translateY(0px) !important;
+    }}
+
+    /* Data status jangan sampai terlalu mepet kanan setelah shift */
+    [data-testid="stSidebar"] .data-status {{
+        overflow: hidden !important;
+    }}
+
+    [data-testid="stSidebar"] .data-status span {{
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }}
     </style>
     """,
