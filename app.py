@@ -2486,160 +2486,170 @@ theme = apply_theme("Gelap")
 
 
 # ============================================================
-# MODERN COMPACT TABLE DESIGN — v55
-# Redesign khusus tabel agar lebih compact, modern, dan tidak boros ruang.
+# PREMIUM READABLE TABLE DESIGN — v56
+# Tabel dibuat lebih terang, rapi, center, compact tapi tetap mudah dibaca.
 # ============================================================
 
 st.markdown(
     """
     <style>
-    /* Bungkus tabel jadi panel modern, bukan grid tebal */
     .custom-table-wrapper {
         width: 100% !important;
         overflow-x: auto !important;
-        border: 1px solid #3D4A40 !important;
-        border-radius: 18px !important;
+        border: 1px solid rgba(139, 203, 136, 0.30) !important;
+        border-radius: 22px !important;
         background:
-            radial-gradient(circle at 8% 0%, rgba(139, 203, 136, 0.10), transparent 28%),
-            linear-gradient(145deg, rgba(255,255,255,0.030), rgba(255,255,255,0.000)),
-            #1C241F !important;
-        padding: 8px !important;
-        margin: 6px 0 18px 0 !important;
-        box-shadow: 0 12px 30px rgba(0,0,0,0.16) !important;
+            radial-gradient(circle at 5% 0%, rgba(139, 203, 136, 0.16), transparent 28%),
+            radial-gradient(circle at 96% 4%, rgba(226, 177, 93, 0.09), transparent 26%),
+            linear-gradient(145deg, rgba(255,255,255,0.045), rgba(255,255,255,0.010)),
+            #1A211D !important;
+        padding: 10px !important;
+        margin: 8px 0 22px 0 !important;
+        box-shadow: 0 16px 36px rgba(0,0,0,0.18) !important;
         box-sizing: border-box !important;
     }
 
-    /* Hilangkan kesan tabel Excel: lebih clean dan padat */
     table.custom-table {
         width: 100% !important;
         table-layout: fixed !important;
         border-collapse: separate !important;
-        border-spacing: 0 5px !important;
+        border-spacing: 0 6px !important;
         background: transparent !important;
         color: #F5F7F2 !important;
-        font-size: 12.2px !important;
-        line-height: 1.15 !important;
+        font-size: 13px !important;
+        line-height: 1.22 !important;
         margin: 0 !important;
         border: none !important;
-        border-radius: 14px !important;
-        overflow: hidden !important;
     }
 
-    /* Header lebih tipis, seperti dashboard table */
     table.custom-table thead tr th {
         background:
-            linear-gradient(135deg, rgba(139,203,136,0.15), rgba(226,177,93,0.06)),
-            #263029 !important;
+            linear-gradient(135deg, rgba(55, 93, 64, 0.96), rgba(45, 66, 47, 0.98)) !important;
         color: #F5F7F2 !important;
         font-weight: 950 !important;
-        font-size: 11.6px !important;
+        font-size: 12.4px !important;
         letter-spacing: 0.01em !important;
-        padding: 9px 12px !important;
-        height: 34px !important;
+        padding: 11px 10px !important;
+        height: 42px !important;
         border: none !important;
-        border-bottom: 1px solid rgba(139,203,136,0.22) !important;
-        text-align: left !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
+        text-align: center !important;
+        white-space: normal !important;
+        overflow-wrap: normal !important;
+        word-break: normal !important;
         vertical-align: middle !important;
+        box-shadow: inset 0 -1px 0 rgba(139,203,136,0.18) !important;
     }
 
     table.custom-table thead tr th:first-child {
-        border-top-left-radius: 13px !important;
-        border-bottom-left-radius: 13px !important;
+        border-top-left-radius: 16px !important;
+        border-bottom-left-radius: 16px !important;
     }
 
     table.custom-table thead tr th:last-child {
-        border-top-right-radius: 13px !important;
-        border-bottom-right-radius: 13px !important;
+        border-top-right-radius: 16px !important;
+        border-bottom-right-radius: 16px !important;
     }
 
-    /* Isi tabel compact, row seperti kartu tipis */
     table.custom-table tbody tr td,
     table.custom-table tbody tr th {
-        background: rgba(34,42,36,0.82) !important;
-        color: #D8E0D4 !important;
-        padding: 8px 12px !important;
-        height: 32px !important;
+        background:
+            linear-gradient(145deg, rgba(255,255,255,0.030), rgba(255,255,255,0.008)),
+            #243126 !important;
+        color: rgba(245,247,242,0.92) !important;
+        padding: 10px 10px !important;
+        height: 38px !important;
         border: none !important;
-        border-top: 1px solid rgba(61,74,64,0.50) !important;
-        border-bottom: 1px solid rgba(61,74,64,0.50) !important;
-        font-weight: 760 !important;
+        border-top: 1px solid rgba(139,203,136,0.13) !important;
+        border-bottom: 1px solid rgba(139,203,136,0.13) !important;
+        font-weight: 780 !important;
+        text-align: center !important;
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
         vertical-align: middle !important;
+    }
+
+    table.custom-table tbody tr:nth-child(even) td,
+    table.custom-table tbody tr:nth-child(even) th {
+        background:
+            linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0.010)),
+            #202A23 !important;
     }
 
     table.custom-table tbody tr td:first-child,
     table.custom-table tbody tr th:first-child {
         color: #F5F7F2 !important;
-        font-weight: 900 !important;
-        border-left: 1px solid rgba(61,74,64,0.50) !important;
-        border-top-left-radius: 12px !important;
-        border-bottom-left-radius: 12px !important;
+        font-weight: 950 !important;
+        border-left: 1px solid rgba(139,203,136,0.15) !important;
+        border-top-left-radius: 15px !important;
+        border-bottom-left-radius: 15px !important;
     }
 
     table.custom-table tbody tr td:last-child,
     table.custom-table tbody tr th:last-child {
-        border-right: 1px solid rgba(61,74,64,0.50) !important;
-        border-top-right-radius: 12px !important;
-        border-bottom-right-radius: 12px !important;
-    }
-
-    table.custom-table tbody tr:nth-child(even) td,
-    table.custom-table tbody tr:nth-child(even) th {
-        background: rgba(38,48,41,0.76) !important;
+        border-right: 1px solid rgba(139,203,136,0.15) !important;
+        border-top-right-radius: 15px !important;
+        border-bottom-right-radius: 15px !important;
     }
 
     table.custom-table tbody tr:hover td,
     table.custom-table tbody tr:hover th {
-        background: rgba(139,203,136,0.115) !important;
-        color: #F5F7F2 !important;
+        background:
+            linear-gradient(135deg, rgba(139,203,136,0.18), rgba(226,177,93,0.08)),
+            #27382C !important;
+        color: #FFFFFF !important;
+        transform: translateY(-1px);
+        transition: all 0.14s ease-in-out !important;
     }
 
-    /* Kolom angka rata kanan supaya lebih mudah dibaca */
-    table.custom-table thead tr th:not(:first-child),
-    table.custom-table tbody tr td:not(:first-child) {
-        text-align: right !important;
+    /* Lebar kolom tabel simulasi agar tidak padat dan tetap kebaca */
+    table.custom-table thead tr th:nth-child(1) { width: 12.2% !important; }
+    table.custom-table thead tr th:nth-child(2) { width: 13.0% !important; }
+    table.custom-table thead tr th:nth-child(3) { width: 15.2% !important; }
+    table.custom-table thead tr th:nth-child(4) { width: 15.2% !important; }
+    table.custom-table thead tr th:nth-child(5) { width: 13.0% !important; }
+    table.custom-table thead tr th:nth-child(6) { width: 15.0% !important; }
+    table.custom-table thead tr th:nth-child(7) { width: 12.4% !important; }
+
+    /* Tabel evaluasi model cuma 5 kolom: lebih seimbang */
+    table.custom-table:has(thead tr th:nth-child(5):last-child) thead tr th,
+    table.custom-table:has(thead tr th:nth-child(5):last-child) tbody tr td {
+        text-align: center !important;
     }
 
-    /* Tabel evaluasi 1 baris jangan terlihat terlalu kosong */
+    table.custom-table:has(thead tr th:nth-child(5):last-child) thead tr th:nth-child(1) { width: 26% !important; }
+    table.custom-table:has(thead tr th:nth-child(5):last-child) thead tr th:nth-child(2) { width: 18% !important; }
+    table.custom-table:has(thead tr th:nth-child(5):last-child) thead tr th:nth-child(3) { width: 18% !important; }
+    table.custom-table:has(thead tr th:nth-child(5):last-child) thead tr th:nth-child(4) { width: 18% !important; }
+    table.custom-table:has(thead tr th:nth-child(5):last-child) thead tr th:nth-child(5) { width: 20% !important; }
+
     .custom-table-wrapper table.custom-table tbody:has(tr:only-child) tr td,
     .custom-table-wrapper table.custom-table tbody:has(tr:only-child) tr th {
-        height: 36px !important;
-        padding-top: 10px !important;
-        padding-bottom: 10px !important;
+        height: 42px !important;
+        padding-top: 12px !important;
+        padding-bottom: 12px !important;
     }
 
-    /* Kalau ada kolom model, tetap kiri karena teks model panjang */
-    table.custom-table thead tr th:first-child,
-    table.custom-table tbody tr td:first-child {
-        text-align: left !important;
-    }
-
-    /* Khusus mobile: tetap compact tapi tidak kepotong brutal */
     @media screen and (max-width: 900px) {
         .custom-table-wrapper {
-            padding: 6px !important;
-            border-radius: 14px !important;
+            padding: 7px !important;
+            border-radius: 16px !important;
             margin-bottom: 12px !important;
             overflow-x: auto !important;
         }
 
         table.custom-table {
-            min-width: 540px !important;
-            font-size: 10px !important;
-            border-spacing: 0 4px !important;
+            min-width: 620px !important;
+            font-size: 10.4px !important;
+            border-spacing: 0 5px !important;
         }
 
         table.custom-table thead tr th,
         table.custom-table tbody tr td,
         table.custom-table tbody tr th {
-            font-size: 9.6px !important;
-            padding: 7px 8px !important;
-            height: 29px !important;
+            font-size: 10px !important;
+            padding: 8px 7px !important;
+            height: 32px !important;
             white-space: nowrap !important;
         }
     }
@@ -2647,6 +2657,10 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+
+
+
 
 
 
