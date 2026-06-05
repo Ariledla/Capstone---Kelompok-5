@@ -3401,6 +3401,322 @@ def inject_custom_sidebar_toggle():
 inject_custom_sidebar_toggle()
 
 
+# ============================================================
+# SIDEBAR FINAL POLISH — v44
+# Fokus: isi sidebar dipersempit dan dipusatkan supaya kiri-kanan rapi,
+# tanpa mengubah isi utama aplikasi.
+# ============================================================
+
+st.markdown(
+    """
+    <style>
+    :root {
+        --sidebar-w-v44: 304px;
+        --sidebar-inner-v44: 232px;
+        --sidebar-btn-v44: 111px;
+        --sidebar-gap-v44: 10px;
+    }
+
+    /* Frame sidebar tetap, hanya isi di dalamnya yang dikuruskan. */
+    [data-testid="stSidebar"],
+    [data-testid="stSidebarContent"],
+    section[data-testid="stSidebar"] {
+        width: var(--sidebar-w-v44) !important;
+        min-width: var(--sidebar-w-v44) !important;
+        max-width: var(--sidebar-w-v44) !important;
+        overflow-x: hidden !important;
+        overflow-y: hidden !important;
+    }
+
+    [data-testid="stSidebarUserContent"] {
+        width: var(--sidebar-w-v44) !important;
+        max-width: var(--sidebar-w-v44) !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 205px !important;
+        margin-top: -36px !important;
+        overflow-x: hidden !important;
+        overflow-y: hidden !important;
+    }
+
+    [data-testid="stSidebar"] .element-container,
+    [data-testid="stSidebar"] .theme-label,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"],
+    [data-testid="stSidebar"] .data-input-note,
+    [data-testid="stSidebar"] .data-status,
+    [data-testid="stSidebar"] .stRadio,
+    [data-testid="stSidebar"] .stRadio > label,
+    [data-testid="stSidebar"] [role="radiogroup"] {
+        width: var(--sidebar-inner-v44) !important;
+        max-width: var(--sidebar-inner-v44) !important;
+        min-width: 0 !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Tombol tema: lebih pendek dan tetap center. */
+    [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) {
+        width: var(--sidebar-inner-v44) !important;
+        max-width: var(--sidebar-inner-v44) !important;
+        min-width: var(--sidebar-inner-v44) !important;
+        display: grid !important;
+        grid-template-columns: var(--sidebar-btn-v44) var(--sidebar-btn-v44) !important;
+        gap: var(--sidebar-gap-v44) !important;
+        margin: 4px auto 20px auto !important;
+        overflow: visible !important;
+    }
+
+    [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) [data-testid="column"] {
+        width: var(--sidebar-btn-v44) !important;
+        min-width: var(--sidebar-btn-v44) !important;
+        max-width: var(--sidebar-btn-v44) !important;
+        flex: 0 0 var(--sidebar-btn-v44) !important;
+        padding: 0 !important;
+    }
+
+    [data-testid="stSidebar"] .stButton > button {
+        width: var(--sidebar-btn-v44) !important;
+        min-width: var(--sidebar-btn-v44) !important;
+        max-width: var(--sidebar-btn-v44) !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        border-radius: 14px !important;
+        padding: 0 !important;
+        font-size: 13px !important;
+    }
+
+    [data-testid="stSidebar"] .theme-label {
+        font-size: 13.6px !important;
+        line-height: 1.1 !important;
+        margin-bottom: 8px !important;
+    }
+
+    /* Label upload + icon bantuan dipaksa masuk area sidebar. */
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] > label {
+        width: var(--sidebar-inner-v44) !important;
+        max-width: var(--sidebar-inner-v44) !important;
+        position: relative !important;
+        padding-right: 24px !important;
+        margin: 0 0 8px 0 !important;
+        display: block !important;
+        box-sizing: border-box !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] label p {
+        max-width: 198px !important;
+        font-size: 12.8px !important;
+        line-height: 1.14 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: clip !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] [data-testid="stTooltipIcon"] {
+        position: absolute !important;
+        right: 0 !important;
+        top: -2px !important;
+        transform: scale(.72) !important;
+        transform-origin: center !important;
+        margin: 0 !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section {
+        width: var(--sidebar-inner-v44) !important;
+        max-width: var(--sidebar-inner-v44) !important;
+        min-height: 96px !important;
+        padding: 11px 12px !important;
+        border-radius: 15px !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section button,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] button[kind="secondary"] {
+        width: 116px !important;
+        min-width: 116px !important;
+        max-width: 116px !important;
+        height: 34px !important;
+        min-height: 34px !important;
+        border-radius: 10px !important;
+        font-size: 12.6px !important;
+        margin-left: 0 !important;
+        margin-right: auto !important;
+        padding: 0 10px !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section small,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section p,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section span {
+        font-size: 10.4px !important;
+        line-height: 1.12 !important;
+        white-space: nowrap !important;
+    }
+
+    .data-input-note {
+        font-size: 10.8px !important;
+        line-height: 1.18 !important;
+        margin: 8px auto 12px auto !important;
+        overflow-wrap: normal !important;
+    }
+
+    /* Status data tidak boleh terpotong: title + periode dibuat dua baris rapi. */
+    [data-testid="stSidebar"] .data-status {
+        position: relative !important;
+        display: block !important;
+        min-height: 50px !important;
+        padding: 8px 9px 8px 32px !important;
+        margin: 0 auto 17px auto !important;
+        border-radius: 13px !important;
+        font-size: 11.4px !important;
+        line-height: 1.12 !important;
+        white-space: normal !important;
+        overflow: hidden !important;
+        text-overflow: clip !important;
+    }
+
+    [data-testid="stSidebar"] .data-status .modern-status-dot {
+        position: absolute !important;
+        left: 10px !important;
+        top: 12px !important;
+        width: 14px !important;
+        height: 14px !important;
+        min-width: 14px !important;
+        max-width: 14px !important;
+        min-height: 14px !important;
+        max-height: 14px !important;
+        margin: 0 !important;
+        border-radius: 5px !important;
+    }
+
+    [data-testid="stSidebar"] .data-status .modern-status-dot::after {
+        left: 4px !important;
+        top: 4px !important;
+        width: 5px !important;
+        height: 5px !important;
+    }
+
+    [data-testid="stSidebar"] .data-status > span:not(.modern-status-dot) {
+        display: block !important;
+        font-size: 9.25px !important;
+        line-height: 1.14 !important;
+        margin-top: 3px !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        max-width: 188px !important;
+    }
+
+    /* Radio menu: circle bulat sempurna, teks tidak terdorong ke kanan. */
+    [data-testid="stSidebar"] .stRadio > label p {
+        font-size: 13.2px !important;
+        line-height: 1.1 !important;
+        margin: 0 0 9px 0 !important;
+    }
+
+    [data-testid="stSidebar"] [role="radiogroup"] {
+        gap: 5px !important;
+        margin-top: 0 !important;
+    }
+
+    [data-testid="stSidebar"] [role="radiogroup"] label {
+        width: var(--sidebar-inner-v44) !important;
+        max-width: var(--sidebar-inner-v44) !important;
+        min-height: 31px !important;
+        height: 31px !important;
+        padding: 0 4px !important;
+        gap: 8px !important;
+        display: flex !important;
+        align-items: center !important;
+        border-radius: 10px !important;
+        overflow: hidden !important;
+    }
+
+    [data-testid="stSidebar"] [role="radiogroup"] label > div:first-child,
+    [data-testid="stSidebar"] [role="radiogroup"] label > div:first-child * {
+        width: 15px !important;
+        min-width: 15px !important;
+        max-width: 15px !important;
+        height: 15px !important;
+        min-height: 15px !important;
+        max-height: 15px !important;
+        aspect-ratio: 1 / 1 !important;
+        border-radius: 999px !important;
+        flex: 0 0 15px !important;
+    }
+
+    [data-testid="stSidebar"] [role="radiogroup"] label p {
+        font-size: 12.2px !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: clip !important;
+        margin: 0 !important;
+    }
+
+    /* Card bawah tetap di dalam sidebar, tapi tidak terlalu mepet kanan. */
+    .sidebar-visual {
+        left: 18px !important;
+        width: 268px !important;
+        max-width: 268px !important;
+        min-height: 206px !important;
+        max-height: 218px !important;
+        padding: 16px 16px !important;
+        border-radius: 19px !important;
+    }
+
+    .sidebar-icons span {
+        width: 39px !important;
+        height: 39px !important;
+        border-radius: 13px !important;
+    }
+
+    .sidebar-icons svg {
+        width: 20px !important;
+        height: 20px !important;
+    }
+
+    .sidebar-visual-title {
+        font-size: 18px !important;
+        line-height: 1.07 !important;
+    }
+
+    .sidebar-visual-subtitle {
+        font-size: 11.4px !important;
+        line-height: 1.28 !important;
+        max-width: 222px !important;
+    }
+
+    .team-name {
+        font-size: 11.5px !important;
+        min-height: 34px !important;
+        padding: 7px 9px !important;
+        border-radius: 13px !important;
+    }
+
+    @media screen and (max-height: 760px) {
+        [data-testid="stSidebarUserContent"] {
+            padding-bottom: 180px !important;
+        }
+        .sidebar-visual {
+            min-height: 176px !important;
+            max-height: 188px !important;
+            padding: 12px 14px !important;
+        }
+        .sidebar-visual-title { font-size: 15.5px !important; }
+        .sidebar-visual-subtitle { font-size: 10px !important; line-height: 1.20 !important; }
+        .team-name { font-size: 10px !important; min-height: 28px !important; margin-top: 7px !important; }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
 # UI COMPONENTS
 # ============================================================
 
