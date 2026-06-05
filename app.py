@@ -2754,10 +2754,8 @@ st.markdown(
         border-radius: 20px;
         border: 1px solid #3D4A40;
         background:
-            radial-gradient(circle at 14% 10%, rgba(139, 203, 136, 0.16), transparent 36%),
-            radial-gradient(circle at 92% 8%, rgba(226, 177, 93, 0.10), transparent 34%),
             linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0.000)),
-            #222A24;
+            {cfg["card"]};
         box-shadow: 0 12px 28px rgba(0,0,0,0.15);
         padding: 15px 17px;
         box-sizing: border-box;
@@ -2773,7 +2771,9 @@ st.markdown(
         right: -28px;
         top: -28px;
         border-radius: 999px;
-        background: rgba(139, 203, 136, 0.08);
+        background:
+            radial-gradient(circle at 16% 8%, {cfg["accent_soft"]}, transparent 34%),
+            radial-gradient(circle at 95% 12%, rgba(226, 177, 93, 0.10), transparent 32%);
     }
 
     .overview-mini-top {
