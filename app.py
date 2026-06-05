@@ -406,8 +406,7 @@ def prepare_comparison_display(comparison_df):
 # SESSION STATE
 # ============================================================
 
-if "theme_mode" not in st.session_state:
-    st.session_state.theme_mode = "Gelap"
+st.session_state.theme_mode = "Gelap"
 
 if "active_menu" not in st.session_state:
     st.session_state.active_menu = "Simulasi Pengelolaan"
@@ -2474,7 +2473,42 @@ def apply_theme(mode):
     return cfg
 
 
-theme = apply_theme(st.session_state.theme_mode)
+st.session_state.theme_mode = "Gelap"
+theme = apply_theme("Gelap")
+
+
+# ============================================================
+# DARK ONLY SIDEBAR FIX — v50
+# Mode terang/gelap dihapus. Aplikasi selalu memakai mode gelap.
+# ============================================================
+
+st.markdown(
+    """
+    <style>
+    /* Karena pilihan mode dihapus, konten sidebar dinaikkan secukupnya */
+    [data-testid="stSidebarUserContent"] {
+        padding-top: 0rem !important;
+        margin-top: -2.35rem !important;
+    }
+
+    /* Kalau masih ada style lama untuk theme button, jangan kasih ruang kosong */
+    [data-testid="stSidebar"] .theme-label {
+        display: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 0 !important;
+    }
+
+    [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
 
 
 # ============================================================
