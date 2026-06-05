@@ -2486,6 +2486,70 @@ theme = apply_theme("Gelap")
 
 
 # ============================================================
+# CLEAN HERO SPACING FIX — v58
+# Target: tampilan seperti referensi gambar 2.
+# Mengurangi ruang kosong atas dari block-container, bukan menarik hero dengan margin negatif.
+# ============================================================
+
+st.markdown(
+    """
+    <style>
+    /* Kurangi padding bawaan Streamlit di atas halaman */
+    section.main > div.block-container,
+    [data-testid="stAppViewContainer"] .main .block-container,
+    [data-testid="stAppViewContainer"] div.block-container {
+        padding-top: 1.05rem !important;
+    }
+
+    /* Hero tetap normal, tidak ditarik naik ekstrem */
+    .hero {
+        margin-top: 0px !important;
+        margin-bottom: 14px !important;
+    }
+
+    /* Section setelah hero tetap dekat, tapi tidak nabrak */
+    .section-title {
+        margin-top: 4px !important;
+        margin-bottom: 7px !important;
+    }
+
+    .section-desc {
+        margin-top: 0px !important;
+        margin-bottom: 18px !important;
+    }
+
+    /* Hilangkan sisa margin container yang kadang bikin jarak random */
+    div[data-testid="stElementContainer"]:has(.hero) {
+        margin-top: 0px !important;
+        margin-bottom: 0px !important;
+    }
+
+    div[data-testid="stMarkdownContainer"]:has(.hero) {
+        margin-top: 0px !important;
+        margin-bottom: 0px !important;
+    }
+
+    @media screen and (max-width: 900px) {
+        section.main > div.block-container,
+        [data-testid="stAppViewContainer"] .main .block-container,
+        [data-testid="stAppViewContainer"] div.block-container {
+            padding-top: 0.75rem !important;
+        }
+
+        .hero {
+            margin-top: 0px !important;
+            margin-bottom: 12px !important;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+
+
+# ============================================================
 # PREMIUM READABLE TABLE DESIGN — v56
 # Tabel dibuat lebih terang, rapi, center, compact tapi tetap mudah dibaca.
 # ============================================================
