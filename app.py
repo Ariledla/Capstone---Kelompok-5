@@ -4484,12 +4484,12 @@ periode_data = f"{format_periode(ts.index.min())} - {format_periode(ts.index.max
 
 if source_data_type == "upload":
     st.sidebar.markdown(
-        f'<div class="data-status success"><span class="modern-status-dot success-dot"></span>Data upload aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
+        f'<div class=\"data-status success\"><span class=\"modern-status-dot success-dot\"></span><div class=\"data-status-copy\"><b>Data upload aktif</b><span>{len(df_raw)} baris | {periode_data}</span></div></div>',
         unsafe_allow_html=True
     )
 else:
     st.sidebar.markdown(
-        f'<div class="data-status info"><span class="modern-status-dot info-dot"></span>Data bawaan aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
+        f'<div class=\"data-status info\"><span class=\"modern-status-dot info-dot\"></span><div class=\"data-status-copy\"><b>Data bawaan aktif</b><span>{len(df_raw)} baris | {periode_data}</span></div></div>',
         unsafe_allow_html=True
     )
 
@@ -5102,6 +5102,285 @@ st.markdown(
     [data-testid="stSidebar"] .data-status-icon * {{
         display: none !important;
     }}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+
+
+# ============================================================
+# SIDEBAR UPLOAD STATUS FINAL — v48
+# Final targeted fix:
+# - Upload button full-width sesuai lebar dalam dropzone.
+# - Icon upload dan teks Upload selalu satu baris.
+# - Data bawaan aktif jadi 2 baris dan periode terbaca penuh.
+# - Status icon tidak double.
+# - Radio menu disejajarkan dan dibuat lebih modern.
+# ============================================================
+
+st.markdown(
+    """
+    <style>
+    /* =========================
+       Upload box final
+       ========================= */
+
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section {
+        align-items: stretch !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        overflow: hidden !important;
+    }
+
+    /* Parent button harus full width. Streamlit sering membatasi wrapper-nya, jadi dipaksa di sini. */
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section div:has(button),
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section [data-testid="stFileUploaderDropzoneInstructions"],
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] div:has(button),
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] [data-testid="stFileUploaderDropzoneInstructions"] {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Tombol abu-abu Upload memanjang penuh */
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section button,
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] button[data-testid="stBaseButton-secondary"],
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] button[kind="secondary"] {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        height: 36px !important;
+        min-height: 36px !important;
+        border-radius: 12px !important;
+        padding: 0 12px !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+        text-align: center !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Icon + tulisan Upload satu baris dan vertical-center */
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section button *,
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button *,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"] *,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] button[data-testid="stBaseButton-secondary"] * {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        vertical-align: middle !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section button svg,
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button svg,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"] svg,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] button[data-testid="stBaseButton-secondary"] svg {
+        width: 14px !important;
+        height: 14px !important;
+        min-width: 14px !important;
+        max-width: 14px !important;
+        margin: 0 8px 0 0 !important;
+        transform: translateY(0px) !important;
+        flex: 0 0 14px !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section button p,
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button p,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section button span,
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button span {
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        letter-spacing: .01em !important;
+        transform: translateY(0px) !important;
+    }
+
+    /* Teks format file tetap di tengah */
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section small,
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] small,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section > div:not(:has(button)),
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] > div:not(:has(button)) {
+        width: 100% !important;
+        text-align: center !important;
+        justify-content: center !important;
+    }
+
+    /* =========================
+       Data bawaan aktif final
+       ========================= */
+
+    [data-testid="stSidebar"] .data-status {
+        width: 252px !important;
+        max-width: 252px !important;
+        min-height: 52px !important;
+        height: auto !important;
+        margin: 10px auto 18px auto !important;
+        padding: 8px 10px !important;
+        display: grid !important;
+        grid-template-columns: 22px minmax(0, 1fr) !important;
+        column-gap: 9px !important;
+        align-items: center !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+    }
+
+    [data-testid="stSidebar"] .data-status-copy {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        gap: 3px !important;
+        overflow: visible !important;
+    }
+
+    [data-testid="stSidebar"] .data-status-copy b {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        font-size: 11.2px !important;
+        font-weight: 850 !important;
+        line-height: 1.05 !important;
+        letter-spacing: .01em !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    [data-testid="stSidebar"] .data-status-copy span {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        font-size: 8.65px !important;
+        font-weight: 700 !important;
+        line-height: 1.05 !important;
+        letter-spacing: -0.22px !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Matikan pseudo-dot lama supaya tidak double */
+    [data-testid="stSidebar"] .modern-status-dot::after {
+        content: none !important;
+        display: none !important;
+    }
+
+    [data-testid="stSidebar"] .modern-status-dot,
+    [data-testid="stSidebar"] .data-status-icon {
+        width: 22px !important;
+        height: 22px !important;
+        min-width: 22px !important;
+        max-width: 22px !important;
+        min-height: 22px !important;
+        max-height: 22px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 8px !important;
+        border: 1px solid rgba(139,203,136,.24) !important;
+        background:
+            radial-gradient(circle at 50% 50%, #8BCB88 0 26%, transparent 28%),
+            linear-gradient(145deg, rgba(139,203,136,.20), rgba(139,203,136,.07)) !important;
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,.09),
+            0 6px 12px rgba(0,0,0,.14) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex: 0 0 22px !important;
+        align-self: center !important;
+        color: transparent !important;
+        font-size: 0 !important;
+        overflow: hidden !important;
+    }
+
+    /* =========================
+       Menu utama radio final
+       ========================= */
+
+    [data-testid="stSidebar"] [role="radiogroup"] label {
+        height: 34px !important;
+        min-height: 34px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 10px !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
+    [data-testid="stSidebar"] [role="radiogroup"] label p {
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1 !important;
+        display: flex !important;
+        align-items: center !important;
+        transform: translateY(-1px) !important;
+    }
+
+    [data-testid="stSidebar"] [role="radiogroup"] label > div:first-child,
+    [data-testid="stSidebar"] input[type="radio"] {
+        width: 18px !important;
+        height: 18px !important;
+        min-width: 18px !important;
+        max-width: 18px !important;
+        min-height: 18px !important;
+        max-height: 18px !important;
+        border-radius: 999px !important;
+        margin: 0 5px 0 0 !important;
+        padding: 0 !important;
+        flex: 0 0 18px !important;
+        align-self: center !important;
+        box-sizing: border-box !important;
+    }
+
+    [data-testid="stSidebar"] input[type="radio"] {
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        border: 1px solid rgba(139,203,136,.26) !important;
+        background:
+            linear-gradient(145deg, rgba(43,45,58,.96), rgba(31,34,45,.96)) !important;
+        box-shadow:
+            inset 0 1px 1px rgba(255,255,255,.06),
+            0 4px 10px rgba(0,0,0,.15) !important;
+    }
+
+    [data-testid="stSidebar"] input[type="radio"]:checked {
+        border-color: rgba(139,203,136,.75) !important;
+        background:
+            radial-gradient(circle at center, #E7F7E2 0 19%, transparent 21%),
+            linear-gradient(145deg, #2E8B57, #257448) !important;
+        box-shadow:
+            0 0 0 4px rgba(46,139,87,.18),
+            0 8px 16px rgba(0,0,0,.20) !important;
+    }
+
+    [data-testid="stSidebar"] [role="radiogroup"] label > div:first-child * {
+        border-radius: 999px !important;
+    }
     </style>
     """,
     unsafe_allow_html=True
