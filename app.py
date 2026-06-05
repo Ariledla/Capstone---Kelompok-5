@@ -6404,7 +6404,7 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
 
         /* Tarik hero ke atas agar ruang kosong tidak terlalu lebar */
         div[data-testid="stElementContainer"]:has(.upload-v5-hero) {
-            margin-top: -318px !important;
+            margin-top: -270px !important;
             margin-bottom: 16px !important;
             padding-top: 0 !important;
             padding-bottom: 0 !important;
