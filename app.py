@@ -851,7 +851,7 @@ def apply_theme(mode):
             color: white !important;
             padding: 24px 31px;
             border-radius: 24px;
-            margin-top: -14px !important;
+            margin-top: -105px !important;
             margin-bottom: 24px;
             box-shadow: 0 18px 42px rgba(31, 41, 51, 0.18);
         }}
