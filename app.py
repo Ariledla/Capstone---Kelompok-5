@@ -4843,6 +4843,46 @@ st.markdown(
 
 
 
+
+# ============================================================
+# SIDEBAR LEFT BALANCE FIX — v45
+# Geser seluruh isi sidebar sedikit ke kiri agar space kiri-kanan lebih simetris.
+# ============================================================
+
+st.markdown(
+    f"""
+    <style>
+    :root {{
+        --sidebar-balance-shift: -22px;
+    }}
+
+    /* Geser kelompok elemen utama sidebar ke kiri secara halus */
+    [data-testid="stSidebar"] .theme-label,
+    [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton),
+    [data-testid="stSidebar"] [data-testid="stFileUploader"],
+    [data-testid="stSidebar"] .data-status,
+    [data-testid="stSidebar"] .stRadio {{
+        transform: translateX(var(--sidebar-balance-shift)) !important;
+    }}
+
+    /* Card bawah ikut digeser agar sejajar dengan elemen atas */
+    .sidebar-visual {{
+        transform: translateX(calc(-50% + var(--sidebar-balance-shift))) !important;
+    }}
+
+    /* Biar tidak ada elemen yang kepotong setelah digeser */
+    [data-testid="stSidebar"],
+    [data-testid="stSidebarContent"],
+    [data-testid="stSidebarUserContent"] {{
+        overflow-x: hidden !important;
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+
 # ============================================================
 # HERO
 # ============================================================
