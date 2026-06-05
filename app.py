@@ -5607,7 +5607,7 @@ elif menu == "Ringkasan Data & Model":
         bullet_card(
             "Ringkasan Model",
             [
-                f"Model evaluasi terbaik yang dipilih otomatis: <b>{eval_model_label}</b>.",
+                f"Model evaluasi terbaik yang dipilih: <b>{eval_model_label}</b>.",
                 "Sistem mencoba beberapa kandidat SARIMA, lalu memilih parameter terbaik berdasarkan nilai <b>AIC</b> terkecil.",
                 "Jika user mengunggah data terbaru, preprocessing dan pelatihan model dilakukan ulang secara otomatis berdasarkan data tersebut.",
                 "Prediksi dapat dibuat sampai <b>24 bulan ke depan</b> untuk mendukung simulasi hingga dua tahun mendatang.",
