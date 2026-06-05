@@ -191,7 +191,7 @@ def load_data(uploaded_bytes=None, uploaded_name=None):
         source_data_type = "upload"
     else:
         df_raw = pd.read_excel(FILE_NAME)
-        source_data_name = "Data bawaan aplikasi"
+        source_data_name = "Badan Pusat Statistik"
         source_data_type = "default"
 
     df_raw, df, ts = preprocess_data(df_raw)
