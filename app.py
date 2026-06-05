@@ -4944,6 +4944,171 @@ st.markdown(
 
 
 
+
+# ============================================================
+# SIDEBAR UPLOAD AND STATUS POLISH — v47
+# Fokus:
+# - Tombol Upload full-width di dalam dropzone.
+# - Icon upload + teks Upload satu baris dan center.
+# - Data bawaan aktif dibuat 2 baris agar periode terbaca penuh.
+# - Icon data bawaan dibuat lebih rapi.
+# ============================================================
+
+st.markdown(
+    f"""
+    <style>
+    /* Upload dropzone: isi harus stretch, bukan center button kecil */
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section,
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] {{
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        justify-content: center !important;
+        gap: 8px !important;
+    }}
+
+    /* Semua wrapper di area upload dibuat full width agar button bisa memanjang */
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section > div,
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] > div,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section [data-testid="stWidgetLabel"],
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section [data-testid="baseButton-secondary"] {{
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 100% !important;
+    }}
+
+    /* Tombol Upload selebar bagian dalam dropzone */
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section button,
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] button[kind="secondary"] {{
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        height: 34px !important;
+        min-height: 34px !important;
+        border-radius: 12px !important;
+        padding: 0 12px !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 9px !important;
+        white-space: nowrap !important;
+        line-height: 1 !important;
+        text-align: center !important;
+    }}
+
+    /* Icon Upload + tulisan satu baris */
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section button *,
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button *,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"] * {{
+        display: inline-flex !important;
+        align-items: center !important;
+        vertical-align: middle !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+    }}
+
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section button svg,
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button svg,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"] svg {{
+        width: 14px !important;
+        height: 14px !important;
+        min-width: 14px !important;
+        margin: 0 7px 0 0 !important;
+        transform: translateY(0) !important;
+        flex: 0 0 14px !important;
+    }}
+
+    /* Teks format file tetap center di bawah button */
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section small,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section p:not(:has(button)),
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section span:not(button span),
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] small,
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] p,
+    [data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] span:not(button span) {{
+        text-align: center !important;
+        justify-content: center !important;
+        line-height: 1.08 !important;
+        white-space: nowrap !important;
+    }}
+
+    /* Data bawaan aktif: 2 baris, tidak kepotong */
+    [data-testid="stSidebar"] .data-status {{
+        min-height: 54px !important;
+        height: auto !important;
+        padding: 9px 11px !important;
+        gap: 9px !important;
+        overflow: visible !important;
+        align-items: center !important;
+    }}
+
+    [data-testid="stSidebar"] .data-status > div:last-child,
+    [data-testid="stSidebar"] .data-status-text {{
+        min-width: 0 !important;
+        max-width: calc(100% - 31px) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 3px !important;
+        overflow: visible !important;
+    }}
+
+    [data-testid="stSidebar"] .data-status b {{
+        display: block !important;
+        width: 100% !important;
+        font-size: 11.8px !important;
+        line-height: 1.05 !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+    }}
+
+    [data-testid="stSidebar"] .data-status span {{
+        display: block !important;
+        width: 100% !important;
+        font-size: 9.6px !important;
+        line-height: 1.05 !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+    }}
+
+    /* Icon data status lebih rapi, bukan kotak kosong besar */
+    [data-testid="stSidebar"] .modern-status-dot,
+    [data-testid="stSidebar"] .data-status-icon {{
+        width: 22px !important;
+        height: 22px !important;
+        min-width: 22px !important;
+        max-width: 22px !important;
+        min-height: 22px !important;
+        max-height: 22px !important;
+        border-radius: 8px !important;
+        background:
+            radial-gradient(circle at 50% 50%, #8BCB88 0 28%, transparent 30%),
+            rgba(139,203,136,.15) !important;
+        border: 1px solid rgba(139,203,136,.22) !important;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.06) !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex: 0 0 22px !important;
+        color: transparent !important;
+        font-size: 0 !important;
+        overflow: hidden !important;
+    }}
+
+    [data-testid="stSidebar"] .modern-status-dot *,
+    [data-testid="stSidebar"] .data-status-icon * {{
+        display: none !important;
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+
 # ============================================================
 # HERO
 # ============================================================
