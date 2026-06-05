@@ -6694,13 +6694,48 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             text-overflow: clip !important;
         }
 
-        /* Setelah file dipilih, card bawaan Streamlit + tombol X disembunyikan */
+        /* Setelah file dipilih, card bawaan Streamlit, tombol X, tombol +, dan status proses disembunyikan */
         [data-testid="stFileUploaderFile"],
         [data-testid="stFileUploader"] ul,
         [data-testid="stFileUploader"] li,
         [data-testid="stFileUploader"] [data-testid="stFileUploaderFile"],
-        [data-testid="stFileUploaderDropzone"] + div {
+        [data-testid="stFileUploader"] [data-testid="stFileUploaderFile"] *,
+        [data-testid="stFileUploader"] [data-testid="stFileUploaderFileDeleteBtn"],
+        [data-testid="stFileUploader"] [data-testid="stFileUploaderDeleteBtn"],
+        [data-testid="stFileUploader"] [data-testid="stProgress"],
+        [data-testid="stFileUploader"] [data-testid="stSpinner"],
+        [data-testid="stFileUploader"] [data-testid="stStatusWidget"],
+        [data-testid="stFileUploader"] [role="progressbar"],
+        [data-testid="stFileUploader"] section ~ div,
+        [data-testid="stFileUploader"] section ~ div *,
+        [data-testid="stFileUploaderDropzone"] + div,
+        [data-testid="stFileUploaderDropzone"] + div *,
+        [data-testid="stFileUploader"] button[aria-label*="Remove"],
+        [data-testid="stFileUploader"] button[aria-label*="remove"],
+        [data-testid="stFileUploader"] button[aria-label*="Delete"],
+        [data-testid="stFileUploader"] button[aria-label*="delete"],
+        [data-testid="stFileUploader"] button[aria-label*="Clear"],
+        [data-testid="stFileUploader"] button[aria-label*="clear"],
+        [data-testid="stFileUploader"] button[aria-label*="Add"],
+        [data-testid="stFileUploader"] button[aria-label*="add"],
+        [data-testid="stFileUploader"] button[title*="Remove"],
+        [data-testid="stFileUploader"] button[title*="Delete"],
+        [data-testid="stFileUploader"] button[title*="Clear"],
+        [data-testid="stFileUploader"] button[title*="Add"] {
             display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            min-height: 0 !important;
+            max-height: 0 !important;
+            width: 0 !important;
+            min-width: 0 !important;
+            max-width: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: 0 !important;
+            overflow: hidden !important;
+            pointer-events: none !important;
         }
 
         /* ============================================================
@@ -6957,6 +6992,63 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
                 accept_multiple_files=True,
                 key=f"no_empty_upload_panel_{st.session_state.uploader_key}",
                 label_visibility="collapsed"
+            )
+
+            components.html(
+                """
+                <script>
+                const hideUploadArtifacts = () => {
+                    const doc = window.parent.document;
+                    const selectors = [
+                        '[data-testid="stFileUploaderFile"]',
+                        '[data-testid="stFileUploader"] ul',
+                        '[data-testid="stFileUploader"] li',
+                        '[data-testid="stFileUploader"] [role="progressbar"]',
+                        '[data-testid="stFileUploader"] [data-testid="stProgress"]',
+                        '[data-testid="stFileUploader"] [data-testid="stSpinner"]',
+                        '[data-testid="stFileUploader"] [data-testid="stStatusWidget"]'
+                    ];
+                    selectors.forEach((selector) => {
+                        doc.querySelectorAll(selector).forEach((el) => {
+                            el.style.setProperty('display', 'none', 'important');
+                            el.style.setProperty('visibility', 'hidden', 'important');
+                            el.style.setProperty('height', '0px', 'important');
+                            el.style.setProperty('margin', '0px', 'important');
+                            el.style.setProperty('padding', '0px', 'important');
+                            el.style.setProperty('overflow', 'hidden', 'important');
+                        });
+                    });
+                    doc.querySelectorAll('[data-testid="stFileUploader"] button').forEach((btn) => {
+                        const text = (btn.innerText || '').trim();
+                        const aria = (btn.getAttribute('aria-label') || '').toLowerCase();
+                        const title = (btn.getAttribute('title') || '').toLowerCase();
+                        const mustHide = text === '+' || text === '×' || text.toLowerCase() === 'x' ||
+                            aria.includes('remove') || aria.includes('delete') || aria.includes('clear') || aria.includes('add') ||
+                            title.includes('remove') || title.includes('delete') || title.includes('clear') || title.includes('add');
+                        if (mustHide) {
+                            btn.style.setProperty('display', 'none', 'important');
+                            btn.style.setProperty('visibility', 'hidden', 'important');
+                            btn.style.setProperty('pointer-events', 'none', 'important');
+                        }
+                    });
+                };
+                hideUploadArtifacts();
+                setTimeout(hideUploadArtifacts, 50);
+                setTimeout(hideUploadArtifacts, 200);
+                setTimeout(hideUploadArtifacts, 600);
+                </script>
+                """,
+                height=0,
+                width=0,
+            )
+
+            st.markdown(
+                """
+                <div class="upload-v5-note">
+                    Kolom wajib: <b>tahun</b>, <b>bulan</b>, dan <b>jumlah_sampah</b>. File tidak langsung memengaruhi model sebelum upload final.
+                </div>
+                """,
+                unsafe_allow_html=True
             )
 
     if uploaded_files_main:
