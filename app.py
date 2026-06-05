@@ -2549,7 +2549,7 @@ st.markdown(
        Kalau masih terlalu turun, ubah -345px jadi -365px.
        Kalau terlalu naik/kepotong, ubah jadi -320px. */
     div[data-testid="stElementContainer"]:has(.hero) {
-        margin-top: -210px !important;
+        margin-top: -240px !important;
         margin-bottom: 18px !important;
         padding-top: 0px !important;
         padding-bottom: 0px !important;
