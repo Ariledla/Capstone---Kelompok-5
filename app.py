@@ -496,9 +496,6 @@ if "upload_queue" not in st.session_state:
 if "upload_error_messages" not in st.session_state:
     st.session_state.upload_error_messages = []
 
-if "upload_success_message" not in st.session_state:
-    st.session_state.upload_success_message = ""
-
 if "uploader_key" not in st.session_state:
     st.session_state.uploader_key = 0
 
@@ -6376,420 +6373,292 @@ st.markdown(
 # ============================================================
 
 def render_upload_management_section(ts, source_data_type, periode_data, forecast_max_months):
-    """Halaman Kelola Data Upload dibuat sederhana sesuai rancangan user.
-    Argumen tetap dipertahankan agar pemanggilan fungsi lama tidak perlu diubah.
-    """
+    st.markdown('<div class="section-title">Kelola Data Upload</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="section-desc">Tambahkan data baru ke antrian terlebih dahulu. Data baru belum memengaruhi model sampai tombol <b>Gabungkan ke Data</b> diklik.</div>',
+        unsafe_allow_html=True
+    )
 
     st.markdown(
         """
         <style>
-        /* ============================================================
-           KELOLA DATA UPLOAD — SIMPLE ASCII STYLE
-           ============================================================ */
-        .kelola-simple-wrap {
-            max-width: 760px;
-            margin-top: 0px;
-            padding-top: 0px;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-            color: #F5F7F2;
+        .main-upload-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            margin: 4px 0 18px 0;
         }
-
-        .kelola-simple-title {
-            font-size: 20px;
-            font-weight: 900;
-            line-height: 1.25;
-            margin: 0 0 12px 0;
-            color: #F5F7F2;
-            letter-spacing: .1px;
-        }
-
-        .kelola-simple-desc {
-            font-size: 15px;
-            font-weight: 800;
-            line-height: 1.55;
-            margin: 0 0 38px 0;
-            color: #F5F7F2;
-            white-space: normal;
-        }
-
-        .kelola-simple-subtitle {
-            font-size: 16px;
-            font-weight: 900;
-            line-height: 1.3;
-            margin: 0 0 12px 0;
-            color: #F5F7F2;
-        }
-
-        .kelola-simple-box {
-            width: 530px;
-            max-width: 100%;
-            border: 2px solid rgba(245,247,242,.88);
-            background: transparent;
-            color: #F5F7F2;
+        .main-upload-card {
+            background: rgba(255,255,255,0.035);
+            border: 1px solid rgba(139,203,136,0.22);
+            border-radius: 20px;
             padding: 18px 20px;
-            margin: 0 0 78px 6px;
+            min-height: 94px;
+            box-sizing: border-box;
+            box-shadow: 0 10px 26px rgba(0,0,0,.10);
+        }
+        .main-upload-label {
+            font-size: 13px;
+            font-weight: 850;
+            color: #D8E0D4;
+            margin-bottom: 8px;
+        }
+        .main-upload-value {
+            font-size: 24px;
+            line-height: 1.12;
+            font-weight: 950;
+            color: #F5F7F2;
+            letter-spacing: -0.4px;
+            overflow-wrap: anywhere;
+        }
+        .main-upload-note {
+            margin-top: 7px;
+            font-size: 12px;
+            line-height: 1.35;
+            font-weight: 700;
+            color: #D8E0D4;
+        }
+        .upload-panel {
+            background: rgba(255,255,255,0.035);
+            border: 1px solid rgba(139,203,136,0.24);
+            border-radius: 22px;
+            padding: 22px 24px;
+            margin: 14px 0 18px 0;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        .upload-panel-title {
+            font-size: 18px;
+            font-weight: 950;
+            margin-bottom: 6px;
+            color: #F5F7F2;
+        }
+        .upload-panel-desc {
+            font-size: 13px;
+            font-weight: 650;
+            line-height: 1.55;
+            color: #D8E0D4;
+            margin-bottom: 16px;
+        }
+        .queue-header {
+            background: rgba(139,203,136,.09);
+            border: 1px solid rgba(139,203,136,.22);
+            border-radius: 18px;
+            padding: 16px 18px;
+            margin: 14px 0 12px 0;
+            text-align: center;
+        }
+        .queue-header-title {
+            font-size: 18px;
+            font-weight: 950;
+            color: #F5F7F2;
+            margin-bottom: 5px;
+        }
+        .queue-header-sub {
+            font-size: 13px;
+            font-weight: 750;
+            color: #D8E0D4;
+        }
+        .queue-row {
+            background: rgba(255,255,255,0.035);
+            border: 1px solid rgba(139,203,136,0.17);
+            border-radius: 16px;
+            padding: 12px 14px;
+            margin: 8px 0;
             box-sizing: border-box;
         }
-
-        .kelola-simple-box.upload-box {
-            margin-bottom: 78px;
-        }
-
-        .kelola-simple-box.queue-box {
-            margin-bottom: 60px;
-        }
-
-        .kelola-simple-box.success-box {
-            margin-top: 54px;
-            margin-bottom: 0;
-        }
-
-        .kelola-box-title {
-            font-size: 16px;
-            font-weight: 900;
-            line-height: 1.45;
-            margin-bottom: 8px;
-            color: #F5F7F2;
-        }
-
-        .kelola-box-text {
+        .queue-file-name {
             font-size: 14px;
-            font-weight: 800;
-            line-height: 1.65;
-            color: #F5F7F2;
-            margin: 0;
-        }
-
-        .kelola-queue-line {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) 90px;
-            gap: 12px;
-            align-items: center;
-            font-size: 14px;
+            line-height: 1.25;
             font-weight: 850;
-            line-height: 1.5;
             color: #F5F7F2;
-            margin: 10px 0 0 0;
-        }
-
-        .kelola-queue-name {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
-        /* File uploader dibuat sederhana dan tidak melebar seperti card modern */
-        .kelola-simple-wrap [data-testid="stFileUploader"] {
-            width: 530px !important;
-            max-width: 100% !important;
-            margin-left: 6px !important;
-            margin-bottom: 78px !important;
+        .queue-file-meta {
+            margin-top: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #D8E0D4;
         }
-
-        .kelola-simple-wrap [data-testid="stFileUploader"] label {
-            display: none !important;
+        .upload-empty-box {
+            border: 1px dashed rgba(139,203,136,.28);
+            border-radius: 18px;
+            padding: 22px;
+            margin: 14px 0;
+            text-align: center;
+            color: #D8E0D4;
+            font-weight: 750;
+            background: rgba(255,255,255,.025);
         }
-
-        .kelola-simple-wrap [data-testid="stFileUploader"] section {
-            min-height: 118px !important;
-            border: 2px solid rgba(245,247,242,.88) !important;
-            border-radius: 0 !important;
-            background: transparent !important;
-            padding: 16px 20px !important;
-            box-sizing: border-box !important;
-        }
-
-        .kelola-simple-wrap [data-testid="stFileUploader"] section button,
-        .kelola-simple-wrap [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
-        .kelola-simple-wrap [data-testid="stFileUploader"] button[kind="secondary"] {
-            border-radius: 0 !important;
-            border: 1px solid rgba(245,247,242,.65) !important;
-            background: transparent !important;
-            color: #F5F7F2 !important;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
-            font-size: 14px !important;
-            font-weight: 900 !important;
-            min-height: 38px !important;
-            height: 38px !important;
-            width: 100% !important;
-        }
-
-        .kelola-simple-wrap [data-testid="stFileUploader"] section button:hover,
-        .kelola-simple-wrap [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"]:hover,
-        .kelola-simple-wrap [data-testid="stFileUploader"] button[kind="secondary"]:hover {
-            background: rgba(139,203,136,.14) !important;
-            color: #F5F7F2 !important;
-            border-color: rgba(139,203,136,.9) !important;
-        }
-
-        .kelola-simple-wrap [data-testid="stFileUploader"] small,
-        .kelola-simple-wrap [data-testid="stFileUploader"] p,
-        .kelola-simple-wrap [data-testid="stFileUploader"] span {
-            color: #F5F7F2 !important;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
-            font-weight: 800 !important;
-        }
-
-        /* Tombol aksi dibuat seperti teks bracket pada gambar referensi */
-        .kelola-simple-wrap .stButton > button {
-            width: auto !important;
-            min-width: 0 !important;
-            height: auto !important;
-            min-height: 0 !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            border: none !important;
-            border-radius: 0 !important;
-            background: transparent !important;
-            box-shadow: none !important;
-            color: #F5F7F2 !important;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
-            font-size: 15px !important;
-            font-weight: 900 !important;
-            line-height: 1.2 !important;
-            text-align: left !important;
-            white-space: nowrap !important;
-        }
-
-        .kelola-simple-wrap .stButton > button:hover {
-            color: #8BCB88 !important;
-            background: transparent !important;
-            border: none !important;
-            transform: none !important;
-        }
-
-        .kelola-simple-wrap .stButton > button:disabled {
-            color: rgba(245,247,242,.38) !important;
-            background: transparent !important;
-            border: none !important;
-            opacity: 1 !important;
-        }
-
-        .kelola-simple-wrap div[data-testid="stHorizontalBlock"] {
-            gap: 0 !important;
-        }
-
-        .kelola-simple-wrap div[data-testid="column"] {
-            width: auto !important;
-            min-width: 0 !important;
-            flex: 0 0 auto !important;
-        }
-
-        .kelola-simple-wrap .stAlert {
-            width: 530px !important;
-            max-width: 100% !important;
-            margin-left: 6px !important;
-            border-radius: 0 !important;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
-        }
-
         @media screen and (max-width: 900px) {
-            .kelola-simple-wrap {
-                max-width: 100%;
-            }
-            .kelola-simple-title {
-                font-size: 17px;
-            }
-            .kelola-simple-desc {
-                font-size: 12.5px;
-                margin-bottom: 24px;
-            }
-            .kelola-simple-subtitle {
-                font-size: 14px;
-            }
-            .kelola-simple-box,
-            .kelola-simple-wrap [data-testid="stFileUploader"],
-            .kelola-simple-wrap .stAlert {
-                width: 100% !important;
-                margin-left: 0 !important;
-            }
-            .kelola-simple-box.upload-box,
-            .kelola-simple-wrap [data-testid="stFileUploader"] {
-                margin-bottom: 38px !important;
-            }
-            .kelola-simple-box.queue-box {
-                margin-bottom: 34px;
-            }
-            .kelola-simple-wrap .stButton > button {
-                font-size: 12.5px !important;
-            }
-            .kelola-queue-line {
-                grid-template-columns: minmax(0, 1fr) 66px;
-                font-size: 12.5px;
-            }
+            .main-upload-grid { grid-template-columns: 1fr; gap: 10px; }
+            .main-upload-card { min-height: auto; padding: 14px; }
+            .main-upload-value { font-size: 18px; }
+            .upload-panel { padding: 16px 14px; border-radius: 18px; }
+            .queue-file-name { white-space: normal; overflow-wrap: anywhere; }
         }
         </style>
-        <div class="kelola-simple-wrap">
-            <div class="kelola-simple-title">Kelola Data Upload</div>
-            <div class="kelola-simple-desc">
-                Tambahkan data baru ke antrian terlebih dahulu. Data baru belum memengaruhi model sampai tombol Upload diklik.
-            </div>
-            <div class="kelola-simple-subtitle">Upload file data sampah</div>
-        </div>
         """,
         unsafe_allow_html=True
     )
 
-    st.markdown('<div class="kelola-simple-wrap">', unsafe_allow_html=True)
-
-    uploaded_files_main = st.file_uploader(
-        "Upload file data sampah",
-        type=["xlsx", "xls", "csv"],
-        help="Format minimal wajib memiliki kolom tahun, bulan, dan jumlah_sampah.",
-        accept_multiple_files=True,
-        key=f"main_upload_data_queue_{st.session_state.uploader_key}",
-        label_visibility="collapsed"
-    )
-
-    if uploaded_files_main:
-        new_errors = []
-        existing_keys = {
-            (item.get("name"), item.get("size"))
-            for item in st.session_state.upload_queue
-        }
-
-        for uploaded_file in uploaded_files_main:
-            uploaded_bytes = uploaded_file.getvalue()
-            uploaded_name = uploaded_file.name
-            uploaded_size = len(uploaded_bytes)
-
-            try:
-                read_uploaded_dataframe(uploaded_bytes, uploaded_name)
-                item_key = (uploaded_name, uploaded_size)
-                if item_key not in existing_keys:
-                    st.session_state.upload_queue.append({
-                        "name": uploaded_name,
-                        "bytes": uploaded_bytes,
-                        "size": uploaded_size
-                    })
-                    existing_keys.add(item_key)
-            except Exception as error:
-                new_errors.append(f"{uploaded_name}: {error}")
-
-        st.session_state.upload_error_messages = new_errors
-        st.session_state.upload_success_message = ""
-        st.session_state.uploader_key += 1
-        st.rerun()
-
-    st.markdown(
-        """
-        <div class="kelola-simple-box upload-box">
-            <div class="kelola-box-title">[ Upload file Excel / CSV ]</div>
-            <div class="kelola-box-text">Format: .xlsx / .csv</div>
-            <div class="kelola-box-text">Kolom wajib: tahun, bulan, jumlah_sampah</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    if st.session_state.upload_error_messages:
-        for error_message in st.session_state.upload_error_messages:
-            st.error(f"File tidak valid: {error_message}")
-
+    data_mode = "Data upload aktif" if source_data_type == "upload" else "Data bawaan aktif"
+    joined_count = len(st.session_state.uploaded_data_payloads)
     queue_count = len(st.session_state.upload_queue)
-    if queue_count > 0:
-        queue_lines = []
-        for idx, item in enumerate(st.session_state.upload_queue, start=1):
-            file_label = html.escape(item.get("name", "file upload"))
-            queue_lines.append(f'<div class="kelola-queue-line"><div class="kelola-queue-name">{idx}. {file_label}</div><div>[hapus]</div></div>')
-        queue_content = "".join(queue_lines)
-        queue_subtitle = f"{queue_count} file siap diproses"
-    else:
-        queue_content = '<div class="kelola-box-text" style="margin-top:22px;">Belum ada file di antrian</div>'
-        queue_subtitle = "0 file siap diproses"
 
     st.markdown(
         f"""
-        <div class="kelola-simple-box queue-box">
-            <div class="kelola-box-title">Antrian file</div>
-            <div class="kelola-box-text">{queue_subtitle}</div>
-            <div style="height:24px;"></div>
-            {queue_content}
+        <div class="main-upload-grid">
+            <div class="main-upload-card">
+                <div class="main-upload-label">Status Data</div>
+                <div class="main-upload-value">{data_mode}</div>
+                <div class="main-upload-note">{len(ts.dropna())} baris | {periode_data}</div>
+            </div>
+            <div class="main-upload-card">
+                <div class="main-upload-label">File Digabung</div>
+                <div class="main-upload-value">{joined_count} file</div>
+                <div class="main-upload-note">File yang sudah masuk ke data aktif</div>
+            </div>
+            <div class="main-upload-card">
+                <div class="main-upload-label">Maksimal Prediksi</div>
+                <div class="main-upload-value">{int(forecast_max_months)} bulan</div>
+                <div class="main-upload-note">Naik otomatis setelah data baru digabung</div>
+            </div>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-    # Tombol hapus asli diletakkan di bawah box. Visual [hapus] di box atas mempertahankan bentuk referensi.
-    if queue_count > 0:
-        remove_cols = st.columns(queue_count)
-        for idx, item in enumerate(list(st.session_state.upload_queue)):
-            with remove_cols[idx]:
-                if st.button(f"[hapus {idx + 1}]", key=f"simple_remove_upload_queue_{idx}"):
-                    st.session_state.upload_queue.pop(idx)
-                    st.session_state.upload_success_message = ""
-                    st.session_state.uploader_key += 1
-                    st.rerun()
-
-    action_col1, action_col2, action_col3 = st.columns([1.7, 1.05, 0.9], gap="medium")
-
-    with action_col1:
-        if st.button("[Tambahkan Data Lagi]", key="simple_add_more_upload"):
-            st.session_state.uploader_key += 1
-            st.session_state.upload_success_message = ""
-            st.rerun()
-
-    with action_col2:
-        if st.button("[Batalkan]", key="simple_cancel_upload_queue"):
-            st.session_state.upload_queue = []
-            st.session_state.upload_error_messages = []
-            st.session_state.upload_success_message = ""
-            st.session_state.uploader_key += 1
-            st.rerun()
-
-    with action_col3:
-        if st.button("[Upload]", key="simple_upload_queue_to_data", disabled=queue_count == 0):
-            jumlah_digabung = len(st.session_state.upload_queue)
-            st.session_state.uploaded_data_payloads.extend(st.session_state.upload_queue)
-            st.session_state.upload_queue = []
-            st.session_state.upload_error_messages = []
-            st.session_state.upload_success_message = f"{jumlah_digabung} file berhasil digabungkan"
-            st.session_state.uploader_key += 1
-            st.cache_data.clear()
-            st.rerun()
-
-    if st.session_state.upload_success_message:
+    with st.container():
         st.markdown(
-            f"""
-            <div class="kelola-simple-box success-box">
-                <div class="kelola-box-title">✅ Upload berhasil</div>
-                <div class="kelola-box-text">{html.escape(st.session_state.upload_success_message)}</div>
+            """
+            <div class="upload-panel">
+                <div class="upload-panel-title">Upload File ke Antrian</div>
+                <div class="upload-panel-desc">Pilih satu atau beberapa file. File akan masuk ke antrian dulu, sehingga bisa dihapus atau dibatalkan sebelum digabung ke data aktif.</div>
             </div>
             """,
             unsafe_allow_html=True
         )
 
+        uploaded_files_main = st.file_uploader(
+            "Upload file data sampah",
+            type=["xlsx", "xls", "csv"],
+            help="Format minimal wajib memiliki kolom tahun, bulan, dan jumlah_sampah.",
+            accept_multiple_files=True,
+            key=f"main_upload_data_queue_{st.session_state.uploader_key}"
+        )
+
+        if uploaded_files_main:
+            new_errors = []
+            existing_keys = {
+                (item.get("name"), item.get("size"))
+                for item in st.session_state.upload_queue
+            }
+
+            for uploaded_file in uploaded_files_main:
+                uploaded_bytes = uploaded_file.getvalue()
+                uploaded_name = uploaded_file.name
+                uploaded_size = len(uploaded_bytes)
+
+                try:
+                    read_uploaded_dataframe(uploaded_bytes, uploaded_name)
+                    item_key = (uploaded_name, uploaded_size)
+                    if item_key not in existing_keys:
+                        st.session_state.upload_queue.append({
+                            "name": uploaded_name,
+                            "bytes": uploaded_bytes,
+                            "size": uploaded_size
+                        })
+                        existing_keys.add(item_key)
+                except Exception as error:
+                    new_errors.append(f"{uploaded_name}: {error}")
+
+            st.session_state.upload_error_messages = new_errors
+            st.session_state.uploader_key += 1
+            st.rerun()
+
+    if st.session_state.upload_error_messages:
+        for error_message in st.session_state.upload_error_messages:
+            st.error(f"File tidak valid: {error_message}")
+
+    if st.session_state.upload_queue:
+        st.markdown(
+            f"""
+            <div class="queue-header">
+                <div class="queue-header-title">Antrian Upload</div>
+                <div class="queue-header-sub">{queue_count} file siap digabung ke data aktif</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        for idx, item in enumerate(list(st.session_state.upload_queue)):
+            file_label = html.escape(shorten_file_name(item.get("name", "file upload"), max_chars=70))
+            file_size = format_file_size(item.get("size", len(item.get("bytes", b""))))
+            col_file, col_action = st.columns([0.82, 0.18], gap="small")
+            with col_file:
+                st.markdown(
+                    f"""
+                    <div class="queue-row">
+                        <div class="queue-file-name">{idx + 1}. {file_label}</div>
+                        <div class="queue-file-meta">{file_size}</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+            with col_action:
+                st.write("")
+                if st.button("Hapus", key=f"main_remove_upload_queue_{idx}"):
+                    st.session_state.upload_queue.pop(idx)
+                    st.session_state.uploader_key += 1
+                    st.rerun()
+
+        action_col1, action_col2 = st.columns([0.62, 0.38], gap="small")
+        with action_col1:
+            if st.button("Gabungkan ke Data", key="main_merge_upload_queue_to_data", use_container_width=True):
+                st.session_state.uploaded_data_payloads.extend(st.session_state.upload_queue)
+                st.session_state.upload_queue = []
+                st.session_state.upload_error_messages = []
+                st.cache_data.clear()
+                st.rerun()
+        with action_col2:
+            if st.button("Batalkan Semua", key="main_clear_upload_queue", use_container_width=True):
+                st.session_state.upload_queue = []
+                st.session_state.upload_error_messages = []
+                st.session_state.uploader_key += 1
+                st.rerun()
+    else:
+        st.markdown('<div class="upload-empty-box">Belum ada file di antrian. Upload file untuk menyiapkan data tambahan.</div>', unsafe_allow_html=True)
+
     if st.session_state.uploaded_data_payloads:
-        st.markdown('<div style="height:26px;"></div>', unsafe_allow_html=True)
-        if st.button("[Reset ke Data Awal]", key="simple_reset_to_default_data"):
+        st.markdown("---")
+        if st.button("Reset ke Data Awal", key="main_reset_to_default_data", use_container_width=True):
             st.session_state.uploaded_data_payloads = []
             st.session_state.upload_queue = []
             st.session_state.upload_error_messages = []
-            st.session_state.upload_success_message = ""
             st.session_state.uploader_key += 1
             st.cache_data.clear()
             st.rerun()
-
-    st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ============================================================
 # HERO
 # ============================================================
 
-if menu != "Kelola Data Upload":
-    st.markdown(
-        """
-        <div class="hero">
-            <div class="hero-title">Simulasi Pengelolaan Sampah Kota Bandung</div>
-            <div class="hero-subtitle">
-                Dashboard ini difokuskan untuk membantu staf DLH melakukan simulasi kebutuhan operasional
-                berdasarkan prediksi jumlah sampah bulanan.
-            </div>
+st.markdown(
+    """
+    <div class="hero">
+        <div class="hero-title">Simulasi Pengelolaan Sampah Kota Bandung</div>
+        <div class="hero-subtitle">
+            Dashboard ini difokuskan untuk membantu staf DLH melakukan simulasi kebutuhan operasional
+            berdasarkan prediksi jumlah sampah bulanan.
         </div>
-        """,
-        unsafe_allow_html=True
-    )
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 
 # ============================================================
