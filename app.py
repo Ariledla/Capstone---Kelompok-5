@@ -2486,51 +2486,45 @@ theme = apply_theme("Gelap")
 
 
 # ============================================================
-# HERO REAL TOP GAP FIX — v59
-# Menghilangkan ruang kosong dari banyak st.markdown(<style>...)
-# sebelum hero. Hero tidak ditarik ekstrem, jadi section bawah tetap rapi.
+# HERO VISUAL GAP FIX — v60
+# Target: hero naik seperti referensi, tetapi section bawah tetap ikut rapat.
+# Penyebab gap besar adalah elemen CSS/komponen sebelum hero; jadi yang digeser
+# adalah container hero-nya, bukan isi .hero saja.
 # ============================================================
 
 st.markdown(
     """
     <style>
-    /* Collapse semua element-container yang hanya berisi CSS injection.
-       CSS-nya tetap aktif, tapi container kosongnya tidak makan ruang vertikal. */
-    div[data-testid="stElementContainer"]:has(style),
-    div[data-testid="stMarkdown"]:has(style),
-    div[data-testid="stMarkdownContainer"]:has(style) {
-        height: 0px !important;
-        min-height: 0px !important;
-        max-height: 0px !important;
-        margin-top: 0px !important;
-        margin-bottom: 0px !important;
-        padding-top: 0px !important;
-        padding-bottom: 0px !important;
-        overflow: hidden !important;
-    }
-
-    div[data-testid="stElementContainer"]:has(style) * {
-        margin-top: 0px !important;
-        margin-bottom: 0px !important;
-        padding-top: 0px !important;
-        padding-bottom: 0px !important;
-    }
-
-    /* Padding halaman dibuat kecil seperti referensi, bukan kosong besar. */
+    /* Kurangi padding bawaan halaman */
     .block-container,
     [data-testid="stMainBlockContainer"],
     section.main > div.block-container,
     [data-testid="stAppViewContainer"] .main .block-container {
-        padding-top: 0.75rem !important;
+        padding-top: 0.65rem !important;
     }
 
-    /* Hero normal: tidak pakai negative margin yang bikin section bawah jauh. */
+    /* Ini kunci: parent container hero dinaikkan cukup jauh.
+       Kalau masih terlalu turun, ubah -345px jadi -365px.
+       Kalau terlalu naik/kepotong, ubah jadi -320px. */
+    div[data-testid="stElementContainer"]:has(.hero) {
+        margin-top: -345px !important;
+        margin-bottom: 18px !important;
+        padding-top: 0px !important;
+        padding-bottom: 0px !important;
+    }
+
+    div[data-testid="stMarkdownContainer"]:has(.hero) {
+        margin-top: 0px !important;
+        margin-bottom: 0px !important;
+        padding-top: 0px !important;
+        padding-bottom: 0px !important;
+    }
+
     .hero {
         margin-top: 0px !important;
-        margin-bottom: 16px !important;
+        margin-bottom: 0px !important;
     }
 
-    /* Section setelah hero dibuat rapat dan natural. */
     .section-title {
         margin-top: 0px !important;
         margin-bottom: 7px !important;
@@ -2541,13 +2535,11 @@ st.markdown(
         margin-bottom: 18px !important;
     }
 
-    /* Pastikan container hero sendiri tidak memberi margin tambahan. */
-    div[data-testid="stElementContainer"]:has(.hero),
-    div[data-testid="stMarkdownContainer"]:has(.hero) {
-        margin-top: 0px !important;
-        margin-bottom: 0px !important;
-        padding-top: 0px !important;
-        padding-bottom: 0px !important;
+    @media screen and (max-width: 900px) {
+        div[data-testid="stElementContainer"]:has(.hero) {
+            margin-top: 0px !important;
+            margin-bottom: 14px !important;
+        }
     }
     </style>
     """,
