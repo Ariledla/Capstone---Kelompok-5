@@ -6545,13 +6545,22 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             opacity: .92;
         }
 
-        [data-testid="stFileUploader"] {
+        .upload-v5-wrap [data-testid="stFileUploader"] {
+            width: 100% !important;
+            max-width: none !important;
             margin-top: 0 !important;
             margin-bottom: 0 !important;
         }
 
-        [data-testid="stFileUploader"] section {
-            min-height: 196px !important;
+        .upload-v5-wrap [data-testid="stFileUploader"] > div,
+        .upload-v5-wrap [data-testid="stFileUploader"] section,
+        .upload-v5-wrap [data-testid="stFileUploader"] section > div {
+            width: 100% !important;
+            max-width: none !important;
+        }
+
+        .upload-v5-wrap [data-testid="stFileUploader"] section {
+            min-height: 176px !important;
             padding: 18px !important;
             border-radius: 22px !important;
             border: 1.4px dashed rgba(139,203,136,.24) !important;
@@ -6788,43 +6797,41 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
         unsafe_allow_html=True
     )
 
-    left_col, right_col = st.columns([0.95, 1.05], gap="large")
-
-    with left_col:
-        with st.container(border=True):
-            st.markdown(
-                """
-                <div class="upload-v5-card-head">
-                    <div class="upload-v5-title-row">
-                        <div class="upload-v5-icon">⤴</div>
-                        <div>
-                            <div class="upload-v5-card-title">Upload File ke Antrian</div>
-                            <div class="upload-v5-card-subtitle">Pilih file Excel atau CSV. File akan masuk antrian dulu sebelum digabung ke data aktif.</div>
-                        </div>
+    # Upload dibuat full-width dari kiri sampai kanan, tidak lagi terkunci di panel kiri.
+    with st.container(border=True):
+        st.markdown(
+            """
+            <div class="upload-v5-card-head">
+                <div class="upload-v5-title-row">
+                    <div class="upload-v5-icon">⤴</div>
+                    <div>
+                        <div class="upload-v5-card-title">Upload File ke Antrian</div>
+                        <div class="upload-v5-card-subtitle">Pilih satu atau beberapa file Excel/CSV. Area upload dibuat melebar penuh agar tidak terasa sempit di sisi kiri.</div>
                     </div>
-                    <div class="upload-v5-pill">Excel / CSV</div>
                 </div>
-                """,
-                unsafe_allow_html=True
-            )
+                <div class="upload-v5-pill">Excel / CSV</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
-            uploaded_files_main = st.file_uploader(
-                "Upload file data sampah",
-                type=["xlsx", "xls", "csv"],
-                help="File wajib memiliki kolom: tahun, bulan, jumlah_sampah.",
-                accept_multiple_files=True,
-                key=f"no_empty_upload_panel_{st.session_state.uploader_key}",
-                label_visibility="collapsed"
-            )
+        uploaded_files_main = st.file_uploader(
+            "Upload file data sampah",
+            type=["xlsx", "xls", "csv"],
+            help="File wajib memiliki kolom: tahun, bulan, jumlah_sampah.",
+            accept_multiple_files=True,
+            key=f"no_empty_upload_panel_{st.session_state.uploader_key}",
+            label_visibility="collapsed"
+        )
 
-            st.markdown(
-                """
-                <div class="upload-v5-note">
-                    Kolom wajib: <b>tahun</b>, <b>bulan</b>, dan <b>jumlah_sampah</b>. File tidak langsung memengaruhi model sebelum upload final.
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+        st.markdown(
+            """
+            <div class="upload-v5-note">
+                Kolom wajib: <b>tahun</b>, <b>bulan</b>, dan <b>jumlah_sampah</b>. File tidak langsung memengaruhi model sebelum upload final.
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
     if uploaded_files_main:
         new_errors = []
@@ -6856,57 +6863,58 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
         st.session_state.uploader_key += 1
         st.rerun()
 
-    with right_col:
-        with st.container(border=True):
-            st.markdown(
-                f"""
-                <div class="upload-v5-card-head">
-                    <div class="upload-v5-title-row">
-                        <div class="upload-v5-icon">☷</div>
-                        <div>
-                            <div class="upload-v5-card-title">Antrian File</div>
-                            <div class="upload-v5-card-subtitle">Cek file sebelum digabung ke data aktif.</div>
-                        </div>
+    st.markdown('<div style="height:16px"></div>', unsafe_allow_html=True)
+
+    with st.container(border=True):
+        st.markdown(
+            f"""
+            <div class="upload-v5-card-head">
+                <div class="upload-v5-title-row">
+                    <div class="upload-v5-icon">☷</div>
+                    <div>
+                        <div class="upload-v5-card-title">Antrian File</div>
+                        <div class="upload-v5-card-subtitle">Cek file sebelum digabung ke data aktif.</div>
                     </div>
-                    <div class="upload-v5-pill">{queue_count} file</div>
+                </div>
+                <div class="upload-v5-pill">{queue_count} file</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        if queue_count == 0:
+            st.markdown(
+                """
+                <div class="upload-v5-empty compact">
+                    <div class="upload-v5-empty-icon">🗂</div>
+                    <div class="upload-v5-empty-title">Belum ada file di antrian</div>
+                    <div class="upload-v5-empty-desc">
+                        Unggah file dari panel atas. Setelah valid, file akan muncul di sini sebelum digabung ke data aktif.
+                    </div>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
-
-            if queue_count == 0:
-                st.markdown(
-                    """
-                    <div class="upload-v5-empty">
-                        <div class="upload-v5-empty-icon">🗂</div>
-                        <div class="upload-v5-empty-title">Belum ada file di antrian</div>
-                        <div class="upload-v5-empty-desc">
-                            Unggah file dari panel kiri. Setelah valid, file akan muncul di sini sebelum digabung ke data aktif.
+        else:
+            for idx, item in enumerate(list(st.session_state.upload_queue)):
+                qcol1, qcol2 = st.columns([0.86, 0.14], gap="small")
+                with qcol1:
+                    st.markdown(
+                        f"""
+                        <div class="upload-v5-file-row">
+                            <div class="upload-v5-file-title">{idx + 1}. {html.escape(item.get('name', 'file upload'))}</div>
+                            <div class="upload-v5-file-meta">{format_file_size(item.get('size', 0))} • siap diproses ke data aktif</div>
                         </div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-            else:
-                for idx, item in enumerate(list(st.session_state.upload_queue)):
-                    qcol1, qcol2 = st.columns([0.80, 0.20], gap="small")
-                    with qcol1:
-                        st.markdown(
-                            f"""
-                            <div class="upload-v5-file-row">
-                                <div class="upload-v5-file-title">{idx + 1}. {html.escape(item.get('name', 'file upload'))}</div>
-                                <div class="upload-v5-file-meta">{format_file_size(item.get('size', 0))} • siap diproses ke data aktif</div>
-                            </div>
-                            """,
-                            unsafe_allow_html=True
-                        )
-                    with qcol2:
-                        st.markdown('<div style="height:12px"></div>', unsafe_allow_html=True)
-                        if st.button("Hapus", key=f"upload_remove_{idx}", use_container_width=True):
-                            st.session_state.upload_queue.pop(idx)
-                            st.session_state.upload_success_message = ""
-                            st.session_state.uploader_key += 1
-                            st.rerun()
+                        """,
+                        unsafe_allow_html=True
+                    )
+                with qcol2:
+                    st.markdown('<div style="height:12px"></div>', unsafe_allow_html=True)
+                    if st.button("Hapus", key=f"upload_remove_{idx}", use_container_width=True):
+                        st.session_state.upload_queue.pop(idx)
+                        st.session_state.upload_success_message = ""
+                        st.session_state.uploader_key += 1
+                        st.rerun()
 
     if st.session_state.upload_error_messages:
         for error_message in st.session_state.upload_error_messages:
