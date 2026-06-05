@@ -5969,7 +5969,7 @@ if menu == "Simulasi Pengelolaan":
     bullet_card(
         "Catatan simulasi",
         [
-            f"Model prediksi yang digunakan adalah <b>{forecast_model_label}</b>, dipilih otomatis berdasarkan data historis terbaru.",
+            f"Model prediksi yang digunakan adalah <b>{forecast_model_label}</b>, dipilih berdasarkan data historis terbaru.",
             f"Asumsi biaya penanganan adalah <b>{format_rupiah(biaya_per_ton)} per ton</b>.",
             f"Kapasitas truk compactor yang digunakan adalah <b>{kapasitas_truk_compactor_m3} m³</b> per muatan.",
             f"Prediksi sampah dalam satuan ton dikonversi menjadi volume memakai densitas <b>{format_angka(DENSITAS_SAMPAH_KG_PER_M3)} kg/m³</b>.",
