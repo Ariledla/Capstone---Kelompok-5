@@ -5578,7 +5578,7 @@ if menu == "Simulasi Pengelolaan":
 elif menu == "Ringkasan Data & Model":
     st.markdown('<div class="section-title">Ringkasan Data & Model</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="section-desc">Halaman ini menampilkan ringkasan data, EDA interaktif, dan evaluasi model secara singkat. Pilih visualisasi EDA yang ingin dilihat agar dashboard tetap fokus dan tidak terlalu penuh.</div>',
+        '<div class="section-desc">Halaman ini menampilkan ringkasan data, EDA interaktif, dan evaluasi model.</div>',
         unsafe_allow_html=True
     )
 
