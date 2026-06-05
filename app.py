@@ -2097,7 +2097,7 @@ def apply_theme(mode):
                 justify-content: center !important;
                 text-align: center !important;
                 background: transparent !important;
-                transform: translateX(24px) !important;
+                transform: none !important;
             }}
 
             [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) > div:nth-child(1) .stButton > button {{
@@ -3048,7 +3048,7 @@ st.markdown(
         margin-right: auto !important;
         padding-left: 0 !important;
         padding-right: 0 !important;
-        transform: none !important;
+        transform: translateX(18px) !important;
     }
 
     /* Tombol custom: ikon panel-web kecil, lebih halus, dan tidak menabrak hero. */
