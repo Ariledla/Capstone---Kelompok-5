@@ -2477,6 +2477,184 @@ theme = apply_theme(st.session_state.theme_mode)
 
 
 # ============================================================
+# SIDEBAR COMPACT FIT — v43
+# Semua fitur sidebar dikuruskan ±40px, menu wajib terlihat, card tidak overlay.
+# ============================================================
+
+st.markdown(
+    f"""
+    <style>
+    :root {{ --sidebar-feature-w: 264px; }}
+
+    [data-testid="stSidebar"] {{
+        width: 304px !important;
+        min-width: 304px !important;
+        max-width: 304px !important;
+        overflow: hidden !important;
+    }}
+    [data-testid="stSidebarContent"], [data-testid="stSidebarUserContent"] {{
+        overflow: hidden !important;
+        scrollbar-width: none !important;
+    }}
+    [data-testid="stSidebar"]::-webkit-scrollbar,
+    [data-testid="stSidebarContent"]::-webkit-scrollbar,
+    [data-testid="stSidebarUserContent"]::-webkit-scrollbar {{ display:none!important; width:0!important; }}
+    [data-testid="stSidebarUserContent"] {{
+        margin-top: -2.55rem !important;
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+        padding-bottom: 10px !important;
+    }}
+    [data-testid="stSidebar"] .element-container {{
+        width: var(--sidebar-feature-w) !important;
+        max-width: var(--sidebar-feature-w) !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        margin-bottom: 0 !important;
+    }}
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {{ gap:0!important; }}
+
+    [data-testid="stSidebar"] .theme-label {{
+        width: var(--sidebar-feature-w) !important;
+        max-width: var(--sidebar-feature-w) !important;
+        margin: 0 auto 8px auto !important;
+        font-size: 13px !important;
+        line-height: 1.08 !important;
+        font-weight: 900 !important;
+    }}
+    [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) {{
+        width: var(--sidebar-feature-w) !important;
+        max-width: var(--sidebar-feature-w) !important;
+        min-width: var(--sidebar-feature-w) !important;
+        height: 42px !important;
+        min-height: 42px !important;
+        display: grid !important;
+        grid-template-columns: 128px 128px !important;
+        gap: 8px !important;
+        padding: 0 !important;
+        margin: 5px auto 16px auto !important;
+    }}
+    [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) [data-testid="column"] {{
+        width:128px!important; min-width:128px!important; max-width:128px!important; padding:0!important; flex:0 0 128px!important;
+    }}
+    [data-testid="stSidebar"] .stButton > button {{
+        width:128px!important; max-width:128px!important; min-width:128px!important;
+        height:42px!important; min-height:42px!important; border-radius:15px!important;
+        padding:0!important; font-size:13px!important;
+    }}
+
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] {{
+        width: var(--sidebar-feature-w) !important;
+        max-width: var(--sidebar-feature-w) !important;
+        margin: 0 auto !important;
+    }}
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] > label {{
+        width: var(--sidebar-feature-w) !important;
+        max-width: var(--sidebar-feature-w) !important;
+        display:flex!important; align-items:center!important; justify-content:space-between!important;
+        gap:8px!important; margin:0 0 7px 0!important; padding:0!important;
+    }}
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] > label p {{
+        max-width:230px!important; margin:0!important; line-height:1.08!important;
+        font-size:12.7px!important; font-weight:780!important; white-space:nowrap!important;
+    }}
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] [data-testid="stTooltipIcon"] {{
+        transform:scale(.76)!important; transform-origin:center!important; margin:0!important; flex:0 0 auto!important;
+    }}
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section {{
+        width:var(--sidebar-feature-w)!important; max-width:var(--sidebar-feature-w)!important;
+        min-height:82px!important; padding:10px 12px!important; border-radius:15px!important;
+        display:flex!important; flex-direction:column!important; justify-content:center!important; gap:7px!important;
+    }}
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section button,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] button[kind="secondary"] {{
+        width:100%!important; max-width:100%!important; min-width:100%!important;
+        height:34px!important; min-height:34px!important; border-radius:12px!important;
+        display:flex!important; align-items:center!important; justify-content:center!important;
+        gap:7px!important; margin:0!important; padding:0 10px!important;
+        font-size:12.4px!important; font-weight:800!important;
+    }}
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section button svg {{ margin-right:6px!important; transform:translateY(0)!important; }}
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section small,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section p,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section span {{
+        text-align:center!important; line-height:1.05!important; font-size:10.6px!important; white-space:nowrap!important;
+    }}
+
+    [data-testid="stSidebar"] .data-input-note {{
+        width:var(--sidebar-feature-w)!important; max-width:var(--sidebar-feature-w)!important;
+        margin:8px auto 9px auto!important; font-size:10.6px!important; line-height:1.18!important;
+    }}
+    [data-testid="stSidebar"] .data-status {{
+        width:var(--sidebar-feature-w)!important; max-width:var(--sidebar-feature-w)!important;
+        min-height:42px!important; display:flex!important; align-items:center!important; gap:8px!important;
+        padding:8px 10px!important; margin:0 auto 11px auto!important; border-radius:13px!important; line-height:1.1!important;
+    }}
+    [data-testid="stSidebar"] .data-status-icon {{
+        width:20px!important; height:20px!important; min-width:20px!important; border-radius:7px!important; font-size:11px!important;
+    }}
+    [data-testid="stSidebar"] .data-status b {{ font-size:11.5px!important; line-height:1.05!important; }}
+    [data-testid="stSidebar"] .data-status span {{ font-size:9.6px!important; line-height:1.05!important; white-space:nowrap!important; }}
+
+    [data-testid="stSidebar"] .stRadio {{
+        width:var(--sidebar-feature-w)!important; max-width:var(--sidebar-feature-w)!important;
+        margin:7px auto 0 auto!important; display:block!important;
+    }}
+    [data-testid="stSidebar"] .stRadio > label {{ margin:0 0 2px 0!important; padding:0!important; }}
+    [data-testid="stSidebar"] .stRadio > label p {{ font-size:12.6px!important; line-height:1.05!important; margin:0!important; padding:0!important; }}
+    [data-testid="stSidebar"] [role="radiogroup"] {{
+        width:var(--sidebar-feature-w)!important; max-width:var(--sidebar-feature-w)!important;
+        gap:2px!important; margin-top:2px!important;
+    }}
+    [data-testid="stSidebar"] [role="radiogroup"] label {{
+        width:var(--sidebar-feature-w)!important; max-width:var(--sidebar-feature-w)!important;
+        height:29px!important; min-height:29px!important; padding:0 7px!important;
+        display:flex!important; align-items:center!important; gap:9px!important; margin:0!important;
+    }}
+    [data-testid="stSidebar"] [role="radiogroup"] label p {{ margin:0!important; line-height:1!important; font-size:11.6px!important; white-space:nowrap!important; }}
+    [data-testid="stSidebar"] [role="radiogroup"] label > div:first-child {{
+        width:15px!important; height:15px!important; min-width:15px!important; max-width:15px!important;
+        min-height:15px!important; max-height:15px!important; aspect-ratio:1/1!important; border-radius:999px!important;
+        margin:0!important; padding:0!important; background:#2B2D3A!important; border:1px solid rgba(139,203,136,.30)!important;
+        display:flex!important; align-items:center!important; justify-content:center!important; overflow:hidden!important;
+    }}
+    [data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) > div:first-child {{
+        background:{theme["accent_hover"]}!important; border-color:{theme["accent"]}!important; box-shadow:0 0 0 4px {theme["accent_soft"]}!important;
+    }}
+
+    .sidebar-visual {{
+        position:relative!important; left:auto!important; bottom:auto!important;
+        width:var(--sidebar-feature-w)!important; max-width:var(--sidebar-feature-w)!important;
+        min-height:148px!important; max-height:158px!important;
+        margin:10px auto 0 auto!important; padding:11px 13px!important;
+        border-radius:17px!important; overflow:hidden!important; z-index:1!important;
+    }}
+    .sidebar-visual::before {{ width:62px!important; height:62px!important; right:-18px!important; top:-20px!important; }}
+    .sidebar-emoji {{ font-size:22px!important; margin-bottom:6px!important; line-height:1!important; }}
+    .sidebar-visual-title {{ font-size:15.5px!important; line-height:1.05!important; margin:0!important; white-space:nowrap!important; }}
+    .sidebar-visual-subtitle {{ font-size:10px!important; line-height:1.18!important; margin-top:6px!important; max-width:230px!important; }}
+    .team-name {{ margin-top:7px!important; padding:6px 8px!important; min-height:28px!important; border-radius:11px!important; font-size:10.2px!important; line-height:1!important; white-space:nowrap!important; }}
+
+    @media screen and (max-height:760px) {{
+        [data-testid="stSidebarUserContent"] {{ margin-top:-2.7rem!important; }}
+        [data-testid="stSidebar"] [data-testid="stFileUploader"] section {{ min-height:72px!important; padding:8px 10px!important; }}
+        [data-testid="stSidebar"] .data-input-note {{ margin:6px auto 7px auto!important; }}
+        [data-testid="stSidebar"] .data-status {{ min-height:38px!important; margin-bottom:8px!important; }}
+        .sidebar-visual {{ min-height:132px!important; max-height:140px!important; padding:9px 11px!important; margin-top:7px!important; }}
+        .sidebar-emoji {{ font-size:19px!important; margin-bottom:4px!important; }}
+        .sidebar-visual-title {{ font-size:13.4px!important; }}
+        .sidebar-visual-subtitle {{ font-size:8.8px!important; line-height:1.13!important; margin-top:4px!important; }}
+        .team-name {{ margin-top:5px!important; min-height:24px!important; font-size:9px!important; padding:5px 7px!important; }}
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+
+# ============================================================
 # SIDEBAR TARGET STYLE — v36
 # Target: mengikuti referensi gambar sidebar rapi.
 # Sidebar dibuat lebih masuk akal: 304px, inner 252px.
