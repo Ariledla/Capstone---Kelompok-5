@@ -2,6 +2,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import io
+import textwrap
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -2475,6 +2476,331 @@ def apply_theme(mode):
 
 st.session_state.theme_mode = "Gelap"
 theme = apply_theme("Gelap")
+
+
+# ============================================================
+# DATA & MODEL OVERVIEW REDESIGN — v52
+# Redesign khusus halaman Ringkasan Data & Model.
+# ============================================================
+
+st.markdown(
+    """
+    <style>
+    .overview-wrap {
+        margin-top: 4px;
+        margin-bottom: 24px;
+    }
+
+    .overview-mini-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+        margin: 8px 0 18px 0;
+    }
+
+    .overview-mini-card {
+        min-height: 112px;
+        border-radius: 20px;
+        border: 1px solid #3D4A40;
+        background:
+            radial-gradient(circle at 14% 10%, rgba(139, 203, 136, 0.16), transparent 36%),
+            radial-gradient(circle at 92% 8%, rgba(226, 177, 93, 0.10), transparent 34%),
+            linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0.000)),
+            #222A24;
+        box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+        padding: 15px 17px;
+        box-sizing: border-box;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .overview-mini-card::after {
+        content: "";
+        position: absolute;
+        width: 72px;
+        height: 72px;
+        right: -28px;
+        top: -28px;
+        border-radius: 999px;
+        background: rgba(139, 203, 136, 0.08);
+    }
+
+    .overview-mini-top {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 11px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .overview-mini-icon {
+        width: 31px;
+        height: 31px;
+        min-width: 31px;
+        border-radius: 11px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #8BCB88 !important;
+        background: rgba(139, 203, 136, 0.13);
+        border: 1px solid rgba(139, 203, 136, 0.23);
+    }
+
+    .overview-mini-icon svg {
+        width: 17px;
+        height: 17px;
+        display: block;
+    }
+
+    .overview-mini-label {
+        color: #D8E0D4 !important;
+        font-size: 12.2px;
+        font-weight: 900;
+        letter-spacing: -0.1px;
+        line-height: 1.15;
+    }
+
+    .overview-mini-value {
+        color: #F5F7F2 !important;
+        font-size: clamp(17px, 1.25vw, 25px);
+        font-weight: 950;
+        line-height: 1.08;
+        letter-spacing: -0.35px;
+        position: relative;
+        z-index: 2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .overview-mini-note {
+        color: #D8E0D4 !important;
+        opacity: 0.86;
+        font-size: 10.7px;
+        font-weight: 700;
+        margin-top: 6px;
+        line-height: 1.25;
+        position: relative;
+        z-index: 2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .overview-panel-grid {
+        display: grid;
+        grid-template-columns: 0.92fr 1.08fr;
+        gap: 16px;
+        margin-bottom: 24px;
+        align-items: stretch;
+    }
+
+    .overview-panel {
+        border-radius: 24px;
+        border: 1px solid #3D4A40;
+        background:
+            radial-gradient(circle at 8% 8%, rgba(139, 203, 136, 0.15), transparent 34%),
+            radial-gradient(circle at 96% 0%, rgba(226, 177, 93, 0.10), transparent 30%),
+            linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0.000)),
+            #222A24;
+        box-shadow: 0 14px 34px rgba(0,0,0,0.15);
+        padding: 21px 23px;
+        min-height: 318px;
+        box-sizing: border-box;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .overview-panel::before {
+        content: "";
+        position: absolute;
+        width: 145px;
+        height: 145px;
+        right: -70px;
+        top: -70px;
+        border-radius: 999px;
+        background: rgba(139, 203, 136, 0.07);
+    }
+
+    .overview-panel > * {
+        position: relative;
+        z-index: 2;
+    }
+
+    .overview-panel-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #F5F7F2 !important;
+        font-size: 18px;
+        font-weight: 950;
+        line-height: 1.1;
+        margin-bottom: 16px;
+    }
+
+    .overview-panel-title .overview-mini-icon {
+        width: 34px;
+        height: 34px;
+        min-width: 34px;
+        border-radius: 12px;
+    }
+
+    .overview-profile-table {
+        display: grid;
+        gap: 8px;
+    }
+
+    .overview-profile-row {
+        display: grid;
+        grid-template-columns: 132px minmax(0, 1fr);
+        gap: 12px;
+        align-items: center;
+        border: 1px solid rgba(61, 74, 64, 0.72);
+        background: rgba(21, 26, 23, 0.34);
+        border-radius: 14px;
+        padding: 9px 12px;
+    }
+
+    .overview-profile-key {
+        color: #D8E0D4 !important;
+        font-size: 12px;
+        font-weight: 850;
+        opacity: 0.85;
+    }
+
+    .overview-profile-value {
+        color: #F5F7F2 !important;
+        font-size: 12.6px;
+        font-weight: 900;
+        text-align: right;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .overview-model-highlight {
+        border-radius: 18px;
+        background:
+            linear-gradient(135deg, rgba(139, 203, 136, 0.16), rgba(226, 177, 93, 0.11));
+        border: 1px solid rgba(139, 203, 136, 0.26);
+        padding: 14px 16px;
+        margin-bottom: 14px;
+    }
+
+    .overview-model-kicker {
+        color: #8BCB88 !important;
+        font-size: 11.2px;
+        font-weight: 950;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        margin-bottom: 7px;
+    }
+
+    .overview-model-name {
+        color: #F5F7F2 !important;
+        font-size: clamp(19px, 1.35vw, 28px);
+        font-weight: 950;
+        line-height: 1.12;
+        letter-spacing: -0.35px;
+        word-break: break-word;
+    }
+
+    .overview-model-caption {
+        color: #D8E0D4 !important;
+        font-size: 12.2px;
+        font-weight: 720;
+        line-height: 1.45;
+        margin-top: 8px;
+    }
+
+    .overview-step-list {
+        display: grid;
+        gap: 9px;
+        margin-top: 8px;
+    }
+
+    .overview-step {
+        display: grid;
+        grid-template-columns: 34px minmax(0, 1fr);
+        gap: 10px;
+        align-items: start;
+    }
+
+    .overview-step-number {
+        width: 26px;
+        height: 26px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #151A17 !important;
+        background: #8BCB88;
+        font-size: 11.5px;
+        font-weight: 950;
+        margin-top: 1px;
+        box-shadow: 0 8px 18px rgba(139,203,136,0.18);
+    }
+
+    .overview-step-text {
+        color: #D8E0D4 !important;
+        font-size: 13px;
+        font-weight: 720;
+        line-height: 1.45;
+    }
+
+    .overview-step-text b {
+        color: #F5F7F2 !important;
+        font-weight: 950;
+    }
+
+    @media screen and (max-width: 900px) {
+        .overview-mini-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .overview-mini-card {
+            min-height: 92px;
+            padding: 12px 12px;
+            border-radius: 16px;
+        }
+
+        .overview-mini-value {
+            font-size: 14px;
+        }
+
+        .overview-panel-grid {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .overview-panel {
+            min-height: auto;
+            border-radius: 18px;
+            padding: 15px 14px;
+        }
+
+        .overview-profile-row {
+            grid-template-columns: 1fr;
+            gap: 3px;
+        }
+
+        .overview-profile-value {
+            text-align: left;
+            white-space: normal;
+        }
+
+        .overview-panel-title {
+            font-size: 15px;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
 
 
 # ============================================================
@@ -5654,43 +5980,123 @@ if menu == "Simulasi Pengelolaan":
 elif menu == "Ringkasan Data & Model":
     st.markdown('<div class="section-title">Ringkasan Data & Model</div>', unsafe_allow_html=True)
     st.markdown(
-        '<div class="section-desc">Halaman ini menampilkan ringkasan data, EDA interaktif, dan evaluasi model.</div>',
+        '<div class="section-desc">Halaman ini menampilkan kondisi data, status model, EDA interaktif, dan evaluasi model dalam satu tampilan ringkas.</div>',
         unsafe_allow_html=True
     )
 
     eval_df, comparison_df, test_actual, test_forecast, eval_model_label, eval_model_selection_df = evaluate_sarima(ts)
 
-    left, right = st.columns(2, gap="small")
+    missing_value_total = int(df_raw.isnull().sum().sum())
+    duplicate_total = int(df_raw.duplicated().sum())
 
-    with left:
-        bullet_card(
-            "Ringkasan Data",
-            [
-                f"Sumber data: <b>{source_data_name}</b>",
-                f"Wilayah: <b>{kota}</b>",
-                f"Provinsi: <b>{provinsi}</b>",
-                f"Jumlah data: <b>{len(df_raw)} baris</b>",
-                f"Periode: <b>{periode_data}</b>",
-                f"Satuan: <b>{satuan}</b>",
-                "Variabel utama: <b>jumlah_sampah</b>",
-                "Bentuk data: <b>bulanan</b>",
-                f"Missing value: <b>{int(df_raw.isnull().sum().sum())}</b>",
-                f"Data duplikat: <b>{int(df_raw.duplicated().sum())}</b>"
-            ]
-        )
+    st.markdown(
+        textwrap.dedent(f"""
+        <div class="overview-wrap">
+            <div class="overview-mini-grid">
+                <div class="overview-mini-card">
+                    <div class="overview-mini-top">
+                        <div class="overview-mini-icon">{kpi_svg("calendar")}</div>
+                        <div class="overview-mini-label">Jumlah Data</div>
+                    </div>
+                    <div class="overview-mini-value">{len(df_raw)} baris</div>
+                    <div class="overview-mini-note">{periode_data}</div>
+                </div>
 
-    with right:
-        bullet_card(
-            "Ringkasan Model",
-            [
-                f"Model evaluasi terbaik yang dipilih: <b>{eval_model_label}</b>.",
-                "Sistem mencoba beberapa kandidat SARIMA, lalu memilih parameter terbaik berdasarkan nilai <b>AIC</b> terkecil.",
-                "Jika user mengunggah data terbaru, preprocessing dan pelatihan model dilakukan ulang secara otomatis berdasarkan data tersebut.",
-                "Prediksi dapat dibuat sampai <b>24 bulan ke depan</b> untuk mendukung simulasi hingga dua tahun mendatang.",
-                "Model digunakan untuk menghasilkan estimasi jumlah sampah, anggaran, volume sampah, dan kebutuhan muatan truk compactor.",
-                "Detail teori, EDA, parameter model, dan evaluasi lengkap dijelaskan pada laporan."
-            ]
-        )
+                <div class="overview-mini-card">
+                    <div class="overview-mini-top">
+                        <div class="overview-mini-icon">{kpi_svg("waste")}</div>
+                        <div class="overview-mini-label">Variabel Utama</div>
+                    </div>
+                    <div class="overview-mini-value">jumlah_sampah</div>
+                    <div class="overview-mini-note">Data bulanan dalam satuan {satuan}</div>
+                </div>
+
+                <div class="overview-mini-card">
+                    <div class="overview-mini-top">
+                        <div class="overview-mini-icon">{kpi_svg("trend_up")}</div>
+                        <div class="overview-mini-label">Model Aktif</div>
+                    </div>
+                    <div class="overview-mini-value">{eval_model_label}</div>
+                    <div class="overview-mini-note">Dipilih otomatis berdasarkan AIC terkecil</div>
+                </div>
+
+                <div class="overview-mini-card">
+                    <div class="overview-mini-top">
+                        <div class="overview-mini-icon">{kpi_svg("route")}</div>
+                        <div class="overview-mini-label">Kesiapan Data</div>
+                    </div>
+                    <div class="overview-mini-value">{missing_value_total} missing</div>
+                    <div class="overview-mini-note">{duplicate_total} data duplikat terdeteksi</div>
+                </div>
+            </div>
+
+            <div class="overview-panel-grid">
+                <div class="overview-panel">
+                    <div class="overview-panel-title">
+                        <div class="overview-mini-icon">{kpi_svg("cube")}</div>
+                        Profil Data
+                    </div>
+                    <div class="overview-profile-table">
+                        <div class="overview-profile-row">
+                            <div class="overview-profile-key">Sumber data</div>
+                            <div class="overview-profile-value">{source_data_name}</div>
+                        </div>
+                        <div class="overview-profile-row">
+                            <div class="overview-profile-key">Wilayah</div>
+                            <div class="overview-profile-value">{kota}</div>
+                        </div>
+                        <div class="overview-profile-row">
+                            <div class="overview-profile-key">Provinsi</div>
+                            <div class="overview-profile-value">{provinsi}</div>
+                        </div>
+                        <div class="overview-profile-row">
+                            <div class="overview-profile-key">Periode</div>
+                            <div class="overview-profile-value">{periode_data}</div>
+                        </div>
+                        <div class="overview-profile-row">
+                            <div class="overview-profile-key">Bentuk data</div>
+                            <div class="overview-profile-value">Bulanan</div>
+                        </div>
+                        <div class="overview-profile-row">
+                            <div class="overview-profile-key">Satuan</div>
+                            <div class="overview-profile-value">{satuan}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overview-panel">
+                    <div class="overview-panel-title">
+                        <div class="overview-mini-icon">{kpi_svg("trend_up")}</div>
+                        Status Model
+                    </div>
+                    <div class="overview-model-highlight">
+                        <div class="overview-model-kicker">Model Evaluasi Terbaik</div>
+                        <div class="overview-model-name">{eval_model_label}</div>
+                        <div class="overview-model-caption">
+                            Sistem membandingkan beberapa kandidat SARIMA dan memilih konfigurasi dengan nilai AIC terkecil.
+                        </div>
+                    </div>
+
+                    <div class="overview-step-list">
+                        <div class="overview-step">
+                            <div class="overview-step-number">1</div>
+                            <div class="overview-step-text"><b>Preprocessing otomatis</b> dilakukan setelah data bawaan atau data upload dibaca.</div>
+                        </div>
+                        <div class="overview-step">
+                            <div class="overview-step-number">2</div>
+                            <div class="overview-step-text"><b>Seleksi kandidat SARIMA</b> berjalan untuk mencari parameter yang paling sesuai.</div>
+                        </div>
+                        <div class="overview-step">
+                            <div class="overview-step-number">3</div>
+                            <div class="overview-step-text"><b>Prediksi sampai 24 bulan</b> digunakan untuk menghitung sampah, anggaran, volume, dan muatan truk.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        """).strip(),
+        unsafe_allow_html=True
+    )
 
     render_eda_section(ts, theme)
 
