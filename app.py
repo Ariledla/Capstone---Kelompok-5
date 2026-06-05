@@ -6376,7 +6376,9 @@ st.markdown(
 # ============================================================
 
 def render_upload_management_section(ts, source_data_type, periode_data, forecast_max_months):
-    """Halaman Kelola Data Upload modern sesuai layout terbaru user."""
+    """Halaman Kelola Data Upload tanpa card kosong.
+    Fokus: hero, panel upload, panel antrian, tombol upload final/reset.
+    """
 
     active_upload_count = len(st.session_state.uploaded_data_payloads)
     queue_count = len(st.session_state.upload_queue)
@@ -6384,416 +6386,423 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
     st.markdown(
         """
         <style>
+        /* ============================================================
+           KELOLA DATA UPLOAD — NO EMPTY CARD VERSION
+           ============================================================ */
+
         main .block-container {
-            padding-top: 0rem !important;
+            padding-top: 0.15rem !important;
         }
 
-        .upload-page-scope {
+        /* Tarik halaman upload ke atas seperti halaman simulasi */
+        div[data-testid="stElementContainer"]:has(.upload-v5-hero) {
+            margin-top: -300px !important;
+            margin-bottom: 16px !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
+
+        .upload-v5-wrap {
             width: 100%;
-            max-width: 100%;
-        }
-
-        .upload-hero-clean {
-            position: relative;
-            overflow: hidden;
-            border-radius: 28px;
-            border: 1px solid rgba(217,168,74,.35);
-            padding: 34px 38px;
-            margin: -128px 0 22px 0;
-            background: linear-gradient(90deg, #2E7A4F 0%, #5C965D 48%, #C69C49 100%);
-            box-shadow: 0 18px 40px rgba(0,0,0,.16);
-        }
-
-        .upload-hero-clean::after {
-            content: "";
-            position: absolute;
-            width: 270px;
-            height: 270px;
-            right: -80px;
-            top: -35px;
-            border-radius: 999px;
-            background: rgba(255,255,255,.14);
-        }
-
-        .upload-hero-title {
-            position: relative;
-            z-index: 2;
-            color: #F5F7F2 !important;
-            font-size: clamp(34px, 4vw, 62px);
-            line-height: 1.08;
-            letter-spacing: -.8px;
-            font-weight: 950;
-            margin: 0 0 14px 0;
-        }
-
-        .upload-hero-desc {
-            position: relative;
-            z-index: 2;
-            color: #F5F7F2 !important;
-            font-size: 15px;
-            line-height: 1.7;
-            font-weight: 700;
-            max-width: 1100px;
-            margin: 0;
-        }
-
-        .upload-card-head {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 16px;
-            margin-bottom: 14px;
-        }
-
-        .upload-card-title-wrap {
-            display: flex;
-            gap: 14px;
-            align-items: flex-start;
-        }
-
-        .upload-card-icon {
-            width: 58px;
-            height: 58px;
-            min-width: 58px;
-            border-radius: 18px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, rgba(92,150,93,.28), rgba(198,156,73,.15));
-            border: 1px solid rgba(129,176,126,.28);
-            color: #EAF4E4 !important;
-            font-size: 24px;
-            font-weight: 900;
-        }
-
-        .upload-card-title {
-            color: #F5F7F2 !important;
-            font-size: 21px;
-            line-height: 1.15;
-            font-weight: 950;
-            margin: 0 0 6px 0;
-        }
-
-        .upload-card-subtitle {
-            color: #D8E0D4 !important;
-            font-size: 13px;
-            line-height: 1.6;
-            font-weight: 700;
-            margin: 0;
-            max-width: 520px;
-        }
-
-        .upload-chip {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 18px;
-            border-radius: 999px;
-            border: 1px solid rgba(129,176,126,.28);
-            background: rgba(92,150,93,.10);
-            color: #EAF4E4 !important;
-            font-size: 12px;
-            font-weight: 850;
-            white-space: nowrap;
-        }
-
-        .upload-support-note {
-            color: #D8E0D4 !important;
-            font-size: 12px;
-            line-height: 1.6;
-            font-weight: 700;
-            margin-top: 12px;
-        }
-
-        /* Uploader override khusus halaman ini: elemen hijau di dalam card dilebarkan, bukan card luarnya */
-        [data-testid="stFileUploader"] {
-            width: 100% !important;
-            max-width: 100% !important;
-            margin: 6px 0 0 0 !important;
-        }
-
-        [data-testid="stFileUploader"] > label,
-        [data-testid="stFileUploader"] label {
-            display: none !important;
-        }
-
-        [data-testid="stFileUploader"] section,
-        [data-testid="stFileUploaderDropzone"] {
-            width: 100% !important;
-            max-width: 100% !important;
-            min-height: 190px !important;
-            border: 1px dashed rgba(112,188,172,.42) !important;
-            border-radius: 28px !important;
-            background:
-                radial-gradient(circle at 8% 14%, rgba(66,130,101,.22), transparent 22%),
-                linear-gradient(135deg, rgba(42,65,52,.82) 0%, rgba(29,43,36,.92) 100%) !important;
-            padding: 26px 28px !important;
-            box-sizing: border-box !important;
-            overflow: visible !important;
-        }
-
-        [data-testid="stFileUploader"] section > div,
-        [data-testid="stFileUploaderDropzone"] > div {
-            width: 100% !important;
-            max-width: 100% !important;
-            min-width: 0 !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: flex-start !important;
-            gap: 28px !important;
-            flex-wrap: nowrap !important;
-            overflow: visible !important;
-        }
-
-        [data-testid="stFileUploader"] section button,
-        [data-testid="stFileUploaderDropzone"] button,
-        [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
-        [data-testid="stFileUploader"] button[kind="secondary"] {
-            width: 170px !important;
-            min-width: 170px !important;
-            max-width: 170px !important;
-            min-height: 56px !important;
-            height: 56px !important;
-            border-radius: 18px !important;
-            border: 1px solid rgba(112,188,172,.30) !important;
-            background: rgba(66,130,101,.28) !important;
-            color: #F5F7F2 !important;
-            font-size: 15px !important;
-            font-weight: 850 !important;
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            gap: 10px !important;
-            flex: 0 0 170px !important;
-            box-shadow: none !important;
-            overflow: visible !important;
-            white-space: nowrap !important;
-        }
-
-        [data-testid="stFileUploader"] section button:hover,
-        [data-testid="stFileUploaderDropzone"] button:hover,
-        [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"]:hover,
-        [data-testid="stFileUploader"] button[kind="secondary"]:hover {
-            background: rgba(72,149,114,.42) !important;
-            border-color: rgba(112,188,172,.58) !important;
-            color: #FFFFFF !important;
-        }
-
-        [data-testid="stFileUploader"] section small,
-        [data-testid="stFileUploader"] section p,
-        [data-testid="stFileUploader"] section span,
-        [data-testid="stFileUploaderDropzone"] small,
-        [data-testid="stFileUploaderDropzone"] p,
-        [data-testid="stFileUploaderDropzone"] span {
-            width: auto !important;
-            min-width: max-content !important;
-            max-width: none !important;
-            overflow: visible !important;
-            text-overflow: clip !important;
-            white-space: nowrap !important;
-            color: #F5F7F2 !important;
-            font-size: 15px !important;
-            line-height: 1.3 !important;
-            font-weight: 800 !important;
-            text-align: left !important;
-            flex: 0 0 auto !important;
-            margin: 0 !important;
-        }
-
-        [data-testid="stFileUploader"] small {
-            color: #F5F7F2 !important;
-            opacity: .92 !important;
-        }
-
-        /* Setelah file dipilih, daftar file default Streamlit disembunyikan agar tidak muncul card hitam + tombol X bawaan */
-        [data-testid="stFileUploaderFile"],
-        [data-testid="stFileUploader"] ul,
-        [data-testid="stFileUploader"] li,
-        [data-testid="stFileUploader"] [data-testid="stFileUploaderFile"],
-        [data-testid="stFileUploaderDropzone"] + div {
-            display: none !important;
-        }
-
-        .queue-empty-box {
-            border: 1px dashed rgba(112,188,172,.28);
-            border-radius: 26px;
-            padding: 42px 24px;
-            background: rgba(255,255,255,.02);
-            text-align: center;
-        }
-
-        .queue-empty-icon {
-            width: 84px;
-            height: 84px;
-            margin: 0 auto 18px auto;
-            border-radius: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, rgba(92,150,93,.20), rgba(198,156,73,.10));
-            border: 1px solid rgba(129,176,126,.28);
-            font-size: 32px;
-        }
-
-        .queue-empty-title {
-            color: #F5F7F2 !important;
-            font-size: 17px;
-            line-height: 1.3;
-            font-weight: 900;
-            margin-bottom: 8px;
-        }
-
-        .queue-empty-desc {
-            color: #D8E0D4 !important;
-            font-size: 13px;
-            line-height: 1.6;
-            font-weight: 700;
-            max-width: 420px;
+            max-width: 1320px;
             margin: 0 auto;
         }
 
-        .queue-file-row {
-            border: 1px solid rgba(129,176,126,.22);
+        .upload-v5-hero {
+            position: relative;
+            overflow: hidden;
+            border-radius: 28px;
+            padding: 34px 36px;
+            margin-bottom: 18px;
+            border: 1px solid rgba(255,255,255,0.14);
+            background: linear-gradient(135deg, #1F4D36 0%, #4F8B59 55%, #B78335 100%);
+            box-shadow: 0 18px 42px rgba(31, 41, 51, 0.18);
+        }
+
+        .upload-v5-hero::before {
+            content: "";
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            right: -85px;
+            top: -105px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.12);
+        }
+
+        .upload-v5-hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(0,0,0,.06), rgba(255,255,255,.02));
+            pointer-events: none;
+        }
+
+        .upload-v5-title {
+            position: relative;
+            z-index: 2;
+            color: white !important;
+            font-size: clamp(34px, 3.6vw, 52px);
+            line-height: 1.08;
+            font-weight: 950;
+            letter-spacing: -.9px;
+            margin: 0 0 12px 0;
+        }
+
+        .upload-v5-desc {
+            position: relative;
+            z-index: 2;
+            color: rgba(255,255,255,.92) !important;
+            font-size: 15.5px;
+            line-height: 1.65;
+            font-weight: 650;
+            max-width: 1060px;
+            margin: 0;
+        }
+
+        /* Container Streamlit pada halaman upload dibuat menjadi card modern */
+        .upload-v5-wrap div[data-testid="stVerticalBlockBorderWrapper"] {
+            border: 1px solid rgba(61,74,64,.95) !important;
+            border-radius: 24px !important;
+            background:
+                linear-gradient(150deg, rgba(255,255,255,.040), rgba(255,255,255,.008)),
+                rgba(29,38,31,.96) !important;
+            box-shadow: 0 16px 38px rgba(0,0,0,.14) !important;
+            overflow: hidden !important;
+        }
+
+        .upload-v5-wrap div[data-testid="stVerticalBlockBorderWrapper"] > div {
+            padding: 22px !important;
+        }
+
+        .upload-v5-card-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .upload-v5-title-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .upload-v5-icon {
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
+            border-radius: 15px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(103,240,193,.15), rgba(241,190,84,.14));
+            border: 1px solid rgba(139,203,136,.18);
+            color: #DDF4D8 !important;
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .upload-v5-card-title {
+            color: #F5F7F2 !important;
+            font-size: 20px;
+            line-height: 1.15;
+            font-weight: 950;
+            letter-spacing: -.28px;
+            margin: 0 0 5px 0;
+        }
+
+        .upload-v5-card-subtitle {
+            color: #D8E0D4 !important;
+            font-size: 12.8px;
+            line-height: 1.5;
+            font-weight: 650;
+            margin: 0;
+        }
+
+        .upload-v5-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(139,203,136,.18);
+            background: rgba(139,203,136,.08);
+            color: #CFE7CC !important;
+            font-size: 11.5px;
+            font-weight: 850;
+        }
+
+        .upload-v5-note {
+            color: #D8E0D4 !important;
+            font-size: 12.4px;
+            line-height: 1.55;
+            font-weight: 650;
+            margin-top: 13px;
+            opacity: .92;
+        }
+
+        [data-testid="stFileUploader"] {
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+        }
+
+        [data-testid="stFileUploader"] section {
+            min-height: 196px !important;
+            padding: 18px !important;
+            border-radius: 22px !important;
+            border: 1.4px dashed rgba(139,203,136,.24) !important;
+            background:
+                radial-gradient(circle at 10% 12%, rgba(103,240,193,.09), transparent 22%),
+                linear-gradient(145deg, rgba(255,255,255,.035), rgba(255,255,255,.012)),
+                #1B241E !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+        }
+
+        [data-testid="stFileUploader"] section:hover {
+            border-color: rgba(103,240,193,.44) !important;
+            background:
+                radial-gradient(circle at 10% 12%, rgba(103,240,193,.12), transparent 22%),
+                linear-gradient(145deg, rgba(255,255,255,.045), rgba(255,255,255,.018)),
+                #1C2720 !important;
+        }
+
+        [data-testid="stFileUploader"] section button,
+        [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
+        [data-testid="stFileUploader"] button[kind="secondary"] {
+            min-height: 42px !important;
+            border-radius: 14px !important;
+            border: 1px solid rgba(139,203,136,.18) !important;
+            background: linear-gradient(135deg, #26322A 0%, #2D3A30 100%) !important;
+            color: #F5F7F2 !important;
+            font-weight: 850 !important;
+            box-shadow: 0 8px 20px rgba(0,0,0,.16) !important;
+        }
+
+        [data-testid="stFileUploader"] section button:hover,
+        [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"]:hover,
+        [data-testid="stFileUploader"] button[kind="secondary"]:hover {
+            background: linear-gradient(135deg, #2F7D52 0%, #4A8A58 100%) !important;
+            color: white !important;
+            border-color: #2F7D52 !important;
+        }
+
+        [data-testid="stFileUploader"] small,
+        [data-testid="stFileUploader"] section small,
+        [data-testid="stFileUploader"] section div,
+        [data-testid="stFileUploader"] section span,
+        [data-testid="stFileUploader"] section p {
+            color: #D8E0D4 !important;
+            font-weight: 650 !important;
+        }
+
+        .upload-v5-empty {
+            min-height: 196px;
+            border: 1.4px dashed rgba(139,203,136,.22);
+            border-radius: 22px;
+            background:
+                radial-gradient(circle at 50% 0%, rgba(139,203,136,.08), transparent 35%),
+                rgba(255,255,255,.018);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 22px;
+            box-sizing: border-box;
+        }
+
+        .upload-v5-empty-icon {
+            width: 62px;
+            height: 62px;
             border-radius: 18px;
-            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(103,240,193,.13), rgba(241,190,84,.12));
+            border: 1px solid rgba(139,203,136,.18);
+            margin-bottom: 13px;
+            font-size: 26px;
+        }
+
+        .upload-v5-empty-title {
+            color: #F5F7F2 !important;
+            font-size: 15.5px;
+            line-height: 1.35;
+            font-weight: 900;
+            margin-bottom: 5px;
+        }
+
+        .upload-v5-empty-desc {
+            color: #D8E0D4 !important;
+            font-size: 12.2px;
+            line-height: 1.5;
+            font-weight: 650;
+            max-width: 360px;
+        }
+
+        .upload-v5-file-row {
+            border: 1px solid rgba(61,74,64,.85);
+            border-radius: 18px;
+            padding: 13px 15px;
             background: rgba(255,255,255,.03);
             margin-bottom: 10px;
         }
 
-        .queue-file-name {
+        .upload-v5-file-title {
             color: #F5F7F2 !important;
-            font-size: 13px;
-            line-height: 1.45;
+            font-size: 13.1px;
+            line-height: 1.4;
             font-weight: 850;
             margin-bottom: 4px;
             word-break: break-word;
         }
 
-        .queue-file-meta {
-            color: #D8E0D4 !important;
-            font-size: 11.8px;
+        .upload-v5-file-meta {
+            color: #BFC9BD !important;
+            font-size: 11.5px;
             line-height: 1.4;
             font-weight: 700;
         }
 
-        .queue-remove-wrap .stButton > button,
-        .action-buttons-wrap .stButton > button {
-            width: 100% !important;
-            min-height: 52px !important;
-            border-radius: 16px !important;
-            font-size: 15px !important;
-            font-weight: 850 !important;
-        }
-
-        .action-buttons-wrap .stButton > button[kind="secondary"] {
-            background: rgba(11,19,42,.92) !important;
-            color: #F5F7F2 !important;
-            border: 1px solid rgba(129,176,126,.25) !important;
-        }
-
-        .success-upload-box {
+        .upload-v5-success {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 14px;
-            padding: 18px 20px;
-            border-radius: 22px;
-            border: 1px solid rgba(112,188,172,.26);
-            background: linear-gradient(135deg, rgba(57,136,107,.18), rgba(198,156,73,.08));
-            margin-top: 14px;
+            padding: 16px 18px;
+            margin-top: 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(103,240,193,.22);
+            background: linear-gradient(135deg, rgba(103,240,193,.10), rgba(139,203,136,.06));
+            box-shadow: 0 14px 30px rgba(0,0,0,.12);
         }
 
-        .success-upload-icon {
-            width: 52px;
-            height: 52px;
-            min-width: 52px;
-            border-radius: 16px;
+        .upload-v5-success-icon {
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(72,149,114,.26);
-            border: 1px solid rgba(112,188,172,.28);
+            background: rgba(103,240,193,.14);
+            border: 1px solid rgba(103,240,193,.20);
             color: #67F0C1 !important;
-            font-size: 26px;
+            font-size: 22px;
             font-weight: 950;
         }
 
-        .success-upload-title {
+        .upload-v5-success-title {
             color: #F5F7F2 !important;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 900;
-            margin-bottom: 3px;
+            margin-bottom: 4px;
         }
 
-        .success-upload-text {
+        .upload-v5-success-text {
             color: #D8E0D4 !important;
-            font-size: 13px;
+            font-size: 12.8px;
+            line-height: 1.55;
             font-weight: 700;
-            line-height: 1.5;
         }
 
-        @media screen and (max-width: 900px) {
-            .upload-hero-clean {
-                padding: 24px 22px;
+        .upload-v5-wrap .stButton > button {
+            width: 100% !important;
+            min-height: 46px !important;
+            border-radius: 15px !important;
+            font-size: 13px !important;
+            font-weight: 850 !important;
+            border: 1px solid rgba(61,74,64,.95) !important;
+            background: linear-gradient(135deg, #212A23 0%, #29332B 100%) !important;
+            color: #F5F7F2 !important;
+            box-shadow: 0 10px 22px rgba(0,0,0,.14) !important;
+        }
+
+        .upload-v5-wrap .stButton > button:hover {
+            background: linear-gradient(135deg, #2F7D52 0%, #4A8A58 100%) !important;
+            color: white !important;
+            border-color: #2F7D52 !important;
+        }
+
+        .upload-v5-wrap .stButton > button[kind="primary"] {
+            background: linear-gradient(135deg, #2F7D52 0%, #4A8A58 58%, #D1A64A 100%) !important;
+            border-color: rgba(209,166,74,.58) !important;
+            color: white !important;
+        }
+
+        .upload-v5-wrap .stButton > button:disabled {
+            opacity: .50 !important;
+            cursor: not-allowed !important;
+        }
+
+        @media screen and (max-width: 960px) {
+            div[data-testid="stElementContainer"]:has(.upload-v5-hero) {
+                margin-top: 50px !important;
             }
-            .upload-hero-title {
-                font-size: 32px;
+
+            .upload-v5-hero {
+                padding: 20px 18px;
+                border-radius: 22px;
             }
-            .upload-hero-desc {
+
+            .upload-v5-title {
+                font-size: 24px;
+            }
+
+            .upload-v5-desc {
                 font-size: 13px;
             }
-            .upload-page-scope [data-testid="stFileUploader"] section > div,
-            .upload-page-scope [data-testid="stFileUploaderDropzone"] > div {
-                gap: 16px !important;
-                flex-wrap: wrap !important;
+
+            .upload-v5-wrap div[data-testid="stVerticalBlockBorderWrapper"] > div {
+                padding: 16px !important;
             }
-            .upload-page-scope [data-testid="stFileUploader"] section button,
-            .upload-page-scope [data-testid="stFileUploaderDropzone"] button,
-            .upload-page-scope [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
-            .upload-page-scope [data-testid="stFileUploader"] button[kind="secondary"] {
-                width: 100% !important;
-                max-width: 100% !important;
-                flex: 1 1 auto !important;
-            }
-            .upload-page-scope [data-testid="stFileUploader"] section small,
-            .upload-page-scope [data-testid="stFileUploader"] section p,
-            .upload-page-scope [data-testid="stFileUploader"] section span,
-            .upload-page-scope [data-testid="stFileUploaderDropzone"] small,
-            .upload-page-scope [data-testid="stFileUploaderDropzone"] p,
-            .upload-page-scope [data-testid="stFileUploaderDropzone"] span {
-                white-space: normal !important;
+
+            [data-testid="stFileUploader"] section,
+            .upload-v5-empty {
+                min-height: 165px !important;
             }
         }
         </style>
-        <div class="upload-page-scope">
-            <div class="upload-hero-clean">
-                <div class="upload-hero-title">Kelola Data Upload</div>
-                <div class="upload-hero-desc">
-                    Tambahkan file baru ke antrian terlebih dahulu. File yang diunggah belum memengaruhi model sampai tombol Upload ke Data Aktif diklik.
-                </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.markdown('<div class="upload-v5-wrap">', unsafe_allow_html=True)
+
+    st.markdown(
+        """
+        <div class="upload-v5-hero">
+            <div class="upload-v5-title">Kelola Data Upload</div>
+            <div class="upload-v5-desc">
+                Tambahkan file baru ke antrian terlebih dahulu. File yang diunggah belum memengaruhi model sampai tombol
+                <b>Upload ke Data Aktif</b> diklik.
             </div>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-    uploaded_files_main = None
-    st.markdown('<div class="upload-page-scope">', unsafe_allow_html=True)
-
-    left_col, right_col = st.columns(2, gap="large")
+    left_col, right_col = st.columns([0.95, 1.05], gap="large")
 
     with left_col:
         with st.container(border=True):
             st.markdown(
                 """
-                <div class="upload-card-head">
-                    <div class="upload-card-title-wrap">
-                        <div class="upload-card-icon">⤴</div>
+                <div class="upload-v5-card-head">
+                    <div class="upload-v5-title-row">
+                        <div class="upload-v5-icon">⤴</div>
                         <div>
-                            <div class="upload-card-title">Upload File ke Antrian</div>
-                            <div class="upload-card-subtitle">Pilih file Excel atau CSV. File akan masuk antrian dulu sebelum digabung ke data aktif.</div>
+                            <div class="upload-v5-card-title">Upload File ke Antrian</div>
+                            <div class="upload-v5-card-subtitle">Pilih file Excel atau CSV. File akan masuk antrian dulu sebelum digabung ke data aktif.</div>
                         </div>
                     </div>
-                    <div class="upload-chip">Excel / CSV</div>
+                    <div class="upload-v5-pill">Excel / CSV</div>
                 </div>
                 """,
                 unsafe_allow_html=True
@@ -6802,67 +6811,20 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             uploaded_files_main = st.file_uploader(
                 "Upload file data sampah",
                 type=["xlsx", "xls", "csv"],
-                help="Kolom wajib: tahun, bulan, jumlah_sampah.",
+                help="File wajib memiliki kolom: tahun, bulan, jumlah_sampah.",
                 accept_multiple_files=True,
-                key=f"main_upload_data_queue_{st.session_state.uploader_key}",
+                key=f"no_empty_upload_panel_{st.session_state.uploader_key}",
                 label_visibility="collapsed"
             )
 
             st.markdown(
-                '<div class="upload-support-note">Kolom wajib: tahun, bulan, dan jumlah_sampah. File tidak langsung memengaruhi model sebelum upload final.</div>',
-                unsafe_allow_html=True
-            )
-
-    with right_col:
-        with st.container(border=True):
-            st.markdown(
-                f"""
-                <div class="upload-card-head">
-                    <div class="upload-card-title-wrap">
-                        <div class="upload-card-icon">☷</div>
-                        <div>
-                            <div class="upload-card-title">Antrian File</div>
-                            <div class="upload-card-subtitle">Cek file sebelum digabung ke data aktif.</div>
-                        </div>
-                    </div>
-                    <div class="upload-chip">{queue_count} file</div>
+                """
+                <div class="upload-v5-note">
+                    Kolom wajib: <b>tahun</b>, <b>bulan</b>, dan <b>jumlah_sampah</b>. File tidak langsung memengaruhi model sebelum upload final.
                 </div>
                 """,
                 unsafe_allow_html=True
             )
-
-            if queue_count == 0:
-                st.markdown(
-                    """
-                    <div class="queue-empty-box">
-                        <div class="queue-empty-icon">🗂</div>
-                        <div class="queue-empty-title">Belum ada file di antrian</div>
-                        <div class="queue-empty-desc">Unggah file dari panel kiri. Setelah valid, file akan muncul di sini sebelum digabung ke data aktif.</div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-            else:
-                for idx, item in enumerate(list(st.session_state.upload_queue)):
-                    row1, row2 = st.columns([0.80, 0.20], gap="small")
-                    with row1:
-                        st.markdown(
-                            f"""
-                            <div class="queue-file-row">
-                                <div class="queue-file-name">{idx + 1}. {html.escape(item.get('name', 'file upload'))}</div>
-                                <div class="queue-file-meta">{format_file_size(item.get('size', 0))} • siap diproses ke data aktif</div>
-                            </div>
-                            """,
-                            unsafe_allow_html=True
-                        )
-                    with row2:
-                        st.markdown('<div class="queue-remove-wrap">', unsafe_allow_html=True)
-                        if st.button("Hapus", key=f"remove_upload_queue_{idx}", use_container_width=True):
-                            st.session_state.upload_queue.pop(idx)
-                            st.session_state.upload_success_message = ""
-                            st.session_state.uploader_key += 1
-                            st.rerun()
-                        st.markdown('</div>', unsafe_allow_html=True)
 
     if uploaded_files_main:
         new_errors = []
@@ -6875,6 +6837,7 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             uploaded_bytes = uploaded_file.getvalue()
             uploaded_name = uploaded_file.name
             uploaded_size = len(uploaded_bytes)
+
             try:
                 read_uploaded_dataframe(uploaded_bytes, uploaded_name)
                 item_key = (uploaded_name, uploaded_size)
@@ -6893,15 +6856,66 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
         st.session_state.uploader_key += 1
         st.rerun()
 
+    with right_col:
+        with st.container(border=True):
+            st.markdown(
+                f"""
+                <div class="upload-v5-card-head">
+                    <div class="upload-v5-title-row">
+                        <div class="upload-v5-icon">☷</div>
+                        <div>
+                            <div class="upload-v5-card-title">Antrian File</div>
+                            <div class="upload-v5-card-subtitle">Cek file sebelum digabung ke data aktif.</div>
+                        </div>
+                    </div>
+                    <div class="upload-v5-pill">{queue_count} file</div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+            if queue_count == 0:
+                st.markdown(
+                    """
+                    <div class="upload-v5-empty">
+                        <div class="upload-v5-empty-icon">🗂</div>
+                        <div class="upload-v5-empty-title">Belum ada file di antrian</div>
+                        <div class="upload-v5-empty-desc">
+                            Unggah file dari panel kiri. Setelah valid, file akan muncul di sini sebelum digabung ke data aktif.
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+            else:
+                for idx, item in enumerate(list(st.session_state.upload_queue)):
+                    qcol1, qcol2 = st.columns([0.80, 0.20], gap="small")
+                    with qcol1:
+                        st.markdown(
+                            f"""
+                            <div class="upload-v5-file-row">
+                                <div class="upload-v5-file-title">{idx + 1}. {html.escape(item.get('name', 'file upload'))}</div>
+                                <div class="upload-v5-file-meta">{format_file_size(item.get('size', 0))} • siap diproses ke data aktif</div>
+                            </div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+                    with qcol2:
+                        st.markdown('<div style="height:12px"></div>', unsafe_allow_html=True)
+                        if st.button("Hapus", key=f"upload_remove_{idx}", use_container_width=True):
+                            st.session_state.upload_queue.pop(idx)
+                            st.session_state.upload_success_message = ""
+                            st.session_state.uploader_key += 1
+                            st.rerun()
+
     if st.session_state.upload_error_messages:
         for error_message in st.session_state.upload_error_messages:
             st.error(f"File tidak valid: {error_message}")
 
-    st.markdown('<div class="action-buttons-wrap">', unsafe_allow_html=True)
-    btn_col1, btn_col2 = st.columns([1.85, 1], gap="small")
+    action_col1, action_col2 = st.columns([1.35, 0.75], gap="small")
 
-    with btn_col1:
-        if st.button("Upload ke Data Aktif", key="upload_commit_queue", disabled=queue_count == 0, use_container_width=True):
+    with action_col1:
+        if st.button("Upload ke Data Aktif", key="upload_commit_queue", type="primary", disabled=queue_count == 0, use_container_width=True):
             jumlah_digabung = len(st.session_state.upload_queue)
             st.session_state.uploaded_data_payloads.extend(st.session_state.upload_queue)
             st.session_state.upload_queue = []
@@ -6911,7 +6925,7 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             st.cache_data.clear()
             st.rerun()
 
-    with btn_col2:
+    with action_col2:
         reset_disabled = active_upload_count == 0 and queue_count == 0
         if st.button("Reset Awal", key="upload_reset_default", disabled=reset_disabled, use_container_width=True):
             st.session_state.uploaded_data_payloads = []
@@ -6921,16 +6935,15 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
             st.session_state.uploader_key += 1
             st.cache_data.clear()
             st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
 
     if st.session_state.upload_success_message:
         st.markdown(
             f"""
-            <div class="success-upload-box">
-                <div class="success-upload-icon">✓</div>
+            <div class="upload-v5-success">
+                <div class="upload-v5-success-icon">✓</div>
                 <div>
-                    <div class="success-upload-title">Upload berhasil</div>
-                    <div class="success-upload-text">{html.escape(st.session_state.upload_success_message)}</div>
+                    <div class="upload-v5-success-title">Upload berhasil</div>
+                    <div class="upload-v5-success-text">{html.escape(st.session_state.upload_success_message)}</div>
                 </div>
             </div>
             """,
