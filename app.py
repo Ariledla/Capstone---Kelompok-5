@@ -904,7 +904,8 @@ def apply_theme(mode):
             border-radius: 22px;
             padding: 22px 24px;
             margin-bottom: 22px;
-            min-height: auto;
+            min-height: 360px;
+            height: 360px;
             box-shadow: 0 12px 30px {cfg["shadow"]};
             position: relative;
             overflow: hidden;
