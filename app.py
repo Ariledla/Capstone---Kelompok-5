@@ -4473,6 +4473,26 @@ def render_eda_section(ts, theme):
 # SIDEBAR KIRI
 # ============================================================
 
+st.sidebar.markdown('<div class="theme-label">Pilih Tampilan</div>', unsafe_allow_html=True)
+
+theme_col1, theme_col2 = st.sidebar.columns(2)
+
+with theme_col1:
+    st.button(
+        "☀️",
+        use_container_width=True,
+        on_click=set_theme,
+        args=("Terang",)
+    )
+
+with theme_col2:
+    st.button(
+        "🌙",
+        use_container_width=True,
+        on_click=set_theme,
+        args=("Gelap",)
+    )
+
 uploaded_file = st.sidebar.file_uploader(
     "Upload data sampah terbaru",
     type=["xlsx", "xls", "csv"],
@@ -4503,7 +4523,7 @@ if source_data_type == "upload":
     )
 else:
     st.sidebar.markdown(
-        f'<div class=\"data-status info\"><span class=\"modern-status-dot info-dot\"></span><div class=\"data-status-copy\"><b>Data aktif</b><span>{len(df_raw)} baris | {periode_data}</span></div></div>',
+        f'<div class=\"data-status info\"><span class=\"modern-status-dot info-dot\"></span><div class=\"data-status-copy\"><b>Data bawaan aktif</b><span>{len(df_raw)} baris | {periode_data}</span></div></div>',
         unsafe_allow_html=True
     )
 
@@ -4964,7 +4984,7 @@ st.markdown(
 # Fokus:
 # - Tombol Upload full-width di dalam dropzone.
 # - Icon upload + teks Upload satu baris dan center.
-# - Data aktif dibuat 2 baris agar periode terbaca penuh.
+# - Data bawaan aktif dibuat 2 baris agar periode terbaca penuh.
 # - Icon data bawaan dibuat lebih rapi.
 # ============================================================
 
@@ -5048,7 +5068,7 @@ st.markdown(
         white-space: nowrap !important;
     }}
 
-    /* Data aktif: 2 baris, tidak kepotong */
+    /* Data bawaan aktif: 2 baris, tidak kepotong */
     [data-testid="stSidebar"] .data-status {{
         min-height: 54px !important;
         height: auto !important;
@@ -5129,7 +5149,7 @@ st.markdown(
 # Final targeted fix:
 # - Upload button full-width sesuai lebar dalam dropzone.
 # - Icon upload dan teks Upload selalu satu baris.
-# - Data aktif jadi 2 baris dan periode terbaca penuh.
+# - Data bawaan aktif jadi 2 baris dan periode terbaca penuh.
 # - Status icon tidak double.
 # - Radio menu disejajarkan dan dibuat lebih modern.
 # ============================================================
@@ -5428,6 +5448,69 @@ st.markdown(
         align-items: center !important;
         justify-content: center !important;
         overflow: hidden !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+
+
+# ============================================================
+# SIDEBAR FILE UPLOADER HELP ICON FIX — v51
+# Geser ikon ? agar tepat di sebelah teks "Upload data sampah terbaru",
+# bukan jauh di kanan.
+# ============================================================
+
+st.markdown(
+    """
+    <style>
+    /* Label file uploader: teks dan ikon ? dibuat berdampingan */
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] > label,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] label {
+        display: inline-flex !important;
+        width: auto !important;
+        max-width: max-content !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 7px !important;
+        margin-bottom: 7px !important;
+    }
+
+    /* Teks label jangan mengambil lebar penuh */
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] > label p,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] label p,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] > label span,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] label span {
+        width: auto !important;
+        max-width: max-content !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        white-space: nowrap !important;
+        line-height: 1.1 !important;
+    }
+
+    /* Ikon ? ditempel dekat teks, bukan di ujung kanan */
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] [data-testid="stTooltipIcon"],
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] [aria-label="help"],
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] button[aria-label="help"] {
+        position: static !important;
+        margin-left: 2px !important;
+        transform: translateY(0px) scale(.78) !important;
+        align-self: center !important;
+    }
+
+    /* Hindari wrapper label memakai space-between */
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] > label > div {
+        width: auto !important;
+        max-width: max-content !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 7px !important;
     }
     </style>
     """,
