@@ -1818,6 +1818,270 @@ theme = apply_theme(st.session_state.theme_mode)
 
 
 # ============================================================
+# SIDEBAR NO SCROLL FIX — v42
+# Hilangkan scroll sidebar, hapus judul input, compact-kan isi, dan ikon status modern.
+# ============================================================
+
+st.markdown(
+    f"""
+    <style>
+    /* Sidebar tidak perlu scrollbar */
+    [data-testid="stSidebar"],
+    [data-testid="stSidebarContent"],
+    [data-testid="stSidebarUserContent"] {{
+        overflow-y: hidden !important;
+        scrollbar-width: none !important;
+    }}
+
+    [data-testid="stSidebar"]::-webkit-scrollbar,
+    [data-testid="stSidebarContent"]::-webkit-scrollbar,
+    [data-testid="stSidebarUserContent"]::-webkit-scrollbar {{
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+    }}
+
+    /* Naikkan dan compact-kan isi utama sidebar agar tidak crop */
+    [data-testid="stSidebarUserContent"] {{
+        margin-top: -2.45rem !important;
+        padding-bottom: 190px !important;
+    }}
+
+    /* Beri jarak aman antara judul Pilih Tampilan dan tombol tema */
+    [data-testid="stSidebar"] .theme-label {{
+        margin-bottom: 12px !important;
+    }}
+
+    [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) {{
+        margin-bottom: 18px !important;
+    }}
+
+    /* Judul Input Data sudah dihapus, jadi upload langsung naik rapi */
+    [data-testid="stSidebar"] .data-input-title {{
+        display: none !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }}
+
+    /* Label upload dan ikon bantuan sejajar */
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] > label {{
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 10px !important;
+        margin: 0 0 9px 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }}
+
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] > label p {{
+        margin: 0 !important;
+        line-height: 1.1 !important;
+        display: flex !important;
+        align-items: center !important;
+        font-weight: 760 !important;
+    }}
+
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] [data-testid="stTooltipIcon"] {{
+        align-self: center !important;
+        transform: translateY(0px) scale(.82) !important;
+        margin: 0 !important;
+        flex: 0 0 auto !important;
+    }}
+
+    /* Upload box lebih compact supaya tidak perlu scroll */
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section {{
+        min-height: 92px !important;
+        padding: 12px 16px !important;
+        border-radius: 16px !important;
+        justify-content: center !important;
+        gap: 10px !important;
+    }}
+
+    /* Tombol upload panjang ke kanan dan icon-teks sejajar */
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section button,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"],
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] button[kind="secondary"] {{
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 100% !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        border-radius: 13px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        margin: 0 !important;
+    }}
+
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section button svg,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] button[data-testid="baseButton-secondary"] svg {{
+        margin-right: 7px !important;
+        transform: translateY(0) !important;
+    }}
+
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section small,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section p,
+    [data-testid="stSidebar"] [data-testid="stFileUploader"] section span {{
+        text-align: center !important;
+        line-height: 1.12 !important;
+    }}
+
+    /* Note format dibuat pendek dan rapat */
+    [data-testid="stSidebar"] .data-input-note {{
+        margin: 9px 0 10px 0 !important;
+        font-size: 11px !important;
+        line-height: 1.22 !important;
+    }}
+
+    /* Status data dengan ikon modern */
+    [data-testid="stSidebar"] .data-status {{
+        display: flex !important;
+        align-items: center !important;
+        gap: 9px !important;
+        padding: 9px 11px !important;
+        margin: 0 0 16px 0 !important;
+        min-height: 48px !important;
+        line-height: 1.15 !important;
+    }}
+
+    [data-testid="stSidebar"] .data-status b {{
+        color: {theme["text"]} !important;
+        font-size: 12.2px !important;
+        font-weight: 900 !important;
+    }}
+
+    [data-testid="stSidebar"] .data-status span {{
+        line-height: 1.1 !important;
+    }}
+
+    [data-testid="stSidebar"] .data-status-icon {{
+        width: 24px !important;
+        height: 24px !important;
+        min-width: 24px !important;
+        border-radius: 8px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background:
+            radial-gradient(circle at 35% 25%, rgba(255,255,255,.30), transparent 34%),
+            {theme["accent_soft"]} !important;
+        border: 1px solid {theme["border"]} !important;
+        color: {theme["accent"]} !important;
+        font-size: 13px !important;
+        font-weight: 950 !important;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,.05) !important;
+    }}
+
+    /* Menu utama: jarak dengan status cukup, tapi opsi dekat judul */
+    [data-testid="stSidebar"] .stRadio {{
+        margin-top: 12px !important;
+    }}
+
+    [data-testid="stSidebar"] .stRadio > label {{
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+    }}
+
+    [data-testid="stSidebar"] .stRadio > label p {{
+        margin-bottom: 0 !important;
+        line-height: 1.05 !important;
+    }}
+
+    [data-testid="stSidebar"] [role="radiogroup"] {{
+        gap: 3px !important;
+        margin-top: 2px !important;
+    }}
+
+    [data-testid="stSidebar"] [role="radiogroup"] label {{
+        height: 34px !important;
+        min-height: 34px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 11px !important;
+        padding: 0 8px !important;
+    }}
+
+    [data-testid="stSidebar"] [role="radiogroup"] label p {{
+        margin: 0 !important;
+        line-height: 1 !important;
+        display: flex !important;
+        align-items: center !important;
+    }}
+
+    /* Radio hijau, bukan putih */
+    [data-testid="stSidebar"] [role="radiogroup"] label > div:first-child {{
+        width: 17px !important;
+        height: 17px !important;
+        min-width: 17px !important;
+        max-width: 17px !important;
+        min-height: 17px !important;
+        max-height: 17px !important;
+        aspect-ratio: 1 / 1 !important;
+        border-radius: 999px !important;
+        background: #2B2D3A !important;
+        border: 1px solid rgba(139,203,136,.30) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        overflow: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }}
+
+    [data-testid="stSidebar"] [role="radiogroup"] label:has(input:checked) > div:first-child {{
+        background: {theme["accent_hover"]} !important;
+        border-color: {theme["accent"]} !important;
+        box-shadow: 0 0 0 5px {theme["accent_soft"]} !important;
+    }}
+
+    [data-testid="stSidebar"] input[type="radio"] {{
+        accent-color: {theme["accent_hover"]} !important;
+    }}
+
+    [data-testid="stSidebar"] input[type="radio"]:checked {{
+        accent-color: {theme["accent_hover"]} !important;
+    }}
+
+    /* Card bawah dikecilkan sedikit supaya semua muat tanpa scroll */
+    .sidebar-visual {{
+        bottom: 16px !important;
+        padding: 13px 15px !important;
+        min-height: 196px !important;
+        max-height: 208px !important;
+    }}
+
+    .sidebar-emoji {{
+        font-size: 27px !important;
+        margin-bottom: 8px !important;
+    }}
+
+    .sidebar-visual-title {{
+        font-size: 17px !important;
+        line-height: 1.05 !important;
+    }}
+
+    .sidebar-visual-subtitle {{
+        font-size: 11.4px !important;
+        line-height: 1.28 !important;
+        margin-top: 8px !important;
+    }}
+
+    .team-name {{
+        margin-top: 10px !important;
+        padding: 8px 9px !important;
+        font-size: 11.5px !important;
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+
+# ============================================================
 # SIDEBAR MICRO FIX — v41
 # Rapikan uploader, help icon, jarak menu, dan radio hijau.
 # ============================================================
@@ -2504,14 +2768,13 @@ with theme_col2:
         args=("Gelap",)
     )
 
-st.sidebar.markdown('<div class="data-input-title">📂 Input Data</div>', unsafe_allow_html=True)
 uploaded_file = st.sidebar.file_uploader(
     "Upload data sampah terbaru",
     type=["xlsx", "xls", "csv"],
     help="Format minimal: kolom tahun, bulan, dan jumlah_sampah."
 )
 st.sidebar.markdown(
-    '<div class="data-input-note">Format wajib: <b>tahun</b>, <b>bulan</b>, <b>jumlah_sampah</b>. Jika data diunggah, model otomatis dilatih ulang dan prediksi bisa dibuat sampai 24 bulan ke depan.</div>',
+    '<div class="data-input-note">Format wajib: <b>tahun</b>, <b>bulan</b>, <b>jumlah_sampah</b>.</div>',
     unsafe_allow_html=True
 )
 
@@ -2534,12 +2797,12 @@ periode_data = f"{format_periode(ts.index.min())} - {format_periode(ts.index.max
 
 if source_data_type == "upload":
     st.sidebar.markdown(
-        f'<div class="data-status success">✅ Data upload aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
+        f'<div class=\"data-status success\"><span class=\"data-status-icon\">↥</span><div><b>Data upload aktif</b><br><span>{len(df_raw)} baris | {periode_data}</span></div></div>',
         unsafe_allow_html=True
     )
 else:
     st.sidebar.markdown(
-        f'<div class="data-status info">ℹ️ Data bawaan aktif<br><span>{len(df_raw)} baris | {periode_data}</span></div>',
+        f'<div class=\"data-status info\"><span class=\"data-status-icon\">◆</span><div><b>Data bawaan aktif</b><br><span>{len(df_raw)} baris | {periode_data}</span></div></div>',
         unsafe_allow_html=True
     )
 
