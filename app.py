@@ -2097,7 +2097,7 @@ def apply_theme(mode):
                 justify-content: center !important;
                 text-align: center !important;
                 background: transparent !important;
-                transform: none !important;
+                transform: translateX(18px) !important;
             }}
 
             [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) > div:nth-child(1) .stButton > button {{
