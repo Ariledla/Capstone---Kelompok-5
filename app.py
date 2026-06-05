@@ -33,6 +33,9 @@ def render_clean_html(html: str) -> None:
 
 
 FILE_NAME = "jumlah_capaian_penanganan_sampah_di_kota_bandung.xlsx"
+BASE_HISTORICAL_ROWS = 96
+DEFAULT_FORECAST_MAX_MONTHS = 24
+UPLOAD_FORECAST_MAX_MONTHS = 48
 
 BULAN_MAP = {
     "JANUARI": 1,
@@ -177,20 +180,38 @@ def preprocess_data(df_raw):
     return df_raw, df, ts
 
 
+def read_uploaded_dataframe(uploaded_bytes, uploaded_name):
+    file_buffer = io.BytesIO(uploaded_bytes)
+
+    if uploaded_name.lower().endswith(".csv"):
+        uploaded_df = pd.read_csv(file_buffer)
+    else:
+        uploaded_df = pd.read_excel(file_buffer)
+
+    return normalize_uploaded_columns(uploaded_df)
+
+
 @st.cache_data
 def load_data(uploaded_bytes=None, uploaded_name=None):
+    df_base_raw = pd.read_excel(FILE_NAME)
+    df_base_raw = normalize_uploaded_columns(df_base_raw)
+
     if uploaded_bytes is not None and uploaded_name is not None:
-        file_buffer = io.BytesIO(uploaded_bytes)
+        df_uploaded_raw = read_uploaded_dataframe(uploaded_bytes, uploaded_name)
 
-        if uploaded_name.lower().endswith(".csv"):
-            df_raw = pd.read_csv(file_buffer)
-        else:
-            df_raw = pd.read_excel(file_buffer)
+        # Data upload digabung dengan data bawaan.
+        # Kalau periode upload sama dengan periode bawaan, nilai upload menjadi versi terbaru
+        # karena preprocess_data memakai drop_duplicates(..., keep="last").
+        df_raw = pd.concat(
+            [df_base_raw, df_uploaded_raw],
+            ignore_index=True,
+            sort=False
+        )
 
-        source_data_name = f"Upload user: {uploaded_name}"
+        source_data_name = f"Badan Pusat Statistik + Upload user: {uploaded_name}"
         source_data_type = "upload"
     else:
-        df_raw = pd.read_excel(FILE_NAME)
+        df_raw = df_base_raw
         source_data_name = "Badan Pusat Statistik"
         source_data_type = "default"
 
@@ -2549,7 +2570,7 @@ st.markdown(
        Kalau masih terlalu turun, ubah -345px jadi -365px.
        Kalau terlalu naik/kepotong, ubah jadi -320px. */
     div[data-testid="stElementContainer"]:has(.hero) {
-        margin-top: -230px !important;
+        margin-top: -210px !important;
         margin-bottom: 18px !important;
         padding-top: 0px !important;
         padding-bottom: 0px !important;
@@ -5097,6 +5118,41 @@ def render_eda_section(ts, theme):
     st.plotly_chart(fig_eda, use_container_width=True, config={"displayModeBar": False, "responsive": True})
 
 
+
+# ============================================================
+# SIDEBAR VISUAL POSITION FIX — v63
+# Memastikan card Dashboard Sampah di sidebar tidak geser ke kiri pada desktop.
+# ============================================================
+
+st.markdown(
+    """
+    <style>
+    @media screen and (min-width: 901px) {
+        [data-testid="stSidebar"] .sidebar-visual {
+            position: fixed !important;
+            left: 16px !important;
+            bottom: 18px !important;
+            width: 272px !important;
+            max-width: 272px !important;
+            min-width: 272px !important;
+            transform: none !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            box-sizing: border-box !important;
+            z-index: 25 !important;
+        }
+
+        body.sidebar-custom-closed [data-testid="stSidebar"] .sidebar-visual,
+        body.sidebar-custom-closed .sidebar-visual {
+            display: none !important;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
 # ============================================================
 # SIDEBAR KIRI
 # ============================================================
@@ -5104,7 +5160,8 @@ def render_eda_section(ts, theme):
 uploaded_file = st.sidebar.file_uploader(
     "Upload data sampah terbaru",
     type=["xlsx", "xls", "csv"],
-    help="Format minimal: kolom tahun, bulan, dan jumlah_sampah."
+    help="Format minimal: kolom tahun, bulan, dan jumlah_sampah.",
+    key="sidebar_upload_data_sampah_v63"
 )
 
 try:
@@ -5124,14 +5181,23 @@ kota = safe_unique_text(df_raw, "bps_nama_kabupaten_kota")
 satuan = safe_unique_text(df_raw, "satuan", default="Ton")
 periode_data = f"{format_periode(ts.index.min())} - {format_periode(ts.index.max())}"
 
+forecast_max_months = DEFAULT_FORECAST_MAX_MONTHS
+if source_data_type == "upload":
+    tambahan_bulan_data = max(0, len(ts.dropna()) - BASE_HISTORICAL_ROWS)
+    forecast_max_months = min(
+        UPLOAD_FORECAST_MAX_MONTHS,
+        DEFAULT_FORECAST_MAX_MONTHS + tambahan_bulan_data
+    )
+    forecast_max_months = max(DEFAULT_FORECAST_MAX_MONTHS, forecast_max_months)
+
 if source_data_type == "upload":
     st.sidebar.markdown(
-        f'<div class=\"data-status success\"><span class=\"modern-status-dot success-dot\"></span><div class=\"data-status-copy\"><b>Data upload aktif</b><span>{len(df_raw)} baris | {periode_data}</span></div></div>',
+        f'<div class=\"data-status success\"><span class=\"modern-status-dot success-dot\"></span><div class=\"data-status-copy\"><b>Data upload aktif</b><span>{len(ts.dropna())} baris | {periode_data}</span></div></div>',
         unsafe_allow_html=True
     )
 else:
     st.sidebar.markdown(
-        f'<div class=\"data-status info\"><span class=\"modern-status-dot info-dot\"></span><div class=\"data-status-copy\"><b>Data aktif</b><span>{len(df_raw)} baris | {periode_data}</span></div></div>',
+        f'<div class=\"data-status info\"><span class=\"modern-status-dot info-dot\"></span><div class=\"data-status-copy\"><b>Data aktif</b><span>{len(ts.dropna())} baris | {periode_data}</span></div></div>',
         unsafe_allow_html=True
     )
 
@@ -6162,8 +6228,8 @@ if menu == "Simulasi Pengelolaan":
         forecast_steps = st.slider(
             "Simulasi untuk berapa bulan ke depan?",
             min_value=1,
-            max_value=24,
-            value=12,
+            max_value=int(forecast_max_months),
+            value=min(12, int(forecast_max_months)),
             step=1
         )
 
@@ -6300,7 +6366,7 @@ elif menu == "Ringkasan Data & Model":
                         <div class="overview-mini-icon">{kpi_svg("calendar")}</div>
                         <div class="overview-mini-label">Jumlah Data</div>
                     </div>
-                    <div class="overview-mini-value">{len(df_raw)} baris</div>
+                    <div class="overview-mini-value">{len(ts.dropna())} baris</div>
                     <div class="overview-mini-note">{periode_data}</div>
                 </div>
 
