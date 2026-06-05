@@ -6959,15 +6959,6 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
                 label_visibility="collapsed"
             )
 
-            st.markdown(
-                """
-                <div class="upload-v5-note">
-                    Kolom wajib: <b>tahun</b>, <b>bulan</b>, dan <b>jumlah_sampah</b>. File tidak langsung memengaruhi model sebelum upload final.
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
     if uploaded_files_main:
         new_errors = []
         existing_keys = {
