@@ -2967,17 +2967,17 @@ st.markdown(
 
     .overview-step-list {
         display: grid;
-        gap: 9px;
-        margin-top: 8px;
+        gap: 12px;
+        margin-top: 22px;
     }
-
+    
     .overview-step {
         display: grid;
         grid-template-columns: 34px minmax(0, 1fr);
         gap: 10px;
         align-items: start;
     }
-
+    
     .overview-step-number {
         width: 26px;
         height: 26px;
@@ -2989,15 +2989,16 @@ st.markdown(
         background: #8BCB88;
         font-size: 11.5px;
         font-weight: 950;
-        margin-top: 1px;
+        margin-top: 4px;
         box-shadow: 0 8px 18px rgba(139,203,136,0.18);
     }
-
+    
     .overview-step-text {
         color: #D8E0D4 !important;
         font-size: 13px;
         font-weight: 720;
         line-height: 1.45;
+        margin-top: 4px !important;
     }
 
     .overview-step-text b {
