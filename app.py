@@ -1286,7 +1286,8 @@ def apply_theme(mode):
             min-height: 42px !important;
             height: 42px !important;
             margin-top: -3px !important;
-            padding-bottom: 3px !important;
+            padding-top: 2px !important;
+            padding-bottom: 0px !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
