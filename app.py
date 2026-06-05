@@ -6795,7 +6795,7 @@ def render_upload_management_section(ts, source_data_type, periode_data, forecas
         }
 
         .upload-v5-right-bottom-spacer {
-            height: 19px;
+            height: 18px;
         }
 
         .upload-v5-file-row {
