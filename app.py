@@ -4964,7 +4964,7 @@ st.markdown(
 # Fokus:
 # - Tombol Upload full-width di dalam dropzone.
 # - Icon upload + teks Upload satu baris dan center.
-# - Data bawaan aktif dibuat 2 baris agar periode terbaca penuh.
+# - Data aktif dibuat 2 baris agar periode terbaca penuh.
 # - Icon data bawaan dibuat lebih rapi.
 # ============================================================
 
@@ -5048,7 +5048,7 @@ st.markdown(
         white-space: nowrap !important;
     }}
 
-    /* Data bawaan aktif: 2 baris, tidak kepotong */
+    /* Data aktif: 2 baris, tidak kepotong */
     [data-testid="stSidebar"] .data-status {{
         min-height: 54px !important;
         height: auto !important;
@@ -5129,7 +5129,7 @@ st.markdown(
 # Final targeted fix:
 # - Upload button full-width sesuai lebar dalam dropzone.
 # - Icon upload dan teks Upload selalu satu baris.
-# - Data bawaan aktif jadi 2 baris dan periode terbaca penuh.
+# - Data aktif jadi 2 baris dan periode terbaca penuh.
 # - Status icon tidak double.
 # - Radio menu disejajarkan dan dibuat lebih modern.
 # ============================================================
