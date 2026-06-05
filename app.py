@@ -5388,6 +5388,40 @@ st.markdown(
 
 
 
+
+# ============================================================
+# SIDEBAR THEME ICON POSITION FIX — v49
+# Turunkan hanya emoji matahari/bulan di dalam tombol tema.
+# Posisi dan ukuran tombol tidak diubah.
+# ============================================================
+
+st.markdown(
+    """
+    <style>
+    /* Turunkan emoji tema sedikit tanpa menggeser button/elemen luar */
+    [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) .stButton > button p,
+    [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) .stButton > button span {
+        transform: translateY(3px) !important;
+        line-height: 1 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) .stButton > button {
+        align-items: center !important;
+        justify-content: center !important;
+        overflow: hidden !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+
 # ============================================================
 # HERO
 # ============================================================
