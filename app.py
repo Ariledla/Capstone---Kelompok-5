@@ -5401,7 +5401,7 @@ st.markdown(
     /* Turunkan emoji tema sedikit tanpa menggeser button/elemen luar */
     [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) .stButton > button p,
     [data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.stButton) .stButton > button span {
-        transform: translateY(0.7px) !important;
+        transform: translateY(0.3px) !important;
         line-height: 1 !important;
         margin: 0 !important;
         padding: 0 !important;
