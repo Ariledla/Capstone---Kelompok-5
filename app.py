@@ -3048,7 +3048,7 @@ st.markdown(
         margin-right: auto !important;
         padding-left: 0 !important;
         padding-right: 0 !important;
-        transform: translateX(12px) !important;
+        transform: translateX(9px) !important;
     }
 
     /* Tombol custom: ikon panel-web kecil, lebih halus, dan tidak menabrak hero. */
