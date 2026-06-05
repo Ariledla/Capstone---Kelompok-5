@@ -904,11 +904,10 @@ def apply_theme(mode):
             border-radius: 22px;
             padding: 22px 24px;
             margin-bottom: 22px;
-            min-height: 430px;
-            height: auto;
+            min-height: auto;
             box-shadow: 0 12px 30px {cfg["shadow"]};
             position: relative;
-            overflow: visible;
+            overflow: hidden;
         }}
 
         .info-card::before {{
