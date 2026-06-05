@@ -192,23 +192,33 @@ def read_uploaded_dataframe(uploaded_bytes, uploaded_name):
 
 
 @st.cache_data
-def load_data(uploaded_bytes=None, uploaded_name=None):
+def load_data(upload_payloads=None):
     df_base_raw = pd.read_excel(FILE_NAME)
     df_base_raw = normalize_uploaded_columns(df_base_raw)
 
-    if uploaded_bytes is not None and uploaded_name is not None:
-        df_uploaded_raw = read_uploaded_dataframe(uploaded_bytes, uploaded_name)
+    upload_payloads = upload_payloads or tuple()
+    uploaded_frames = []
+    uploaded_names = []
 
-        # Data upload digabung dengan data bawaan.
-        # Kalau periode upload sama dengan periode bawaan, nilai upload menjadi versi terbaru
+    for uploaded_name, uploaded_bytes in upload_payloads:
+        if uploaded_name is None or uploaded_bytes is None:
+            continue
+
+        df_uploaded_raw = read_uploaded_dataframe(uploaded_bytes, uploaded_name)
+        uploaded_frames.append(df_uploaded_raw)
+        uploaded_names.append(uploaded_name)
+
+    if uploaded_frames:
+        # Data upload digabung dengan data bawaan dan seluruh upload sebelumnya.
+        # Kalau periode upload sama dengan periode bawaan/upload lama, nilai terakhir menjadi versi terbaru
         # karena preprocess_data memakai drop_duplicates(..., keep="last").
         df_raw = pd.concat(
-            [df_base_raw, df_uploaded_raw],
+            [df_base_raw] + uploaded_frames,
             ignore_index=True,
             sort=False
         )
 
-        source_data_name = f"Badan Pusat Statistik + Upload user: {uploaded_name}"
+        source_data_name = f"Badan Pusat Statistik + {len(uploaded_frames)} file upload"
         source_data_type = "upload"
     else:
         df_raw = df_base_raw
@@ -445,6 +455,12 @@ if st.session_state.active_menu == "Data Singkat":
 
 if st.session_state.active_menu not in MENU_OPTIONS:
     st.session_state.active_menu = "Simulasi Pengelolaan"
+
+if "uploaded_data_payloads" not in st.session_state:
+    st.session_state.uploaded_data_payloads = []
+
+if "uploader_key" not in st.session_state:
+    st.session_state.uploader_key = 0
 
 
 def set_theme(mode):
@@ -5161,20 +5177,46 @@ uploaded_file = st.sidebar.file_uploader(
     "Upload data sampah terbaru",
     type=["xlsx", "xls", "csv"],
     help="Format minimal: kolom tahun, bulan, dan jumlah_sampah.",
-    key="sidebar_upload_data_sampah_v63"
+    key=f"sidebar_upload_data_sampah_v64_{st.session_state.uploader_key}"
 )
 
+if uploaded_file is not None:
+    if st.sidebar.button("Tambahkan ke Data Gabungan", key="add_uploaded_data_to_history"):
+        try:
+            uploaded_bytes = uploaded_file.getvalue()
+            uploaded_name = uploaded_file.name
+
+            # Validasi cepat agar file yang salah tidak masuk ke data gabungan sementara.
+            read_uploaded_dataframe(uploaded_bytes, uploaded_name)
+
+            st.session_state.uploaded_data_payloads.append({
+                "name": uploaded_name,
+                "bytes": uploaded_bytes
+            })
+            st.session_state.uploader_key += 1
+            st.cache_data.clear()
+            st.rerun()
+        except Exception as error:
+            st.sidebar.error(f"File upload tidak valid: {error}")
+
+if st.session_state.uploaded_data_payloads:
+    if st.sidebar.button("Reset ke Data Awal", key="reset_to_default_data"):
+        st.session_state.uploaded_data_payloads = []
+        st.session_state.uploader_key += 1
+        st.cache_data.clear()
+        st.rerun()
+
 try:
-    uploaded_bytes = uploaded_file.getvalue() if uploaded_file is not None else None
-    uploaded_name = uploaded_file.name if uploaded_file is not None else None
-    df_raw, df, ts, source_data_name, source_data_type = load_data(uploaded_bytes, uploaded_name)
+    upload_payloads = tuple(
+        (item["name"], item["bytes"])
+        for item in st.session_state.uploaded_data_payloads
+    )
+    df_raw, df, ts, source_data_name, source_data_type = load_data(upload_payloads)
 except Exception as error:
-    if uploaded_file is not None:
-        st.sidebar.error(f"File upload tidak valid: {error}")
-        df_raw, df, ts, source_data_name, source_data_type = load_data()
-    else:
-        st.error(f"Data tidak dapat dimuat: {error}")
-        st.stop()
+    st.sidebar.error(f"Data tidak dapat dimuat: {error}")
+    st.session_state.uploaded_data_payloads = []
+    st.cache_data.clear()
+    df_raw, df, ts, source_data_name, source_data_type = load_data()
 
 provinsi = safe_unique_text(df_raw, "nama_provinsi")
 kota = safe_unique_text(df_raw, "bps_nama_kabupaten_kota")
@@ -5191,8 +5233,9 @@ if source_data_type == "upload":
     forecast_max_months = max(DEFAULT_FORECAST_MAX_MONTHS, forecast_max_months)
 
 if source_data_type == "upload":
+    jumlah_file_upload = len(st.session_state.uploaded_data_payloads)
     st.sidebar.markdown(
-        f'<div class=\"data-status success\"><span class=\"modern-status-dot success-dot\"></span><div class=\"data-status-copy\"><b>Data upload aktif</b><span>{len(ts.dropna())} baris | {periode_data}</span></div></div>',
+        f'<div class=\"data-status success\"><span class=\"modern-status-dot success-dot\"></span><div class=\"data-status-copy\"><b>Data upload aktif</b><span>{jumlah_file_upload} file | {len(ts.dropna())} baris | {periode_data}</span></div></div>',
         unsafe_allow_html=True
     )
 else:
